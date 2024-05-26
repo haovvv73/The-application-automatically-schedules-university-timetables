@@ -104,35 +104,131 @@
 
 <!-- view model popup -->
 <app-popup #popup [popupTitle]="title">
-    <div sectionPopup>
-        <div class="flex items-start gap-7">
+    <div sectionPopup class="space-y-2">
+        <!-- schedule -->
+        <h2 class="mb-1 text-lg font-semibold">Schedule</h2>
+        <div class="flex gap-5">
             <!-- left -->
             <div class="flex-1">
                 <form class="max-w-md mx-auto">
-                    <label for="default-search"
-                        class="mb-2 text-sm font-medium text-gray-900 sr-only ">Search</label>
+                    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only ">Search</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 20 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                         </div>
                         <input type="search" id="default-search"
-                            class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
-                            placeholder="Search Mockups, Logos..." required />
+                            class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 shadow-sm rounded-lg bg-gray-50"
+                            placeholder="Search Schedule" required />
                         <button type="submit"
                             class="text-white absolute end-1.5 bottom-[5px] bg-sky-600 hover:bg-sky-800 font-medium rounded-md text-sm px-2 py-1">Search</button>
                     </div>
                 </form>
+                <!-- list schedule -->
+                <div class="border rounded-lg shadow-sm p-2 bg-white mt-2">
+                    <li class="flex items-center gap-2" *ngFor="let item of [1,2,3]">
+                        <button class="text-xs bg-sky-400 px-1 rounded-sm shadow-md text-white" >select</button> 
+                        <span>TKB lop dai tra</span>
+                        <span class="flex-1 text-right text-gray-600 text-xs" >2024-2028</span>
+                    </li>
+                </div>
             </div>
             <!-- right -->
-            <div class="flex-1">schedule is selected</div>
+            <div class="flex-1 border py-2 px-3 rounded-lg shadow-sm border-sky-400">
+                <span class="font-semibold">Thoi Khoa Bieu Lop Dai Tra</span>
+                <ul>
+                    <li>HK: <span class="text-gray-600">1</span></li>
+                    <li>Year: <span class="text-gray-600">2024</span></li>
+                    <li>Course: <span class="text-gray-600">20</span></li>
+                    <li>Teacher: <span class="text-gray-600">22</span></li>
+                </ul>
+            </div>
         </div>
 
-        <div>course</div>
-        <div>change date and time</div>
-        <div>other action</div>
+        <!-- course -->
+        <h2 class="mb-1 text-lg font-semibold">course</h2>
+        <div class="flex gap-5">
+            <!-- left -->
+            <div class="flex-1">
+                <form class="max-w-md mx-auto">
+                    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only ">Search</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="search" id="default-search"
+                            class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 shadow-sm rounded-lg bg-gray-50"
+                            placeholder="Search course" required />
+                        <button type="submit"
+                            class="text-white absolute end-1.5 bottom-[5px] bg-sky-600 hover:bg-sky-800 font-medium rounded-md text-sm px-2 py-1">Search</button>
+                    </div>
+                </form>
+                <!-- list course -->
+                <div class="border rounded-lg shadow-sm p-2 bg-white mt-2">
+                    <ul>
+                        <li class="flex items-center gap-2" *ngFor="let item of [1,2,3,4,6,5]">
+                            <button class="text-xs bg-sky-400 px-1 rounded-sm shadow-md text-white" >select</button> 
+                            <span>Toan roi rac</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- right -->
+            <div class="flex-1 border py-2 px-3 rounded-lg shadow-sm border-sky-400 space-y-1">
+                <span class="font-semibold">Toan Roi Rac</span>
+                <div>
+                    <span class="mb-1">Select new Day:</span>
+                    <div class="flex items-start gap-2">
+                        <span class="rounded-md text-gray-600 text-sm bg-gray-200 px-2 cursor-pointer hover:bg-sky-300"
+                            *ngFor="let item of ['mon','tue','wed','thur','fri','sun','sat']">{{item}}</span>
+                    </div>
+                </div>
+                <div>
+                    <span>Select new Time</span>
+                    <form class="flex gap-2">
+                        <!-- time start -->
+                        <input type="text" id="small-input"
+                            class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                            placeholder="Start">
+                        <!-- time end -->
+                        <input type="text" id="small-input"
+                            class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                            placeholder="End">
+                    </form>
+                    <div class="text-gray-600 text-xs my-1">--Or--</div>
+                    <!-- auto select time -->
+                    <div>
+                        <button
+                            class="select-none rounded-lg bg-gray-900 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+                            type="button">
+                            Time Auto
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- reason -->
+        <div>
+            <form class="w-full space-y-2">
+                <div>
+                    <textarea id="message" rows="4"
+                        class="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-sky-400"
+                        placeholder="Leave a reason..."></textarea>
+                </div>
+            </form>
+        </div>
+
+        <!-- button -->
+        <div class="w-1/3 mx-auto text-white">
+            <button class="w-full bg-sky-600 py-1 rounded-sm">request</button>
+        </div>
     </div>
 </app-popup>
