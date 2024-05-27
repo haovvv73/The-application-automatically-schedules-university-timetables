@@ -16,6 +16,7 @@ import { UserTemplateComponent } from './component/user-template/user-template.c
 import { NotificationComponent } from './pages/notification/notification.component';
 import { ScheduleGenerateComponent } from './pages/schedule-generate/schedule-generate.component';
 import { HomeUserComponent } from './pages/home-user/home-user.component';
+import { ApprovalViewComponent } from './pages/approval-view/approval-view.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'app/auth/login', pathMatch: 'full' },
@@ -31,6 +32,7 @@ export const routes: Routes = [
           { path: 'teacher', component: TeacherComponent },
           { path: 'room', component: RoomComponent },
           { path: 'approval', component: ApprovalComponent },
+          { path: 'approval-view/:id', component: ApprovalViewComponent },
           { path: 'schedule', component: ScheduleComponent },
           { path: 'schedule-view/:id', component: ScheduleViewComponent },
           { path: 'course-view/:id', component: CourseViewComponent },

@@ -1,10 +1,11 @@
 import { NgClass, NgFor } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-approval',
   standalone: true,
-  imports: [NgFor,NgClass],
+  imports: [NgFor,NgClass,RouterLink],
   templateUrl: './approval.component.html',
   styleUrl: './approval.component.css'
 })
@@ -16,12 +17,11 @@ export class ApprovalComponent {
 
   columnsKey: any[] = [
     'No',
-    'request From',
-    'request Description',
-    'time',
-    'date',
-    'status',
-    'Action'
+    'Schedule name',
+    'Semester',
+    'Year',
+    'Request',
+    'action'
   ]
 
   statusColor = {
@@ -42,52 +42,18 @@ export class ApprovalComponent {
 
   data: any[] = [
     {
-      Id: 'request01',
-      request: 'lorem request oo1oasd',
-      requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
-      time: '12h30p',
-      date: '20/05/2002',
-      status: 'Wait',
+      Id: 'scheduleRquest001',
+      scheduleName: 'Thoi khoa bieu lop dai tra',
+      semester: '1',
+      year: '2024-2028',
+      request: '5 request',
     },
     {
-      Id: 'request02',
-      request: 'lorem request asdaosdihoi',
-      requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
-      time: '12h40p',
-      date: '20/05/2002',
-      status: 'Accept',
-    },
-    {
-      Id: 'request03',
-      request: 'lorem request oo1oasd',
-      requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
-      time: '12h30p',
-      date: '20/05/2002',
-      status: 'Wait',
-    },
-    {
-      Id: 'request04',
-      request: 'lorem request asdaosdihoi',
-      requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
-      time: '12h40p',
-      date: '20/05/2002',
-      status: 'Accept',
-    },
-    {
-      Id: 'request05',
-      request: 'lorem request oo1oasd',
-      requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
-      time: '12h30p',
-      date: '20/05/2002',
-      status: 'Reject',
-    },
-    {
-      Id: 'request06',
-      request: 'lorem request asdaosdihoi',
-      requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
-      time: '12h40p',
-      date: '20/05/2002',
-      status: 'Cancel',
+      Id: 'scheduleRquest002',
+      scheduleName: 'Thoi khoa bieu lop dai tra',
+      semester: '1',
+      year: '2024-2028',
+      request: '5 request',
     },
   ]
 
