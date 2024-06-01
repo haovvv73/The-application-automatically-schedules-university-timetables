@@ -1,6 +1,9 @@
 import { errorResponse, successResponse } from "../helpers/httpResponse.js";
 import httpStatusCode from "../helpers/httpStatusCode.js";
+import { Lecturer } from "../models/lecturer.js";
 import lecturerService from "../services/lecturerService.js";
+import { comparePassword, hashPassword } from "../util/passwordUtil.js";
+import { createToken } from "../util/tokenUtil.js";
 
 
 const login = async (req, res, next) => {
@@ -10,22 +13,17 @@ const login = async (req, res, next) => {
     if (!email || !password) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
-        let hao = await lecturerService.getUsers()
-        console.log(hao);
-
         // check user
-        const result = email === 'asd'
-        if (!result) return errorResponse(res, 'User Does Not Exist', httpStatusCode.Unauthorized.code)
+        const result = await lecturerService.getUserByEmail(email)
+        if (result.length < 1) return errorResponse(res, 'User Does Not Exist', httpStatusCode.Unauthorized.code)
 
         // check password
-        const user = {
-            password: 123
-        };
-        const isMatch = (password === user.password) ? true : false
+        const user = result[0]
+        const isMatch = await comparePassword(password, user.password)
         if (!isMatch) return errorResponse(res, 'Wrong Password', httpStatusCode.Unauthorized.code)
 
         // in case right => create token
-        const token = 'sdasda'
+        const token = createToken(user)
 
         // response with token
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, token)
@@ -37,29 +35,34 @@ const login = async (req, res, next) => {
 }
 
 const register = async (req, res, next) => {
-    const { email, name, phone, password, gender, faculty, birthday, address } = req.body;
+    const { email, lecturerName, phone, password, gender, faculty, birthday, address } = req.body;
     // validate
-    if (!email || !password || !name || !phone || !!gender || !faculty || !birthday || !address) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    if (!email || !password || !lecturerName || !phone || !gender || !faculty || !birthday || !address) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
-        const user = {
-            email, name, phone, password, gender, faculty, birthday, address
-        }
-
         // check user is exist ?
-        const isUserExist = false
-        if(isUserExist) return errorResponse(res, httpStatusCode.Conflict.message, httpStatusCode.Conflict.code)
+        const isUserExist = (await lecturerService.getUserByEmail(email)).length > 0
+        if (isUserExist) return errorResponse(res, "User Is Exist", httpStatusCode.Conflict.code)
 
-        // save user
-        const result = user
+        // create new user 
+        // hash password
+        const hashPass = await hashPassword(password)
+        const newUser = new Lecturer(
+            '',email, lecturerName, phone, hashPass, gender, faculty, birthday, address
+        )
+
+        // save user in db
+        const result = await lecturerService.saveUser(newUser)
         // invalid data
-        if (result === 0) return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
+        if (result == 0) return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
 
         // pass => return token
-        const token = 'dasdas';
+        const token = createToken(newUser)
+
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, token)
 
     } catch (error) {
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }

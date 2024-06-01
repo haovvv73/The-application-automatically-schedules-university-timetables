@@ -7,7 +7,7 @@ import morgan from 'morgan';
 dotenv.config();
 
 const app = express()
-const port = process.env.PORT | 4040
+const port = process.env.PORT || 40420
 
 // parse application/json
 app.use(express.json());

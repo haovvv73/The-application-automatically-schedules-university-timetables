@@ -1,5 +1,15 @@
 export class Lecturer {
-    constructor(lecturerID = '', email = '', lecturerName = '', phone = '', password = '', gender = null, faculty = '', birthday = '0000/00/00', address=''){
+    constructor(
+        lecturerID = '', 
+        email = '', 
+        lecturerName = '', 
+        phone = '', 
+        password = '', 
+        gender = null, 
+        faculty = '', 
+        birthday = '0000/00/00', 
+        address=''
+    ){
         this.lecturerID = lecturerID,
         this.email = email, 
         this.lecturerName = lecturerName, 

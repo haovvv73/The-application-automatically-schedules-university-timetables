@@ -4,13 +4,13 @@ import Dbconnection from "./dbConnection.js"
 class LecturerService {
     constructor() {
         this.connection = Dbconnection.getInstance().connection
-        this.lecturerTable = 'lecturer'
+        this.table = 'lecturer'
     }
 
     // GET
     async getUsers() {
-        const query = 'SELECT * FROM ?'
-        const [row] = await this.connection.execute(query, [this.lecturerTable])
+        const query = `SELECT * FROM ${this.table}`
+        const [row] = await this.connection.execute(query)
         const result = []
 
         if (row.length > 0) {
@@ -33,8 +33,8 @@ class LecturerService {
     }
 
     async getUserById(id) {
-        const query = "SELECT * FROM ? WHERE lecturerID = ?"
-        const [row] = await this.connection.execute(query, [this.lecturerTable, id])
+        const query = `SELECT * FROM ${this.table} WHERE lecturerID = ?`
+        const [row] = await this.connection.execute(query, [ id])
         const result = []
 
         if (row.length > 0) {
@@ -56,8 +56,8 @@ class LecturerService {
     }
 
     async getUserByEmail(email) {
-        const query = "SELECT * FROM ? WHERE lecturerID = ?"
-        const [row] = await this.connection.execute(query, [this.lecturerTable, email])
+        const query = `SELECT * FROM ${this.table} WHERE email = ?`
+        const [row] = await this.connection.execute(query, [email])
         const result = []
 
         if (row.length > 0) {
@@ -80,17 +80,16 @@ class LecturerService {
 
     // DELETE
     async deleteUserById(id) {
-        const query = 'DELETE FROM ? WHERE lecturerID = ?'
-        const result = await this.connection.execute(query, [this.lecturerTable, id])
+        const query = `DELETE FROM ${this.table} WHERE lecturerID = ?`
+        const result = await this.connection.execute(query, [id])
 
         return result[0].affectedRows;
     }
 
     // POST
     async saveUser(lecturer) {
-        const query = 'INSERT INTO ?(email,lecturerName,phone,password,gender,faculty,birthday,address) VALUES(?,?,?,?,?,?,?,?,?)'
+        const query = `INSERT INTO ${this.table}(email,lecturerName,phone,password,gender,faculty,birthday,address) VALUES(?,?,?,?,?,?,?,?)`
         const result = await this.connection.execute(query, [
-            lecturer.lecturerID,
             lecturer.email,
             lecturer.lecturerName,
             lecturer.phone,
@@ -106,9 +105,8 @@ class LecturerService {
 
     // PUT
     async updateUser(lecturer) {
-        const query = 'UPDATE ? SET email = ?,lecturerName = ?,phone = ?,password = ?,gender = ?,faculty = ?,birthday = ?,address = ? WHERE lecturerID = ?'
+        const query = `UPDATE ${this.table} SET email = ?,lecturerName = ?,phone = ?,password = ?,gender = ?,faculty = ?,birthday = ?,address = ? WHERE lecturerID = ?`
         const result = await this.connection.execute(query, [
-            this.lecturerTable,
             lecturer.email,
             lecturer.lecturerName,
             lecturer.phone,
