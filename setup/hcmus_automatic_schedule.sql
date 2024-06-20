@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: localhost
--- Thời gian đã tạo: Th6 20, 2024 lúc 11:38 AM
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th6 20, 2024 lúc 06:32 PM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.2.4
 
@@ -33,6 +33,13 @@ CREATE TABLE `account` (
   `password` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `account`
+--
+
+INSERT INTO `account` (`accountID`, `email`, `password`) VALUES
+(6, 'votrangiahao@gmail.com', '$2b$10$/ZW7/FaGlweFVmBasIhDsOAGJufmdOzShgapCnNRd9juUHOXWiIPO');
+
 -- --------------------------------------------------------
 
 --
@@ -50,6 +57,13 @@ CREATE TABLE `lecturer` (
   `phone` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `lecturer`
+--
+
+INSERT INTO `lecturer` (`lecturerID`, `accountID`, `lecturerName`, `gender`, `faculty`, `birthday`, `address`, `phone`) VALUES
+(2, 6, 'giahao', 'M', 'lorem', '2002-01-20', 'dong nai', '1234567881');
+
 -- --------------------------------------------------------
 
 --
@@ -60,9 +74,16 @@ CREATE TABLE `permission` (
   `accountID` int(11) NOT NULL,
   `permissionRead` tinyint(1) NOT NULL DEFAULT 0,
   `permissionCreate` tinyint(1) NOT NULL DEFAULT 0,
-  `pemissionUpdate` tinyint(1) NOT NULL DEFAULT 0,
+  `permissionUpdate` tinyint(1) NOT NULL DEFAULT 0,
   `permissionDelete` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `permission`
+--
+
+INSERT INTO `permission` (`accountID`, `permissionRead`, `permissionCreate`, `permissionUpdate`, `permissionDelete`) VALUES
+(6, 0, 0, 0, 0);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -97,13 +118,13 @@ ALTER TABLE `permission`
 -- AUTO_INCREMENT cho bảng `account`
 --
 ALTER TABLE `account`
-  MODIFY `accountID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `lecturer`
 --
 ALTER TABLE `lecturer`
-  MODIFY `lecturerID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `lecturerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
