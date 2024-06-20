@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors'
 import initApiRoutes from './routes/apiRoutes.js';
 import morgan from 'morgan';
+import httpStatusCode from './helpers/httpStatusCode.js';
+import { errorResponse } from './helpers/httpResponse.js';
 
 dotenv.config();
 
@@ -26,6 +28,11 @@ app.use(morgan('combined'))
 
 // init all routes
 initApiRoutes(app)
+
+// 404 not foud
+app.use((req, res) => {
+    return errorResponse(res, httpStatusCode.NotFound, httpStatusCode.NotFound.code)
+})
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

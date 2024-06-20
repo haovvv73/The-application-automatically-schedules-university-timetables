@@ -6,9 +6,13 @@ const router = express.Router()
 
 const initApiRoutes = (app)=>{
 
+    router.get('/helloworld', (req,res)=>{
+        return res.send('Hello World!')
+    })
+
     router.use('/auth', initAuthRoute)
 
-    router.use('/test', initScheduleRoute)
+    router.use('/schedule', initScheduleRoute)
 
     return app.use('/api/v1',router)
 }

@@ -5,6 +5,7 @@ class LecturerService {
     constructor() {
         this.connection = Dbconnection.getInstance().connection
         this.table = 'lecturer'
+        this.subTable = 'account'
     }
 
     // GET
@@ -34,7 +35,7 @@ class LecturerService {
 
     async getUserById(id) {
         const query = `SELECT * FROM ${this.table} WHERE lecturerID = ?`
-        const [row] = await this.connection.execute(query, [ id])
+        const [row] = await this.connection.execute(query, [id])
         const result = []
 
         if (row.length > 0) {
