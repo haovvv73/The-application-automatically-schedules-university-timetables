@@ -6,6 +6,7 @@ const router = express.Router()
 
 const initApiRoutes = (app)=>{
 
+    // heathy check
     router.get('/helloworld', (req,res)=>{
         return res.send('Hello World!')
     })

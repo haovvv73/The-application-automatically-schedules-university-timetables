@@ -1,5 +1,5 @@
-import { Account } from "../models/account"
-import Dbconnection from "./dbConnection"
+import { Account } from "../models/account.js"
+import Dbconnection from "./dbConnection.js"
 
 class AccountService {
     constructor() {
@@ -35,7 +35,8 @@ class AccountService {
     }
 
     async getAccounts() {
-        const query = `SELECT * FROM ${this.table} LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID `
+        const query = `SELECT * FROM ${this.table} 
+        LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID `
         const [row] = await this.connection.execute(query)
         const result = []
 
@@ -85,7 +86,7 @@ class AccountService {
     async deleteAccount(accountID) {
         try {
             // Start a transaction
-            await this.connection.beginTransaction();
+            await this.connection.query('START TRANSACTION');
 
             const query = `DELETE FROM ${this.table} WHERE accountID = ?`
             const subQuery = `DELETE FROM ${this.subTable} WHERE accountID = ?`
@@ -96,12 +97,12 @@ class AccountService {
             await this.connection.execute(subQuery, [accountID])
 
             // Commit the transaction
-            await this.connection.commit();
+            await this.connection.query('COMMIT');
 
             return result[0].affectedRows;
         } catch (error) {
             // Rollback the transaction if there's an error
-            await this.connection.rollback();
+            await this.connection.query('ROLLBACK');
             throw error; // Re-throw the error for the caller to handle
         }
 
@@ -111,7 +112,7 @@ class AccountService {
     async saveAccount(account) {
         try {
             // Start a transaction
-            await this.connection.beginTransaction();
+            await this.connection.query('START TRANSACTION');
 
             const query = `INSERT INTO ${this.table}(email,password) VALUES(?,?)`
             const result = await this.connection.execute(query, [
@@ -124,12 +125,12 @@ class AccountService {
             await this.connection.execute(subQuery, [insertID,0,0,0,0])
 
             // Commit the transaction
-            await this.connection.commit();
+            await this.connection.query('COMMIT');
 
             return result[0].affectedRows
         } catch (error) {
             // Rollback the transaction if there's an error
-            await this.connection.rollback();
+            await this.connection.query('ROLLBACK');
             throw error; // Re-throw the error for the caller to handle
         }
     }
@@ -138,7 +139,7 @@ class AccountService {
     async updateAccount(account) {
         try {
             // Start a transaction
-            await this.connection.beginTransaction();
+            await this.connection.query('START TRANSACTION');
 
             const query = `UPDATE ${this.table} SET email = ?,password = ?`
             const result = await this.connection.execute(query, [
@@ -147,12 +148,12 @@ class AccountService {
             ])
             
             // Commit the transaction
-            await this.connection.commit();
+            await this.connection.query('COMMIT');
 
             return result[0].affectedRows
         } catch (error) {
             // Rollback the transaction if there's an error
-            await this.connection.rollback();
+            await this.connection.query('ROLLBACK');
             throw error; // Re-throw the error for the caller to handle
         }
     }

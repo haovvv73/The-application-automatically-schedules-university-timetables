@@ -1,6 +1,7 @@
 export class Lecturer {
     constructor(
         lecturerID = '', 
+        accountID = '',
         email = '', 
         lecturerName = '', 
         phone = '', 
@@ -11,6 +12,7 @@ export class Lecturer {
         address=''
     ){
         this.lecturerID = lecturerID,
+        this.accountID = accountID
         this.email = email, 
         this.lecturerName = lecturerName, 
         this.phone = phone, 

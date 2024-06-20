@@ -6,26 +6,31 @@ class LecturerService {
         this.connection = Dbconnection.getInstance().connection
         this.table = 'lecturer'
         this.subTable = 'account'
+        this.subTable2 = 'permission'
     }
 
     // GET
     async getUsers() {
-        const query = `SELECT * FROM ${this.table}`
+        const query = `SELECT * FROM ${this.table} 
+        LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID `
         const [row] = await this.connection.execute(query)
         const result = []
 
         if (row.length > 0) {
             for (let lecturer of row) {
-                result.push(new Lecturer(
-                    lecturer.lecturerID,
-                    lecturer.email,
-                    lecturer.lecturerName,
-                    lecturer.phone,
-                    lecturer.password,
-                    lecturer.gender,
-                    lecturer.faculty,
-                    lecturer.birthday,
-                    lecturer.address)
+                result.push(
+                    new Lecturer(
+                        lecturer.lecturerID,
+                        lecturer.accountID,
+                        lecturer.email,
+                        lecturer.lecturerName,
+                        lecturer.phone,
+                        lecturer.password,
+                        lecturer.gender,
+                        lecturer.faculty,
+                        lecturer.birthday,
+                        lecturer.address
+                    )
                 )
             }
         }
@@ -34,22 +39,27 @@ class LecturerService {
     }
 
     async getUserById(id) {
-        const query = `SELECT * FROM ${this.table} WHERE lecturerID = ?`
+        const query = `SELECT * FROM ${this.table}
+        LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID 
+        WHERE lecturerID = ?`
         const [row] = await this.connection.execute(query, [id])
         const result = []
 
         if (row.length > 0) {
             const lecturer = row[0]
-            result.push(new Lecturer(
-                lecturer.lecturerID,
-                lecturer.email,
-                lecturer.lecturerName,
-                lecturer.phone,
-                lecturer.password,
-                lecturer.gender,
-                lecturer.faculty,
-                lecturer.birthday,
-                lecturer.address)
+            result.push(
+                new Lecturer(
+                    lecturer.lecturerID,
+                    lecturer.accountID,
+                    lecturer.email,
+                    lecturer.lecturerName,
+                    lecturer.phone,
+                    lecturer.password,
+                    lecturer.gender,
+                    lecturer.faculty,
+                    lecturer.birthday,
+                    lecturer.address
+                )
             )
         }
 
@@ -57,22 +67,27 @@ class LecturerService {
     }
 
     async getUserByEmail(email) {
-        const query = `SELECT * FROM ${this.table} WHERE email = ?`
+        const query = `SELECT * FROM ${this.table}
+        LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID 
+        WHERE email = ?`
         const [row] = await this.connection.execute(query, [email])
         const result = []
 
         if (row.length > 0) {
             const lecturer = row[0]
-            result.push(new Lecturer(
-                lecturer.lecturerID,
-                lecturer.email,
-                lecturer.lecturerName,
-                lecturer.phone,
-                lecturer.password,
-                lecturer.gender,
-                lecturer.faculty,
-                lecturer.birthday,
-                lecturer.address)
+            result.push(
+                new Lecturer(
+                    lecturer.lecturerID,
+                    lecturer.accountID,
+                    lecturer.email,
+                    lecturer.lecturerName,
+                    lecturer.phone,
+                    lecturer.password,
+                    lecturer.gender,
+                    lecturer.faculty,
+                    lecturer.birthday,
+                    lecturer.address
+                )
             )
         }
 
@@ -81,45 +96,98 @@ class LecturerService {
 
     // DELETE
     async deleteUserById(id) {
-        const query = `DELETE FROM ${this.table} WHERE lecturerID = ?`
-        const result = await this.connection.execute(query, [id])
+        try {
+            await this.connection.query('START TRANSACTION');
 
-        return result[0].affectedRows;
+            // get detail lecturer
+            const row = getUsers(id)
+
+            if (row.length > 0) {
+                const lecturer = row[0]
+                // delete account
+                const query2 = `DELETE FROM ${this.subTable} WHERE accountID = ?`
+                await this.connection.execute(query2, [lecturer.accountID])
+
+                // delete lecturer
+                const query = `DELETE FROM ${this.table} WHERE lecturerID = ?`
+                const result = await this.connection.execute(query, [lecturer.lecturerID])
+
+                await this.connection.query('COMMIT');
+                return result[0].affectedRows;
+            }
+            
+            await this.connection.query('COMMIT');
+            return 0;
+        } catch (error) {
+            await this.connection.query('ROLLBACK');
+            throw error;
+        }
     }
 
     // POST
     async saveUser(lecturer) {
-        const query = `INSERT INTO ${this.table}(email,lecturerName,phone,password,gender,faculty,birthday,address) VALUES(?,?,?,?,?,?,?,?)`
-        const result = await this.connection.execute(query, [
-            lecturer.email,
-            lecturer.lecturerName,
-            lecturer.phone,
-            lecturer.password,
-            lecturer.gender,
-            lecturer.faculty,
-            lecturer.birthday,
-            lecturer.address
-        ])
+        try {
+            await this.connection.query('START TRANSACTION');
 
-        return result[0].affectedRows
+            // create account 
+            const subQuery = `INSERT INTO ${this.subTable}(email,password) VALUES(?,?)`
+            const subResult = await this.connection.execute(subQuery, [
+                lecturer.email,
+                lecturer.password
+            ])
+
+            const insertID = subResult[0].insertId 
+
+            const subQuery2 = `INSERT INTO ${this.subTable2}(accountID,permissionRead,permissionCreate,permissionUpdate,permissionDelete) 
+            VALUES(?,?,?,?,?)`
+            await this.connection.execute(subQuery2, [insertID,0,0,0,0])
+
+            // create info lecturer
+            const query = `INSERT INTO ${this.table}(accountID,lecturerName,phone,gender,faculty,birthday,address) VALUES(?,?,?,?,?,?,?)`
+            const result = await this.connection.execute(query, [
+                insertID,
+                lecturer.lecturerName,
+                lecturer.phone,
+                lecturer.gender,
+                lecturer.faculty,
+                lecturer.birthday,
+                lecturer.address
+            ])
+
+            await this.connection.query('COMMIT');
+            return result[0].affectedRows
+        } catch (error) {
+            console.log(error);
+            await this.connection.query('ROLLBACK');
+            throw error;
+        }
     }
 
     // PUT
     async updateUser(lecturer) {
-        const query = `UPDATE ${this.table} SET email = ?,lecturerName = ?,phone = ?,password = ?,gender = ?,faculty = ?,birthday = ?,address = ? WHERE lecturerID = ?`
-        const result = await this.connection.execute(query, [
-            lecturer.email,
-            lecturer.lecturerName,
-            lecturer.phone,
-            lecturer.password,
-            lecturer.gender,
-            lecturer.faculty,
-            lecturer.birthday,
-            lecturer.address,
-            lecturer.lecturerID,
-        ])
-        
-        return result[0].affectedRows
+        try {
+            await this.connection.query('START TRANSACTION');
+
+            const query = `UPDATE ${this.table} SET lecturerName = ?,phone = ?,gender = ?,faculty = ?,birthday = ?,address = ? WHERE lecturerID = ?`
+            const result = await this.connection.execute(query, [
+                lecturer.lecturerName,
+                lecturer.phone,
+                lecturer.gender,
+                lecturer.faculty,
+                lecturer.birthday,
+                lecturer.address,
+                lecturer.lecturerID,
+            ])
+
+            const subQuery = `UPDATE ${this.subTable} SET email = ?`
+            await this.connection.execute(subQuery, [lecturer.email,])
+
+            await this.connection.query('COMMIT');
+            return result[0].affectedRows
+        } catch (error) {
+            await this.connection.query('ROLLBACK');
+            throw error;
+        }
     }
 
 }
