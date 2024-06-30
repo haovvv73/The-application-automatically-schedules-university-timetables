@@ -30,8 +30,8 @@
                 <div class="semester">
                     <label for="semester" class="block mb-2 text-sm font-medium text-gray-900">Semester</label>
                     <select id="countries"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-1.5 ">
-                        <option selected>Choose semester</option>
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full px-1 pb-1 pt-1.5 text-[13px] ">
+                        <option selected>--Select--</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -56,8 +56,8 @@
 
         <!-- course and room info -->
         <div class="flex-1 flex items-start gap-2">
-            <!-- room generate -->
-            <div class="flex-[2] shadow-md overflow-hidden border rounded-lg p-1">
+            <!-- course generate -->
+            <div class="flex-[3] shadow-md overflow-hidden border rounded-lg p-1">
                 <div class="px-4 pt-3 pb-2 font-semibold text-white uppercase bg-sky-500  rounded-t-md flex items-start justify-between">
                     <p>Course</p>
                     <button class="hover:bg-black/20 rounded-md px-1.5" ><i class="fa fa-plus"></i></button>
@@ -75,6 +75,9 @@
                                     <th scope="col" class="px-6 py-3">
                                         class size
                                     </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        cohort
+                                    </th>
                                     <th scope="col" class="px-6 py-3 rounded-e-lg">
                                         Type
                                     </th>
@@ -87,6 +90,9 @@
                                     </th>
                                     <td class="px-6 py-4">
                                         125
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        K20
                                     </td>
                                     <td class="px-6 py-4">
                                         Ly Thuyet

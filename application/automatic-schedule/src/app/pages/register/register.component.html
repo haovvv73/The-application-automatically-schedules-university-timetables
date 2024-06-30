@@ -1,68 +1,166 @@
-<div class="fixed top-0 bottom-0 left-0 right-0 bg-[url('./assets/img/hcmus-bg.jpg')] bg-no-repeat bg-cover bg-center blur-[1px]" >
-    <div class="overlap bg-black/20 absolute top-0 bottom-0 left-0 right-0" ></div>
+<div
+    class="fixed top-0 bottom-0 left-0 right-0 bg-[url('./assets/img/hcmus-bg.jpg')] bg-no-repeat bg-cover bg-center blur-[1px]">
+    <div class="overlap bg-black/20 absolute top-0 bottom-0 left-0 right-0"></div>
 </div>
-<div class="h-fit w-[450px] border bg-white rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 space-y-7" >
+<div
+    class="h-fit w-[600px] border bg-white rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 space-y-7">
     <!-- logo -->
-    <div class="m-2 text-center" >
+    <div class="m-2 text-center">
         <!-- <img src="../../../assets/img/hcmus-logo.png" alt="hcmus-logo" class="h-auto w-[150px]"> -->
-        <h1 class="text-2xl font-semibold" >Register</h1>
+        <h1 class="text-2xl font-semibold">Register</h1>
     </div>
-    <form class="space-y-4" [formGroup]="registerForm" (ngSubmit)="onSubmit()" >
-        <!-- Email -->
-        <div>
-            <div class="border border-gray-400 rounded-full overflow-hidden space-x-2 flex items-center" >
-                <span class="ml-4 text-gray-600" ><i class="fa fa-envelope"></i></span>
-                <input type="text" class="outline-none p-3 w-full" placeholder="Email" formControlName="email">
+    <form class="" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="gap-2 flex flex-col md:flex-row">
+            <!-- left -->
+            <div class="flex-1 flex flex-col">
+                <!-- Email -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-envelope"></i></span>
+                        <input type="text" class="outline-none p-3 w-full" placeholder="Email" formControlName="email">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="email && email.invalid && (email.touched || email.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="email.errors?.['required']" class="text-rose-500"> Email is required </span>
+                            <span *ngIf="email.errors?.['email']" class="text-rose-500"> Invalid email format </span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- User Name -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-user"></i></span>
+                        <input type="text" class="outline-none p-3 w-full" placeholder="Your name"
+                            formControlName="lecturerName">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="lecturerName && lecturerName.errors && (lecturerName.touched || lecturerName.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="lecturerName.errors?.['required']" class="text-rose-500">
+                                Name is required</span>
+                            <span *ngIf="lecturerName.errors?.['pattern']" class="text-rose-500">
+                                No special characters</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Faculty -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-graduation-cap"></i></span>
+                        <input type="text" class="outline-none p-3 w-full" placeholder="Faculty"
+                            formControlName="faculty">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="faculty && faculty.errors && (faculty.touched || faculty.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="faculty.errors?.['required']" class="text-rose-500">Faculty is required</span>
+                            <span *ngIf="faculty.errors?.['pattern']" class="text-rose-500">
+                                No special characters</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-lock"></i></span>
+                        <input type="password" class="outline-none p-3 w-full" placeholder="Password"
+                            formControlName="password">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="password && password.invalid && (password.touched || password.dirty)"
+                            class="ml-6 text-[14px] font-semibold">
+                            <span *ngIf="password.errors?.['required']" class="text-rose-500"> Password is required
+                            </span>
+                            <span *ngIf="password.errors?.['minlength']" class="text-rose-500">
+                             Least 6 characters</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div *ngIf="email && email.invalid && (email.touched || email.dirty)" class="ml-6 mt-1 font-semibold">
-                <span *ngIf="email.errors?.['required']" class="text-rose-500"> Email is required </span>
-                <span *ngIf="email.errors?.['email']" class="text-rose-500"> Invalid email format </span> 
+
+            <!-- right -->
+            <div class="flex-1 flex flex-col">
+                <!-- phone -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-phone"></i></span>
+                        <input type="number" class="outline-none p-3 w-full" placeholder="Phone"
+                            formControlName="phone">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="phone && phone.errors && (phone.touched || phone.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="phone.errors?.['required']" class="text-rose-500">phone is required</span>
+                            <span *ngIf="phone.errors?.['pattern']" class="text-rose-500"> Must have exactly 10
+                                digit</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- birthday -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-calendar"></i></span>
+                        <input type="date" class="outline-none p-3 w-full" placeholder="Birthday"
+                            formControlName="birthday">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="birthday && birthday.errors && (birthday.touched || birthday.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="birthday.errors?.['required']" class="text-rose-500">Birthday is
+                                required</span>
+                            <!-- <span *ngIf="birthday.errors?.['pattern']" class="text-rose-500">Must be YYYY-MM-DD </span> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- address -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-address-book"></i></span>
+                        <input type="text" class="outline-none p-3 w-full" placeholder="Address"
+                            formControlName="address">
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="address && address.errors && (address.touched || address.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="address.errors?.['required']" class="text-rose-500">Address is required</span>
+                            <span *ngIf="address.errors?.['pattern']" class="text-rose-500">No special characters</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- gender -->
+                <div>
+                    <div class="border border-gray-400 rounded-full overflow-hidden flex items-center">
+                        <span class="ml-4 text-gray-600"><i class="fa fa-venus-mars"></i></span>
+                        <select
+                        name="cars" id="cars" class="outline-none py-3 pl-3 mr-4 w-full" formControlName="gender">
+                            <option value="" >--Select--</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+                    <div class="h-[26px]">
+                        <div *ngIf="gender && gender.errors && (gender.touched || gender.dirty)"
+                            class="ml-6 text-[13px] font-semibold">
+                            <span *ngIf="gender.errors?.['required']" class="text-rose-500">Gender is required</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        
-        <!-- User Name -->
-        <div>
-            <div class="border border-gray-400 rounded-full overflow-hidden space-x-2 flex items-center" >
-                <span class="ml-4 text-gray-600" ><i class="fa fa-user"></i></span>
-                <input type="text" class="outline-none p-3 w-full" placeholder="Your name" formControlName="name">
-            </div>
-            <div *ngIf="name && name.errors && (name.touched || name.dirty)" class="ml-6 mt-1 font-semibold">
-                <span *ngIf="name.errors?.['required']" class="text-rose-500">Name is required</span>
-                <span *ngIf="name.errors?.['pattern']" class="text-rose-500">Name must contains no special characters</span>
-            </div>
-        </div>
-
-
-        <!-- Faculty -->
-        <div>
-            <div class="border border-gray-400 rounded-full overflow-hidden space-x-2 flex items-center" >
-                <span class="ml-4 text-gray-600" ><i class="fa fa-graduation-cap"></i></span>
-                <input type="text" class="outline-none p-3 w-full" placeholder="Faculty" formControlName="faculty">
-            </div>
-            <div *ngIf="faculty && faculty.errors && (faculty.touched || faculty.dirty)" class="ml-6 mt-1 font-semibold">
-                <span *ngIf="faculty.errors?.['required']" class="text-rose-500">Faculty is required</span>
-                <span *ngIf="faculty.errors?.['pattern']" class="text-rose-500">faculty must contains no special characters</span>
-            </div>
-        </div>
-
-        
-        <!-- Password -->
-        <div>
-            <div class="border border-gray-400 rounded-full overflow-hidden space-x-2 flex items-center" >
-                <span class="ml-4 text-gray-600" ><i class="fa fa-lock"></i></span>
-                <input type="password" class="outline-none p-3 w-full" placeholder="Password" formControlName="password">
-            </div>
-            <div *ngIf="password && password.invalid && (password.touched || password.dirty)" class="ml-6 mt-1 font-semibold">
-                <span *ngIf="password.errors?.['required']" class="text-rose-500"> Password is required </span>
-                <span *ngIf="password.errors?.['minlength']" class="text-rose-500" > Password must be at least 6 characters</span> 
-            </div>
-        </div>
-
-        
         <!-- submit -->
-        <button class="w-full py-3 bg-sky-500 rounded-full hover:bg-sky-300 font-semibold" >Register</button>
+        <button class="w-full py-3 bg-sky-500 rounded-full hover:bg-sky-300 font-semibold mt-1">Register</button>
     </form>
-    <div class="w-full text-center text-gray-500" >Aldready have a account? 
-        <a [routerLink]="envUrl.login" class="underline hover:text-black cursor-pointer" >Login</a></div>
+    <div class="w-full text-center text-gray-500">Aldready have a account?
+        <a [routerLink]="envUrl.login" class="underline hover:text-black cursor-pointer">Login</a>
+    </div>
 </div>

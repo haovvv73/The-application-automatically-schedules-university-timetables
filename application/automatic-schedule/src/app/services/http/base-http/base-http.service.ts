@@ -5,7 +5,7 @@ import { Injectable, inject } from '@angular/core';
   providedIn: 'root'
 })
 export abstract class BaseHttpService {
-  private domain = "https://60fd8c051fa9e90017c70eda.mockapi.io/"
+  private domain = "http://localhost:4040/api/v1/"
   private http = inject(HttpClient);
   constructor() { }
 

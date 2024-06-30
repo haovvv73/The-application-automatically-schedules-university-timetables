@@ -17,8 +17,9 @@ export class LessonComponent {
     'Id',
     'Lesson',
     'Lesson Description',
-    'Index',
+    'Duration',
     'Type',
+    'location',
     'Action'
   ]
 
@@ -27,14 +28,16 @@ export class LessonComponent {
       Id:'lesson1',
       lesson:'sinh',
       lessonDescription: 'mon hoc lien quan toi moi truong va dong vat',
-      index: '4',
+      duration: '4',
+      location: 'L.Trung',
       type: 'ly thuyet',
     },
     {
       Id:'lesson12',
       lesson:'toan',
       lessonDescription: 'hieu kien thuc toan dai so',
-      index: '3',
+      duration: '3',
+      location: 'NVC',
       type: 'ly thuyet',
     },
   ]

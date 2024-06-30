@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
         if (!isMatch) return errorResponse(res, 'Wrong Password', httpStatusCode.Unauthorized.code)
 
         // in case right => create token
-        const token = createToken(user.email)
+        const token = createToken(user)
 
         // response with token
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, token)
@@ -58,7 +58,8 @@ const register = async (req, res, next) => {
         if (result == 0) return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
 
         // pass => return token
-        const token = createToken(newUser.email)
+        const user = await accountService.getAccountByEmail(email)
+        const token = createToken(user)
 
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, token)
 

@@ -5,16 +5,16 @@ import { BaseHttpService } from '../base-http/base-http.service';
   providedIn: 'root'
 })
 export class AuthServiceService extends BaseHttpService {
-  private url = 'account'
+  private url = 'auth/'
   constructor() {
     super();
   }
 
   login(data : any){
-    return this.get(this.url)
+    return this.post(this.url + 'login' ,data)
   }
 
   register(data : any){
-   return this.get(this.url)
+    return this.post(this.url + 'register',data)
   }
 }

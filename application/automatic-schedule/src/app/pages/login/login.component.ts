@@ -58,17 +58,15 @@ export class LoginComponent implements OnInit {
       this.authService.login(this.getForm()).subscribe({
         next: (result: any) => {
           console.log(">> result >> ", result);
-          // author
-          if (user.email === result[0].email && user.password === result[0].password) {
+          if(result.status){
             this.router.navigate([this.envUrl.schedule_admin])
-          } else if (user.email === result[1].email && user.password === result[1].password) {
-            this.router.navigate([this.envUrl.schedule_user])
           }else{
             alert("Wrong email or password")
           }
         },
         error: (error: any) => {
           console.log(">> error >>", error)
+          alert("Something wrong")
         }
       })
     }

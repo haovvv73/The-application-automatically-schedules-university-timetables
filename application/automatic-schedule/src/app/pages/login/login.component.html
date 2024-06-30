@@ -6,36 +6,40 @@
     <div class="flex justify-center m-10" >
         <img src="../../../assets/img/hcmus-logo.png" alt="hcmus-logo" class="h-auto w-[150px]">
     </div>
-    <form class="space-y-4" [formGroup]="loginForm" (ngSubmit)="onSubmit()" >
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" >
         <!-- Email -->
         <div>
-            <div class="border border-gray-400 rounded-full overflow-hidden space-x-2 flex items-center" >
+            <div class="border border-gray-400 rounded-full overflow-hidden flex items-center" >
                 <span class="ml-4" ><i class="fa fa-envelope text-gray-600"></i></span>
                 <input type="text" class="outline-none p-3 w-full"  formControlName="email"
                 placeholder="Enter Email">
             </div>
             <!-- validate error message -->
-            <div *ngIf="email && email.invalid && (email.touched || email.dirty)" class="ml-6 mt-1 font-semibold">
-                <span *ngIf="email.errors?.['required']" class="text-rose-500"> Email is required </span>
-                <span *ngIf="email.errors?.['email']" class="text-rose-500"> Invalid email format </span> 
-            </div>    
+            <div class="h-[26px]">
+                <div *ngIf="email && email.invalid && (email.touched || email.dirty)" class="ml-6 text-[13px] font-semibold">
+                    <span *ngIf="email.errors?.['required']" class="text-rose-500"> Email is required </span>
+                    <span *ngIf="email.errors?.['email']" class="text-rose-500"> Invalid email format </span> 
+                </div>  
+            </div>
         </div>
         
         <!-- Password -->
         <div>
-            <div class="border border-gray-400 rounded-full overflow-hidden space-x-2 flex items-center" >
+            <div class="border border-gray-400 rounded-full overflow-hidden flex items-center" >
                 <span class="ml-4" ><i class="fa fa-lock text-gray-600"></i></span>
                 <input type="password" class="outline-none p-3 w-full" placeholder="Password" formControlName="password">
             </div>
             <!-- validate error message -->
-            <div *ngIf="password && password.invalid && (password.touched || password.dirty)" class="ml-6 mt-1 font-semibold">
-                <span *ngIf="password.errors?.['required']" class="text-rose-500"> Password is required </span>
-                <span *ngIf="password.errors?.['minlength']" class="text-rose-500" > Password must be at least 6 characters</span> 
-            </div>    
+            <div class="h-[26px]">
+                <div *ngIf="password && password.invalid && (password.touched || password.dirty)" class="ml-6 text-[13px] font-semibold">
+                    <span *ngIf="password.errors?.['required']" class="text-rose-500"> Password is required </span>
+                    <span *ngIf="password.errors?.['minlength']" class="text-rose-500" > Password must be at least 6 characters</span> 
+                </div>    
+            </div>
         </div>
         
         <!-- submit -->
-        <button type="submit" class="w-full py-3 bg-sky-500 rounded-full hover:bg-sky-300 font-semibold" >Login</button>
+        <button type="submit" class="w-full py-3 bg-sky-500 rounded-full hover:bg-sky-300 font-semibold mt-1" >Login</button>
     </form>
     <div class="w-full text-center text-gray-500" >Don't have a account? 
         <a [routerLink]="envUrl.register" class="underline hover:text-black cursor-pointer" >register</a>
