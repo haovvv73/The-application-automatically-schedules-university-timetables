@@ -1,11 +1,11 @@
 <div class="p-3">
     <div class="mx-4 mt-4 pb-3">
-        <h1 class="text-3xl font-semibold border-l-[6px] border-blue-500 pl-3">{{title}}</h1>
+        <h1 class="text-3xl font-semibold border-l-[6px] border-blue-500 pl-3">{{titlePage}}</h1>
     </div>
 
     <div class="p-3 flex gap-8 flex-col flex-1">
         <!-- generate buttom -->
-        <div class="flex items-start justify-end gap-2" >
+        <div class="flex items-start justify-end gap-2">
             <button class="bg-orange-500 hover:bg-orange-400 px-4 py-2 rounded-md font-semibold text-white">
                 <i class="fa fa-exclamation-triangle"></i> Cancel
             </button>
@@ -19,17 +19,20 @@
             <div class="px-4 pt-3 pb-2 font-semibold text-white uppercase bg-sky-500  rounded-t-md">
                 <p>Schedule</p>
             </div>
-            <div class="px-3 py-3 flex items-end gap-4">
+            <form [formGroup]="scheduleForm" class="px-3 py-3 flex items-end gap-4">
+                <!-- title -->
                 <div class="nameSchedule flex-1">
-                    <label for="name-schedule" class="block mb-2 text-sm font-medium text-gray-900">Name
-                        Schedule</label>
-                    <input type="text" id="name-schedule"
+                    <label for="name-schedule" class="block mb-2 text-sm font-medium text-gray-900">
+                        Name Schedule
+                    </label>
+                    <input type="text" id="name-schedule" formControlName="title"
                         class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs ">
                 </div>
 
+                <!-- semester -->
                 <div class="semester">
                     <label for="semester" class="block mb-2 text-sm font-medium text-gray-900">Semester</label>
-                    <select id="countries"
+                    <select id="semester" formControlName="semester"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full px-1 pb-1 pt-1.5 text-[13px] ">
                         <option selected>--Select--</option>
                         <option value="1">1</option>
@@ -37,19 +40,40 @@
                         <option value="3">3</option>
                     </select>
                 </div>
-                
+
+                <!-- yearStart -> yearEnd -->
                 <div class="semesterYear flex items-end gap-2">
                     <div class="semesterYearStart">
                         <label for="semester-year-start"
                             class="block mb-2 text-sm font-medium text-gray-900">Year</label>
-                        <input type="date" id="semester-year-start"
+                        <input type="date" id="semester-year-start" formControlName="yearStart"
                             class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs ">
                     </div>
                     <span class="h-full py-1.5"><i class="fa fa-long-arrow-alt-right"></i></span>
                     <div class="semesterYearEnd">
-                        <input type="date" id="semester-year-end"
+                        <input type="date" id="semester-year-end" formControlName="yearEnd"
                             class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs ">
                     </div>
+                </div>
+            </form>
+            <div class="px-5 h-5 text-[14px] font-semibold text-red-500 overflow-hidden">
+                <!-- title -->
+                <div *ngIf="title && title.invalid && (title.touched || title.dirty)" class="flex-1">
+                    <span *ngIf="title.errors?.['required']" class="text-rose-500"> *Title is required </span>
+                    <span *ngIf="title.errors?.['pattern']" class="text-rose-500"> *Title must has no special character
+                    </span>
+                </div>
+                <!-- semester -->
+                <div *ngIf="semester && semester.invalid && (semester.touched || semester.dirty)">
+                    <span *ngIf="semester.errors?.['required']" class="text-rose-500"> *Semester is required </span>
+                </div>
+                <!-- year start -->
+                <div *ngIf="yearStart && yearStart.invalid && (yearStart.touched || yearStart.dirty)">
+                    <span *ngIf="yearStart.errors?.['required']" class="text-rose-500"> *Year is required </span>
+                </div>
+                <!-- year end -->
+                <div *ngIf="yearEnd && yearEnd.invalid && (yearEnd.touched || yearEnd.dirty)">
+                    <span *ngIf="yearEnd.errors?.['required']" class="text-rose-500"> *Year is required </span>
                 </div>
             </div>
         </div>
@@ -58,9 +82,11 @@
         <div class="flex-1 flex items-start gap-2">
             <!-- course generate -->
             <div class="flex-[3] shadow-md overflow-hidden border rounded-lg p-1">
-                <div class="px-4 pt-3 pb-2 font-semibold text-white uppercase bg-sky-500  rounded-t-md flex items-start justify-between">
+                <div
+                    class="px-4 pt-3 pb-2 font-semibold text-white uppercase bg-sky-500  rounded-t-md flex items-start justify-between">
                     <p>Course</p>
-                    <button class="hover:bg-black/20 rounded-md px-1.5" ><i class="fa fa-plus"></i></button>
+                    <button (click)="popupCourse.onOpenPopup()" class="hover:bg-black/20 rounded-md px-1.5"><i
+                            class="fa fa-plus"></i></button>
                 </div>
                 <!-- content -->
                 <div class="px-1 py-3 flex items-start gap-2">
@@ -70,7 +96,7 @@
                             <thead class="text-xs text-gray-700 uppercase bg-gray-100 ">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 rounded-s-lg">
-                                        <i class="fa fa-book" ></i> Subject
+                                        <i class="fa fa-book"></i> Subject
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         class size
@@ -101,14 +127,14 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <!-- right -->
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 ">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-100 ">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 rounded-s-lg">
-                                        <i class="fa fa-chalkboard-teacher" ></i> Teacher
+                                        <i class="fa fa-chalkboard-teacher"></i> Teacher
                                     </th>
                                     <th scope="col" class="px-6 py-3 rounded-e-lg">
                                         Quality
@@ -136,19 +162,204 @@
 
             <!-- room generate -->
             <div class="flex-1 shadow-md overflow-hidden border rounded-lg p-1">
-                <div class="px-4 pt-3 pb-2 font-semibold text-white uppercase bg-sky-500  rounded-t-md flex items-start justify-between">
+                <div
+                    class="px-4 pt-3 pb-2 font-semibold text-white uppercase bg-sky-500  rounded-t-md flex items-start justify-between">
                     <p>Room</p>
-                    <button class="hover:bg-black/20 rounded-md px-1.5" ><i class="fa fa-plus"></i></button>
+                    <button (click)="popupRoom.onOpenPopup()" class="hover:bg-black/20 rounded-md px-1.5"><i
+                            class="fa fa-plus"></i></button>
                 </div>
                 <!-- content -->
                 <div class="p-3 py-3 flex items-start gap-2">
                     <!-- item -->
-                    <div class="rounded-lg bg-gray-200 w-fit pl-2 pr-1 flex gap-2 items-center">
-                        <span>F705</span>
-                        <i class="fa fa-times-circle text-[14px] hover:text-red-400 cursor-pointer text-red-500"></i>
+                    <div *ngFor="let item of dataRoomSelect"
+                        class="rounded-lg bg-gray-200 w-fit pl-2 pr-1 flex gap-2 items-center">
+                        <span>{{item.room}}</span>
+                        <i (click)="onUnselectRoom(item.Id)"
+                            class="fa fa-times-circle text-[14px] hover:text-red-400 cursor-pointer text-red-500"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- view model popup -->
+<!-- course -->
+<app-popup #popupCourse [popupTitle]="titlePage">
+    <div sectionPopup>
+        <form class="w-full space-y-2">
+            <!-- address - phone -->
+            <div class="flex items-start gap-2">
+                <div class="flex-1">
+                    <label for="address" class="block mb-2 text-sm font-medium text-gray-900 ">
+                        Cohort</label>
+                    <input type="text" id="address"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                        placeholder="Cohort here" />
+                </div>
+
+                <div class="flex-1" >
+                    <label for="TeacherName" class="block mb-2 text-sm font-medium text-gray-900 ">
+                        Class size</label>
+                    <input type="text" id="TeacherName"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                        placeholder="Class size Here" />
+                </div>
+            </div>
+
+            <!-- button -->
+            <div class="flex justify-center">
+                <button type="submit"
+                    class="text-white bg-sky-600 hover:bg-sky-700 font-medium rounded-lg text-sm w-1/4 px-5 py-2.5 text-center">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</app-popup>
+
+<!-- room -->
+<app-popup #popupRoom [popupTitle]="'Room List'">
+    <div sectionPopup class="overflow-y-auto">
+        <div class="w-full space-y-3 ">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <div class="flex items-center justify-between mb-3">
+                    <!-- search -->
+                    <div class="border w-1/3 flex items-center p-1 rounded-md bg-gray-50">
+                        <input type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
+                        <span class="px-2"><i class="fa fa-search"></i></span>
+                    </div>
+                    <!-- select -->
+                    <div class="w-1/5 text-white">
+                        <button (click)="dataRoomSelect = [];"
+                            class="w-full bg-orange-500 py-1 rounded-md">Clear</button>
+                    </div>
+                </div>
+
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th *ngFor="let key of columnsKeyRoom" scope="col" class="px-6 py-3">
+                                {{key}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of dataRoom, index as i"
+                            class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" (change)="onCheckboxChange($event, item.Id)"
+                                    [checked]="onChecked(item.Id)"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.Id}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.room}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.roomDescription}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.location}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.capacity}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.type}}
+                            </td>
+                            <td class="px-6 py-4 space-x-3">
+                                <button class="p-2 font-medium text-blue-600 dark:text-blue-500">
+                                    <i class="fa fa-pen"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</app-popup>4
+
+
+
+
+<!-- left -->
+<!-- <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th *ngFor="let key of columnsKeyCourse" scope="col" class="px-6 py-3">
+                    {{key}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of dataCourse, index as i"
+                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                <td class="px-6 py-4">
+                    <input type="checkbox"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                </td>
+                <td class="px-6 py-4">
+                    {{item.lesson}}
+                </td>
+                <td class="px-6 py-4">
+                    {{item.duration}}
+                </td>
+                <td class="px-6 py-4">
+                    {{item.location}}
+                </td>
+                <td class="px-6 py-4">
+                    {{item.type}}
+                </td>
+                <td class="px-6 py-4 space-x-3">
+                    <button class="p-2 font-medium text-blue-600">
+                        <i class="fa fa-pen"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div> -->
+
+<!-- right -->
+<!-- <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th *ngFor="let key of columnsKeyTeacher" scope="col" class="px-6 py-3">
+                    {{key}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of dataTeacher, index as i"
+                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                <td class="px-6 py-4">
+                    <input type="checkbox"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                </td>
+                <td class="px-6 py-4">
+                    {{item.Teacher}}
+                </td>
+                <td class="px-6 py-4">
+                    {{item.Gender}}
+                </td>
+                <td class="px-6 py-4">
+                    {{item.Falculty}}
+                </td>
+                <td class="px-6 py-4">
+                    {{item.Email}}
+                </td>
+                <td class="px-6 py-4 space-x-3">
+                    <button class="p-2 font-medium text-blue-600">
+                        <i class="fa fa-pen"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div> -->

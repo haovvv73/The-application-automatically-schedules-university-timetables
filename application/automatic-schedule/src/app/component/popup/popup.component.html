@@ -1,7 +1,7 @@
 <div *ngIf="openPopup" class="bg-black/10 fixed top-0 right-0 left-0 bottom-0 z-40 flex items-center justify-center" > 
-    <div class="max-h-[90vh] min-w-[50vw] bg-white text-white rounded-md border-4 shadow-md border-sky-500" >
+    <div class="max-h-[90vh] min-w-[50vw] bg-white text-white rounded-md border-4 shadow-md border-sky-500 overflow-y-auto" >
         <!-- header -->
-        <div class="bg-sky-500 px-3 py-2 flex items-center justify-between">
+        <div class="bg-sky-500 px-3 py-2 flex items-center justify-between sticky top-0 z-20">
             <span class="font-semibold text-xl" >{{popupTitle}}</span>
             <button  (click)="onClosePopup()" class=" hover:bg-red-500 rounded-md px-2" ><i class="fa fa-times text-base"></i></button>
         </div>
