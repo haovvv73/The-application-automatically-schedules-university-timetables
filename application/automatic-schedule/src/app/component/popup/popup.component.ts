@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-popup',
@@ -10,15 +10,17 @@ import { Component, Input } from '@angular/core';
 })
 export class PopupComponent {
   @Input() popupTitle = ''
+  @Output() callbackWhenClose =  new EventEmitter<boolean>()
   openPopup = false
 
   onOpenPopup(){
     this.openPopup = true
-    console.log("hello");
+    // console.log("hello");
     
   }
 
   onClosePopup(){
     this.openPopup = false
+    this.callbackWhenClose.emit(true);
   }
 }

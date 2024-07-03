@@ -4,7 +4,7 @@
     </div>
 
     <div class="p-3 flex gap-8 flex-col flex-1">
-        <!-- generate buttom -->
+        <!-- generate button -->
         <div class="flex items-start justify-end gap-2">
             <button class="bg-orange-500 hover:bg-orange-400 px-4 py-2 rounded-md font-semibold text-white">
                 <i class="fa fa-exclamation-triangle"></i> Cancel
@@ -90,7 +90,6 @@
                 </div>
                 <!-- content -->
                 <div class="px-1 py-3 flex items-start gap-2">
-                    <!-- left -->
                     <div class="relative flex-1 overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 ">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-100 ">
@@ -104,54 +103,67 @@
                                     <th scope="col" class="px-6 py-3">
                                         cohort
                                     </th>
-                                    <th scope="col" class="px-6 py-3 rounded-e-lg">
-                                        Type
+                                    <th scope="col" class="px-6 py-3">
+                                        Location
                                     </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-white ">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                                        Toan Roi Rac
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        125
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        K20
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        Ly Thuyet
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- right -->
-                    <div class="relative overflow-x-auto">
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 ">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-100 ">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                    <th scope="col" class="px-6 py-3">
                                         <i class="fa fa-chalkboard-teacher"></i> Teacher
                                     </th>
-                                    <th scope="col" class="px-6 py-3 rounded-e-lg">
+                                    <th scope="col" class="px-6 py-3">
                                         Quality
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 rounded-e-lg">
+                                        Edit
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="bg-white ">
+                                <tr *ngFor="let item of dataCourse; index as i" class="bg-white ">
+                                    <!-- course render -->
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                                        <span>Lorem nguyen</span>
-                                        <span>, </span>
-                                        <span>Goku Vo</span>
-                                        <span>, </span>
-                                        <span>Goku Vo</span>
+                                        {{item.className}}
                                     </th>
                                     <td class="px-6 py-4">
-                                        <span>3</span>
+                                        {{item.classSize}}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{item.coHort}}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{item.location}}
+                                    </td>
+
+                                    <!-- teacher render -->
+                                    <th *ngIf="item.teacherID.length > 0" scope="row"
+                                        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center">
+                                        <!-- button edit teacher -->
+                                        <button class="p-2 font-medium text-sky-600 hover:text-sky-400 text-[14px]">
+                                            <i class="fa fa-user-edit"></i>
+                                        </button>
+                                        <!-- name -->
+                                        <span *ngFor="let id of item.teacherID; index as i">
+                                            <span *ngIf="i >= 1 && i < item.teacherID.length">,</span>
+                                            {{getTeacher(id)}}
+                                        </span>
+                                    </th>
+                                    <td *ngIf="item.teacherID.length > 0" class="px-6 py-4 text-center">
+                                        <span>{{item.teacherID.length}}</span>
+                                    </td>
+
+                                    <!-- button add teacher -->
+                                    <td colspan="2" *ngIf="item.teacherID.length == 0;" class="text-right">
+                                        <button class="text-sky-600 border-sky-600 border  hover:text-sky-500
+                                        border-dashed font-medium rounded-lg text-sm w-full py-1.5 text-center"
+                                            (click)="onSaveIndex(i);popupTeacher.onOpenPopup()">
+                                            Add Teacher
+                                        </button>
+                                    </td>
+
+                                    <!-- button edit course -->
+                                    <td class="px-6 py-4">
+                                        <button class="p-2 font-medium text-blue-600 hover:text-blue-400">
+                                            <i class="fa fa-pen"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -185,32 +197,146 @@
 
 <!-- view model popup -->
 <!-- course -->
-<app-popup #popupCourse [popupTitle]="titlePage">
+<app-popup #popupCourse [popupTitle]="'Course'" (callbackWhenClose)="clearCourseForm($event)">
     <div sectionPopup>
-        <form class="w-full space-y-2">
-            <!-- address - phone -->
-            <div class="flex items-start gap-2">
+        <form [formGroup]="courseForm" (ngSubmit)="onSaveCourse()" class="w-full">
+            <!-- select subject -->
+            <div>
+                <form class="w-full mx-auto">
+                    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only ">Search</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="search" id="default-search"
+                            class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 shadow-sm rounded-lg bg-gray-50"
+                            placeholder="Search course" required />
+                        <button type="submit"
+                            class="text-white absolute end-1.5 bottom-[5px] bg-sky-600 hover:bg-sky-800 font-medium rounded-md text-sm px-2 py-1">Search</button>
+                    </div>
+                </form>
+
+                <!-- list subject -->
+                <div class="mt-2 ">
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th *ngFor="let key of columnsKeySubject" scope="col" class="px-6 py-3">
+                                        {{key}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of dataSubject.slice(0,5), index as i"
+                                    class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                    <td class="px-4 py-2">
+                                        <button
+                                            [ngClass]="{'!bg-gray-400 cursor-no-drop': item.subject == courseForm.value.className}"
+                                            type="button"
+                                            (click)="onSelectSubject(item.Id)"
+                                            class="text-xs bg-sky-400 px-1 rounded-sm shadow-md text-white">select</button>
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{item.subject}}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{item.credits}}
+                                    </td>
+                                    <td class="px-4 py-2 line-clamp-1">
+                                        {{item.description}}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{item.subjectType}}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{item.duration}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- class-size - Cohort - Class size - location -->
+            <div class="flex items-start gap-2 mt-6">
+                <div class="flex-1">
+                    <label for="address" class="block mb-2 text-sm font-medium text-gray-900 ">
+                        Course</label>
+                    <input type="text" id="address" formControlName="className" readonly
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                        placeholder="----" />
+                    <!-- subject -->
+                    <div class="h-6 text-[13px] font-semibold">
+                        <div *ngIf="subjectID && subjectID.invalid && (subjectID.touched || subjectID.dirty)"
+                            class="flex-1">
+                            <span *ngIf="subjectID.errors?.['required']" class="text-rose-500"> *Select Subject </span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex-1">
                     <label for="address" class="block mb-2 text-sm font-medium text-gray-900 ">
                         Cohort</label>
-                    <input type="text" id="address"
+                    <input type="text" id="address" formControlName="coHort"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                         placeholder="Cohort here" />
+                    <!-- coHort -->
+                    <div class="h-6 text-[13px] font-semibold">
+                        <div *ngIf="coHort && coHort.invalid && (coHort.touched || coHort.dirty)" class="flex-1">
+                            <span *ngIf="coHort.errors?.['required']" class="text-rose-500"> *CoHort is required </span>
+                            <span *ngIf="coHort.errors?.['pattern']" class="text-rose-500"> *No special
+                                character
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex-1" >
+                <div class="flex-1">
                     <label for="TeacherName" class="block mb-2 text-sm font-medium text-gray-900 ">
-                        Class size</label>
-                    <input type="text" id="TeacherName"
+                        Class-Size</label>
+                    <input type="number" id="TeacherName" formControlName="classSize"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                        placeholder="Class size Here" />
+                        placeholder="Class-size Here" />
+                    <!-- classSize -->
+                    <div class="h-6 text-[13px] font-semibold">
+                        <div *ngIf="classSize && classSize.invalid && (classSize.touched || classSize.dirty)"
+                            class="flex-1">
+                            <span *ngIf="classSize.errors?.['required']" class="text-rose-500"> *Class-Size is required
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <label for="TeacherName" class="block mb-2 text-sm font-medium text-gray-900 ">
+                        Location</label>
+                    <select id="TeacherName" formControlName="location"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                        <option value="">--Select--</option>
+                        <option value="LT">Linh Trung</option>
+                        <option value="NVC">Nguyen Van Cu</option>
+                    </select>
+                    <!-- classSize -->
+                    <div class="h-6 text-[13px] font-semibold">
+                        <div *ngIf="location && location.invalid && (location.touched || location.dirty)" class="flex-1">
+                            <span *ngIf="location.errors?.['required']" class="text-rose-500"> *Location is required
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- button -->
-            <div class="flex justify-center">
+            <div class="flex justify-end">
                 <button type="submit"
-                    class="text-white bg-sky-600 hover:bg-sky-700 font-medium rounded-lg text-sm w-1/4 px-5 py-2.5 text-center">
+                    class="text-white bg-sky-600 hover:bg-sky-700 font-medium rounded-lg text-sm w-fit px-5 py-2.5 text-center mt-2">
                     Save
                 </button>
             </div>
@@ -220,23 +346,22 @@
 
 <!-- room -->
 <app-popup #popupRoom [popupTitle]="'Room List'">
-    <div sectionPopup class="overflow-y-auto">
-        <div class="w-full space-y-3 ">
-            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <div class="flex items-center justify-between mb-3">
-                    <!-- search -->
-                    <div class="border w-1/3 flex items-center p-1 rounded-md bg-gray-50">
-                        <input type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
-                        <span class="px-2"><i class="fa fa-search"></i></span>
-                    </div>
-                    <!-- select -->
-                    <div class="w-1/5 text-white">
-                        <button (click)="dataRoomSelect = [];"
-                            class="w-full bg-orange-500 py-1 rounded-md">Clear</button>
-                    </div>
+    <div sectionPopup>
+        <div class="w-full space-y-4">
+            <div class="flex items-center justify-between mb-3">
+                <!-- search -->
+                <div class="border w-1/3 flex items-center p-1 rounded-md bg-gray-50">
+                    <input type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
+                    <span class="px-2"><i class="fa fa-search"></i></span>
                 </div>
+                <!-- select -->
+                <div class="w-1/5 text-white">
+                    <button (click)="dataRoomSelect = [];" class="w-full bg-orange-500 py-1 rounded-md">Clear</button>
+                </div>
+            </div>
 
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th *ngFor="let key of columnsKeyRoom" scope="col" class="px-6 py-3">
@@ -248,8 +373,8 @@
                         <tr *ngFor="let item of dataRoom, index as i"
                             class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <td class="px-6 py-4">
-                                <input type="checkbox" (change)="onCheckboxChange($event, item.Id)"
-                                    [checked]="onChecked(item.Id)"
+                                <input type="checkbox" (change)="onSelectRoom($event, item.Id)"
+                                    [checked]="onRoomChecked(item.Id)"
                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
                             </td>
                             <td class="px-6 py-4">
@@ -270,96 +395,86 @@
                             <td class="px-6 py-4">
                                 {{item.type}}
                             </td>
-                            <td class="px-6 py-4 space-x-3">
+                            <!-- <td class="px-6 py-4">
                                 <button class="p-2 font-medium text-blue-600 dark:text-blue-500">
                                     <i class="fa fa-pen"></i>
                                 </button>
-                            </td>
+                            </td> -->
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</app-popup>4
+</app-popup>
 
+<!-- teacher -->
+<app-popup #popupTeacher [popupTitle]="'Teacher List'">
+    <div sectionPopup>
+        <div class="w-full space-y-4">
+            <div class="flex items-center justify-between mb-3">
+                <!-- search -->
+                <div class="border w-1/3 flex items-center p-1 rounded-md bg-gray-50">
+                    <input type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
+                    <span class="px-2"><i class="fa fa-search"></i></span>
+                </div>
+                <!-- select -->
+                <div class="w-1/5 text-white">
+                    <button (click)="onUnSelectTeacher()" class="w-full bg-orange-500 py-1 rounded-md">Clear</button>
+                </div>
+            </div>
 
-
-
-<!-- left -->
-<!-- <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th *ngFor="let key of columnsKeyCourse" scope="col" class="px-6 py-3">
-                    {{key}}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of dataCourse, index as i"
-                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                <td class="px-6 py-4">
-                    <input type="checkbox"
-                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                </td>
-                <td class="px-6 py-4">
-                    {{item.lesson}}
-                </td>
-                <td class="px-6 py-4">
-                    {{item.duration}}
-                </td>
-                <td class="px-6 py-4">
-                    {{item.location}}
-                </td>
-                <td class="px-6 py-4">
-                    {{item.type}}
-                </td>
-                <td class="px-6 py-4 space-x-3">
-                    <button class="p-2 font-medium text-blue-600">
-                        <i class="fa fa-pen"></i>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div> -->
-
-<!-- right -->
-<!-- <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th *ngFor="let key of columnsKeyTeacher" scope="col" class="px-6 py-3">
-                    {{key}}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of dataTeacher, index as i"
-                class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                <td class="px-6 py-4">
-                    <input type="checkbox"
-                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                </td>
-                <td class="px-6 py-4">
-                    {{item.Teacher}}
-                </td>
-                <td class="px-6 py-4">
-                    {{item.Gender}}
-                </td>
-                <td class="px-6 py-4">
-                    {{item.Falculty}}
-                </td>
-                <td class="px-6 py-4">
-                    {{item.Email}}
-                </td>
-                <td class="px-6 py-4 space-x-3">
-                    <button class="p-2 font-medium text-blue-600">
-                        <i class="fa fa-pen"></i>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div> -->
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th *ngFor="let key of columnsKeyTeacher" scope="col" class="px-6 py-3">
+                                {{key}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of dataTeacher, index as i"
+                            class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b">
+                            <td class="px-6 py-4">
+                                <input type="checkbox"
+                                    (change)="onSelectTeacher(item.Id)"
+                                    [checked]="onTeacherChecked(item.Id)"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.Id}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.teacher}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.gender}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.faculty}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.birthday}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.address}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.email}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{item.phone}}
+                            </td>
+                            <!-- <td class="px-6 py-4">
+                                <button class="p-2 font-medium text-blue-600 dark:text-blue-500">
+                                    <i class="fa fa-pen"></i>
+                                </button>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</app-popup>
