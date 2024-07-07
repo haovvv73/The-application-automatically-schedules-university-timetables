@@ -114,24 +114,58 @@ class LecturerService {
         }
     }
 
-    // UPDATE
-    async updateCourse(lecturer) {
+    async saveCourses(courses) {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET lecturerName = ?,phone = ?,gender = ?,faculty = ?,birthday = ?,address = ? WHERE lecturerID = ?`
-            const result = await this.connection.execute(query, [
-                lecturer.lecturerName,
-                lecturer.phone,
-                lecturer.gender,
-                lecturer.faculty,
-                lecturer.birthday,
-                lecturer.address,
-                lecturer.lecturerID,
-            ])
+            for(let course of courses){
+                const {className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID} = course
 
-            const subQuery = `UPDATE ${this.subTable} SET email = ?`
-            await this.connection.execute(subQuery, [lecturer.email])
+                const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?)`
+                const result = await this.connection.execute(query, [
+                    className,
+                    cohort,
+                    classSize,
+                    timeStart,
+                    timeEnd,
+                    day,
+                    location,
+                    lecturerID,
+                    subjectID,
+                    roomID,
+                    scheduleID
+                ])
+            }
+
+            await this.connection.query('COMMIT');
+            return result[0].affectedRows
+        } catch (error) {
+            await this.connection.query('ROLLBACK');
+            throw error;
+        }
+    }
+
+    // UPDATE
+    async updateCourse(course) {
+        try {
+            await this.connection.query('START TRANSACTION');
+
+            const query = `UPDATE ${this.table} SET className = ?,cohort = ?,classSize = ?,timeStart = ?,timeEnd = ?,day = ?,location = ?,lecturerID = ?,subjectID = ?,roomID = ?,scheduleID = ? WHERE courseID = ?`
+            const result = await this.connection.execute(query, [
+                course.className,
+                course.cohort,
+                course.classSize,
+                course.timeStart,
+                course.timeEnd,
+                course.day,
+                course.location,
+                course.lecturerID,
+                course.subjectID,
+                course.roomID,
+                course.scheduleID,
+                course.courseID
+            ])
 
             await this.connection.query('COMMIT');
             return result[0].affectedRows
