@@ -52,19 +52,19 @@
                             {{item.Id}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.lesson}}
+                            {{item.Subject}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.lessonDescription}}
+                            {{item.credit}}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{item.description}}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{item.subjectType}}
                         </td>
                         <td class="px-6 py-4">
                             {{item.duration}}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{item.location}}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{item.type}}
                         </td>
                         <td class="px-6 py-4 space-x-3">
                             <button class="p-2 font-medium text-blue-600">
@@ -84,54 +84,89 @@
 <!-- view model popup -->
 <app-popup #popup [popupTitle]="title">
     <div sectionPopup>
-        <form class="w-full space-y-3">
-            <!-- lesson name -->
+        <form class="w-full" [formGroup]="subjectForm" (ngSubmit)="onSubmit()">
+            <!-- subject -->
             <div>
-                <label for="lessonName" class="block mb-2 text-sm font-medium text-gray-900 ">
-                    Lesson Name</label>
-                <input type="text" id="lessonName"
+                <label for="subjectName" class="block mb-2 text-sm font-medium text-gray-900 ">
+                    Subject Name</label>
+                <input type="text" id="lessonName" formControlName="subject"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                     placeholder="Name here" />
+                <div class="h-[26px]">
+                    <div *ngIf="subject && subject.errors && (subject.touched || subject.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="subject.errors?.['required']" class="text-rose-500">*subject is required</span>
+                        <span *ngIf="subject.errors?.['pattern']" class="text-rose-500"> *No special Character</span>
+                    </div>
+                </div>
             </div>
 
             <div class="flex items-center gap-2">
                 <!-- duration -->
-                <div class="flex-1" >
-                    <label for="index" class="block mb-2 text-sm font-medium text-gray-900 ">
+                <div class="flex-1">
+                    <label for="duration" class="block mb-2 text-sm font-medium text-gray-900 ">
                         Duration</label>
-                    <input type="number" id="index"
+                    <input type="text" id="duration" formControlName="duration"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                         value="0" />
+                    <div class="h-[26px]">
+                        <div *ngIf="duration && duration.errors && (duration.touched || duration.dirty)"
+                            class="ml-1 text-[13px] font-semibold">
+                            <span *ngIf="duration.errors?.['required']" class="text-rose-500">*duration is
+                                required</span>
+                            <span *ngIf="duration.errors?.['pattern']" class="text-rose-500"> *Only Number</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="" >
-                    <label for="index" class="block mb-2 text-sm font-medium text-gray-900 ">
-                        Location</label>
-                    <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" >
-                        <option value="">--Select</option>
-                        <option value="">Linh Trung</option>
-                        <option value="">Nguyen Van Cu</option>
-                    </select>
+                <!-- credit -->
+                <div class="flex-1">
+                    <label for="credit" class="block mb-2 text-sm font-medium text-gray-900 ">
+                        Credit</label>
+                    <input type="text" id="credit" formControlName="credit"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                        value="0" />
+                    <div class="h-[26px]">
+                        <div *ngIf="credit && credit.errors && (credit.touched || credit.dirty)"
+                            class="ml-1 text-[13px] font-semibold">
+                            <span *ngIf="credit.errors?.['required']" class="text-rose-500">*credit is
+                                required</span>
+                            <span *ngIf="credit.errors?.['pattern']" class="text-rose-500"> *Only Number</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- lesson type -->
+            <!-- subject type -->
             <div class="flex-1">
-                <label for="falculty" class="block mb-2 text-sm font-medium text-gray-900">Select Type</label>
-                <select id="falculty"
+                <label for="subjectType" class="block mb-2 text-sm font-medium text-gray-900">Select Type</label>
+                <select id="subjectType" formControlName="subjectType"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
                     <option value="theory" selected>Theory </option>
                     <option value="practice">Practice</option>
                 </select>
+                <div class="h-[26px]">
+                    <div *ngIf="subjectType && subjectType.errors && (subjectType.touched || subjectType.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="subjectType.errors?.['required']" class="text-rose-500">*Subject-Type is required</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- lesson description -->
+            <!-- description -->
             <div>
-                <label for="lessonDescription" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
+                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
                     Description</label>
-                <textarea id="lessonDescription" rows="4"
+                <textarea id="description" rows="4" formControlName="description"
                     class="block p-2.5 resize-none w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                     placeholder="Write description here..."></textarea>
+                <div class="h-[26px]">
+                    <div *ngIf="description && description.errors && (description.touched || description.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="description.errors?.['required']" class="text-rose-500">*description is required</span>
+                        <span *ngIf="description.errors?.['maxlength']" class="text-rose-500">*Max 254 Character </span>
+                    </div>
+                </div>
             </div>
 
             <!-- button -->

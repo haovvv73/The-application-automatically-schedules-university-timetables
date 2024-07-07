@@ -8,7 +8,7 @@ class AccountService {
         this.subTable = 'permission'
     }
 
-    // GET
+    // READ
     async getAccountByID(accountID) {
         const query = `
         SELECT * FROM ${this.table} 
@@ -108,7 +108,7 @@ class AccountService {
 
     }
 
-    // POST
+    // CREATE
     async saveAccount(account) {
         try {
             // Start a transaction
@@ -135,16 +135,17 @@ class AccountService {
         }
     }
 
-    // PUT
+    // UPDATE
     async updateAccount(account) {
         try {
             // Start a transaction
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET email = ?,password = ?`
+            const query = `UPDATE ${this.table} SET email = ?,password = ? WHERE AccountID = ?`
             const result = await this.connection.execute(query, [
                 account.email,
-                account.password
+                account.password,
+                account.AccountID
             ])
             
             // Commit the transaction

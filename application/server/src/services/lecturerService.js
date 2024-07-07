@@ -9,7 +9,7 @@ class LecturerService {
         this.subTable2 = 'permission'
     }
 
-    // GET
+    // READ
     async getUsers() {
         const query = `SELECT * FROM ${this.table} 
         LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID `
@@ -25,7 +25,7 @@ class LecturerService {
                         lecturer.email,
                         lecturer.lecturerName,
                         lecturer.phone,
-                        lecturer.password,
+                        '',
                         lecturer.gender,
                         lecturer.faculty,
                         lecturer.birthday,
@@ -54,7 +54,7 @@ class LecturerService {
                     lecturer.email,
                     lecturer.lecturerName,
                     lecturer.phone,
-                    lecturer.password,
+                    '',
                     lecturer.gender,
                     lecturer.faculty,
                     lecturer.birthday,
@@ -82,7 +82,7 @@ class LecturerService {
                     lecturer.email,
                     lecturer.lecturerName,
                     lecturer.phone,
-                    lecturer.password,
+                    '',
                     lecturer.gender,
                     lecturer.faculty,
                     lecturer.birthday,
@@ -124,7 +124,7 @@ class LecturerService {
         }
     }
 
-    // POST
+    // CREATE
     async saveUser(lecturer) {
         try {
             await this.connection.query('START TRANSACTION');
@@ -163,7 +163,7 @@ class LecturerService {
         }
     }
 
-    // PUT
+    // UPDATE
     async updateUser(lecturer) {
         try {
             await this.connection.query('START TRANSACTION');
@@ -180,7 +180,7 @@ class LecturerService {
             ])
 
             const subQuery = `UPDATE ${this.subTable} SET email = ?`
-            await this.connection.execute(subQuery, [lecturer.email,])
+            await this.connection.execute(subQuery, [lecturer.email])
 
             await this.connection.query('COMMIT');
             return result[0].affectedRows

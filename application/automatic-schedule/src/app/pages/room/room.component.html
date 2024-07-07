@@ -82,45 +82,72 @@
 <!-- view model popup -->
 <app-popup #popup [popupTitle]="title">
     <div sectionPopup>
-        <form class="w-full space-y-3">
+        <form class="w-full" [formGroup]="roomForm" (ngSubmit)="onSubmit()">
             <!-- room name -->
             <div>
                 <label for="roomName" class="block mb-2 text-sm font-medium text-gray-900 ">
                     Room Name</label>
-                <input type="text" id="roomName"
+                <input type="text" id="roomName" formControlName="roomName"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                     placeholder="Name here" />
+                <div class="h-[26px]">
+                    <div *ngIf="roomName && roomName.errors && (roomName.touched || roomName.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="roomName.errors?.['required']" class="text-rose-500">*Room-Name is required</span>
+                        <span *ngIf="roomName.errors?.['pattern']" class="text-rose-500"> *No special Character</span>
+                    </div>
+                </div>
             </div>
 
             <!-- capacity -->
             <div class="flex-1">
                 <label for="capacity" class="block mb-2 text-sm font-medium text-gray-900 ">
                     Capacity</label>
-                <input type="text" id="capacity"
+                <input type="text" id="capacity" formControlName="capacity"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                     value="0" />
+                <div class="h-[26px]">
+                    <div *ngIf="capacity && capacity.errors && (capacity.touched || capacity.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="capacity.errors?.['required']" class="text-rose-500">*Capacity is required</span>
+                        <span *ngIf="capacity.errors?.['pattern']" class="text-rose-500"> *Only number</span>
+                    </div>
+                </div>
             </div>
 
             <div class="flex gap-2">
                 <!-- location -->
                 <div class="flex-1">
-                    <label for="falculty" class="block mb-2 text-sm font-medium text-gray-900">Select Location</label>
-                    <select id="falculty"
+                    <label for="location" class="block mb-2 text-sm font-medium text-gray-900">Select Location</label>
+                    <select id="location" formControlName="location"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                        <option>Choose Location</option>
-                        <option value="LT" selected>Linh Trung </option>
+                        <option value="LT" selected>Linh Trung</option>
                         <option value="NVC">Nguyen Van Cu</option>
                     </select>
+                    <div class="h-[26px]">
+                        <div *ngIf="location && location.errors && (location.touched || location.dirty)"
+                            class="ml-1 text-[13px] font-semibold">
+                            <span *ngIf="location.errors?.['required']" class="text-rose-500">*Location is
+                                required</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- room type -->
                 <div class="flex-1">
                     <label for="roomType" class="block mb-2 text-sm font-medium text-gray-900">Select Type</label>
-                    <select id="roomType"
+                    <select id="roomType" formControlName="roomType"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
                         <option value="theory" selected>Theory </option>
                         <option value="practice">Practice</option>
                     </select>
+                    <div class="h-[26px]">
+                        <div *ngIf="roomType && roomType.errors && (roomType.touched || roomType.dirty)"
+                            class="ml-1 text-[13px] font-semibold">
+                            <span *ngIf="roomType.errors?.['required']" class="text-rose-500">*Room-Type is
+                                required</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -128,9 +155,17 @@
             <div>
                 <label for="roomDescription" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
                     Description</label>
-                <textarea id="roomDescription" rows="4"
+                <textarea id="roomDescription" rows="4" formControlName="description"
                     class="block p-2.5 w-full text-sm resize-none text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                     placeholder="Write description here..."></textarea>
+                <div class="h-[26px]">
+                    <div *ngIf="description && description.errors && (description.touched || description.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="description.errors?.['required']" class="text-rose-500">*description is
+                            required</span>
+                        <span *ngIf="description.errors?.['maxlength']" class="text-rose-500">*Max 254 Character </span>
+                    </div>
+                </div>
             </div>
 
             <!-- button -->

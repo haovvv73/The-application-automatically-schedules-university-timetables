@@ -31,12 +31,12 @@ export class SidebarComponent {
       icon : 'fa fa-calendar-alt'
     },
     {
-      title : 'Teacher',
+      title : 'Lecturer',
       link : this.envUrl.teacher_admin,
       icon : 'fa fa-chalkboard-teacher'
     },
     {
-      title : 'Lesson',
+      title : 'Subject',
       link : this.envUrl.lesson_admin,
       icon : 'fa fa-book'
     },

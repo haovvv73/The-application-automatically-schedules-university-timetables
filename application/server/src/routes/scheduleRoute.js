@@ -1,9 +1,12 @@
 import express from "express"
-import { createSchedule } from "../controllers/scheduleController.js"
+import { createSchedule, deleteSchedule, getSchedules, updateSchedule } from "../controllers/scheduleController.js"
 
 let router = express.Router()
 
-// test schedule generate
-router.get('/generate', createSchedule)
+
+router.post('/', createSchedule)
+router.delete('/', deleteSchedule)
+router.put('/', updateSchedule)
+router.get('/', getSchedules)
 
 export {router as initScheduleRoute} 

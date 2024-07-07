@@ -2,21 +2,65 @@ import { errorResponse, successResponse } from "../helpers/httpResponse.js";
 import httpStatusCode from '../helpers/httpStatusCode.js';
 import { scheduleGenerate } from "../libs/scheduleGenerateLib.js";
 import { format, set} from 'date-fns'
+import scheduleService from "../services/scheduleService.js";
+import { Schedule } from "../models/schedule.js";
 
 const getSchedules = (req, res) => {
+    const scheduleID = req.params.id
 
+    try {
+        let data = []
+        // get by ID
+        if (scheduleID) {
+            data = scheduleService.getScheduleById(scheduleID)
+            if (data.length < 1) return errorResponse(res, httpStatusCode.NotFound.message, httpStatusCode.NotFound.code)
+        } else { //get all
+            data = scheduleService.getSchedule()
+        }
+
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, data)
+
+    } catch (error) {
+        // console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
 }
 
 const deleteSchedule = (req, res) => {
+    const { id } = req.body
+    if (!id) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
-}
+    try {
+        const result = scheduleService.deleteSchedule(id)
 
-const getScheduleDetail = (req, res) => {
-
+        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
+    } catch (error) {
+        // console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
 }
 
 const updateSchedule = (req, res) => {
+    const { scheduleID, title, yearStart, yearEnd, semester } = req.body
+    if (!scheduleID || !title || !yearStart || !yearEnd || !semester) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
+    try {
+        const newSchedule = new Schedule(
+            scheduleID,
+            title,
+            yearStart,
+            yearEnd,
+            semester
+        )
+        const result = scheduleService.updateSchedule(newSchedule)
+
+        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
+    } catch (error) {
+        // console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
 }
 
 const createSchedule = (req, res) => {
@@ -59,6 +103,11 @@ const createSchedule = (req, res) => {
             },
         ]
 
+        // save schedule 
+        // generate course
+        // save course
+        // return schedule-detail
+
         const schedule = scheduleGenerate(rawCourses, rawTeacherSameCourse)
 
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, schedule)
@@ -68,4 +117,4 @@ const createSchedule = (req, res) => {
     }
 }
 
-export { createSchedule }
+export { createSchedule, getSchedules, deleteSchedule, updateSchedule }
