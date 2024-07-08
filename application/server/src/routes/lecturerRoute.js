@@ -5,8 +5,9 @@ import { deleteLecturer, getLecturer, saveLecturer, updateLecturer } from "../co
 let router = express.Router()
 
 router.get('/', getLecturer)
+router.get('/:id', getLecturer)
 router.post('/', saveLecturer)
-router.delete('/', deleteLecturer)
+router.delete('/:id', deleteLecturer)
 router.put('/', updateLecturer)
 
 export {router as initLecturerRoute} 

@@ -1,9 +1,8 @@
-import { errorResponse } from "../helpers/httpResponse"
-import httpStatusCode from "../helpers/httpStatusCode"
-import { Lecturer } from "../models/lecturer"
-import { Room } from "../models/room"
-import lecturerService from "../services/lecturerService"
-import { hashPassword } from "../util/passwordUtil"
+import { errorResponse } from "../helpers/httpResponse.js"
+import httpStatusCode from "../helpers/httpStatusCode.js"
+import { Lecturer } from "../models/lecturer.js"
+import lecturerService from "../services/lecturerService.js"
+import { hashPassword } from "../util/passwordUtil.js"
 
 // GET
 const getLecturer = async (req, res, next) => {
@@ -39,7 +38,7 @@ const saveLecturer = async (req, res, next) => {
         )
         const result = lecturerService.saveUser(newLecturer)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);
@@ -50,13 +49,13 @@ const saveLecturer = async (req, res, next) => {
 
 // DELETE
 const deleteLecturer = async (req, res, next) => {
-    const { id } = req.body
+    const id = req.params.id
     if (!id) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const result = lecturerService.deleteUserById(id)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);
@@ -75,7 +74,7 @@ const updateLecturer = async (req, res, next) => {
         )
         const result = lecturerService.updateUser(newLecturer)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);

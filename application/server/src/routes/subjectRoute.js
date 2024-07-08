@@ -1,11 +1,12 @@
 import express from "express"
-import { deleteRoom, getSubject, saveSubject, updateRoom } from "../controllers/subjectController"
+import { deleteSubject, getSubject, saveSubject, updateSubject } from "../controllers/subjectController.js"
 
 let router = express.Router()
 
 router.get('/', getSubject)
+router.get('/:id', getSubject)
 router.post('/', saveSubject)
-router.delete('/', deleteRoom)
-router.put('/', updateRoom)
+router.delete('/:id', deleteSubject)
+router.put('/', updateSubject)
 
 export {router as initSubjectRoute} 

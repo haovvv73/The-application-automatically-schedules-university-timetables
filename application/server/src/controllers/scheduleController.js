@@ -27,13 +27,13 @@ const getSchedules = (req, res) => {
 }
 
 const deleteSchedule = (req, res) => {
-    const { id } = req.body
+    const id = req.params.id
     if (!id) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const result = scheduleService.deleteSchedule(id)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);
@@ -55,7 +55,7 @@ const updateSchedule = (req, res) => {
         )
         const result = scheduleService.updateSchedule(newSchedule)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);

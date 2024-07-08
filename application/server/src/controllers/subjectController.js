@@ -1,7 +1,7 @@
-import { errorResponse } from "../helpers/httpResponse"
-import httpStatusCode from "../helpers/httpStatusCode"
-import { Subject } from "../models/subject"
-import subjectService from "../services/subjectService"
+import { errorResponse } from "../helpers/httpResponse.js"
+import httpStatusCode from "../helpers/httpStatusCode.js"
+import { Subject } from "../models/subject.js"
+import subjectService from "../services/subjectService.js"
 
 // GET
 const getSubject = async (req, res, next) => {
@@ -28,13 +28,13 @@ const getSubject = async (req, res, next) => {
 // POST
 const saveSubject = async (req, res, next) => {
     const {subjectName,credit,description,subjectType,duration} = req.body
-    if (!subjectName || !credit || !description || !subjectType || !duration) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    if (!subjectName || !credit || !description || !duration) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const newSubject = new Subject('',subjectName,credit,description,subjectType,duration)
         const result = subjectService.saveSubject(newSubject)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);
@@ -45,13 +45,13 @@ const saveSubject = async (req, res, next) => {
 
 // DELETE
 const deleteSubject = async (req, res, next) => {
-    const { id } = req.body
+    const id = req.params.id
     if (!id) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const result = subjectService.deleteById(id)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);
@@ -62,13 +62,13 @@ const deleteSubject = async (req, res, next) => {
 // PUT
 const updateSubject = async (req, res, next) => {
     const {subjectID,subjectName,credit,description,subjectType,duration} = req.body
-    if (!subjectID || !subjectName || !credit || !description || !subjectType || !duration) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    if (!subjectID || !subjectName || !credit || !description || !duration) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const newSubject = new Subject(subjectID,subjectName,credit,description,subjectType,duration)
         const result = subjectService.updateSubject(newSubject)
 
-        if (result) successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+        if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
         // console.log(error);

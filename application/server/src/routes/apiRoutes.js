@@ -4,6 +4,7 @@ import { initScheduleRoute } from './scheduleRoute.js';
 import { initSubjectRoute } from './subjectRoute.js';
 import { initRoomRoute } from './roomRouter.js';
 import { initLecturerRoute } from './lecturerRoute.js';
+import { initCourseRoute } from './courseRoute.js';
 
 const router = express.Router()
 
@@ -23,6 +24,8 @@ const initApiRoutes = (app)=>{
     router.use('/room', initRoomRoute)
 
     router.use('/lecturer', initLecturerRoute)
+
+    router.use('/course', initCourseRoute)
 
     return app.use('/api/v1',router)
 }

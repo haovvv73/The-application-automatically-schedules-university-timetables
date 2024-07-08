@@ -1,6 +1,5 @@
-import { Room } from "../models/room"
-import { Schedule } from "../models/schedule"
-import Dbconnection from "./dbConnection"
+import { Schedule } from "../models/schedule.js"
+import Dbconnection from "./dbConnection.js"
 
 class ScheduleService {
     constructor() {
@@ -100,13 +99,14 @@ class ScheduleService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET title = ?, yearStart = ?, yearEnd = ?, semester = ? WHERE scheduleID = ?`
+            const query = `UPDATE ${this.table} SET title = ?, yearStart = ?, yearEnd = ?, semester = ? WHERE scheduleID = ? AND deleted = ?`
             const result = await this.connection.execute(query, [
                 schedule.title,
                 schedule.yearStart,
                 schedule.yearEnd,
                 schedule.semester,
                 schedule.scheduleID,
+                0
             ])
 
             await this.connection.query('COMMIT');

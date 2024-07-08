@@ -11,7 +11,7 @@ export abstract class BaseHttpService {
 
   protected get(url : string, id : string | null = null){
     let domainWithId = this.domain + url
-    if(id) domainWithId + '/' + id
+    if(id) domainWithId += id
     return this.http.get(domainWithId) 
   }
 
@@ -24,7 +24,7 @@ export abstract class BaseHttpService {
   }
 
   protected delete(url:string, id : any){
-    let domainWithId = this.domain + url + '/' + id
+    let domainWithId = this.domain + url + id
     return this.http.delete(domainWithId)
   }
 }

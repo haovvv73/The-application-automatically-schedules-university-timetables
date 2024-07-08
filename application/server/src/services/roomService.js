@@ -1,5 +1,5 @@
-import { Room } from "../models/room"
-import Dbconnection from "./dbConnection"
+import { Room } from "../models/room.js"
+import Dbconnection from "./dbConnection.js"
 
 
 class RoomService {
@@ -10,8 +10,8 @@ class RoomService {
 
     // READ
     async getRoom() {
-        const query = `SELECT * FROM ${this.table}`
-        const [row] = await this.connection.execute(query)
+        const query = `SELECT * FROM ${this.table} WHERE deleted = ?`
+        const [row] = await this.connection.execute(query,[0])
         const result = []
 
         if (row.length > 0) {
@@ -20,8 +20,9 @@ class RoomService {
                     new Room(
                         room.roomID,
                         room.roomName,
-                        room.roomType,
-                        room.location,
+                        room.capacity,
+                        room.roomType.readUInt8(0),
+                        room.location.readUInt8(0),
                         room.description,
                     )
                 )
@@ -32,8 +33,8 @@ class RoomService {
     }
 
     async getRoomById(id) {
-        const query = `SELECT * FROM ${this.table} WHERE roomID = ?`
-        const [row] = await this.connection.execute(query, [id])
+        const query = `SELECT * FROM ${this.table} WHERE roomID = ? AND deleted = ?`
+        const [row] = await this.connection.execute(query, [id,0])
         const result = []
 
         if (row.length > 0) {
@@ -42,8 +43,9 @@ class RoomService {
                 new Room(
                     room.roomID,
                     room.roomName,
-                    room.roomType,
-                    room.location,
+                    room.capacity,
+                    room.roomType.readUInt8(0),
+                    room.location.readUInt8(0),
                     room.description,
                 )
             )
@@ -57,8 +59,8 @@ class RoomService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `DELETE FROM ${this.table} WHERE roomID = ?`
-            const result = await this.connection.execute(query, [id])
+            const query = `UPDATE ${this.table} SET deleted = ? WHERE roomID = ?`
+            const result = await this.connection.execute(query, [1,id])
             
             await this.connection.query('COMMIT');
             return result[0].affectedRows;
@@ -73,11 +75,11 @@ class RoomService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const {roomName,roomType,location,description} = room
+            const {roomName,capacity,roomType,location,description} = room
 
-            const query = `INSERT INTO ${this.table}(roomName,roomType,location,description) 
-            VALUES(?,?,?,?)`
-            const result = await this.connection.execute(query, [roomName,roomType,location,description])
+            const query = `INSERT INTO ${this.table}(roomName,capacity,roomType,location,description) 
+            VALUES(?,?,?,?,?)`
+            const result = await this.connection.execute(query, [roomName,capacity,parseInt(roomType),parseInt(location),description])
 
 
             await this.connection.query('COMMIT');
@@ -93,13 +95,15 @@ class RoomService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET roomName = ?, roomType = ?, location = ?, description = ? WHERE roomID = ?`
+            const query = `UPDATE ${this.table} SET roomName = ?,capacity = ?, roomType = ?, location = ?, description = ? WHERE roomID = ? AND deleted = ?`
             const result = await this.connection.execute(query, [
                 room.roomName,
-                room.roomType,
-                room.location,
+                room.capacity,
+                parseInt(room.roomType),
+                parseInt(room.location),
                 room.description,
                 room.roomID,
+                0
             ])
 
             await this.connection.query('COMMIT');

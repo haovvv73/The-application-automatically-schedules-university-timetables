@@ -49,28 +49,29 @@
                             {{i+1}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.Id}}
+                            {{item.roomID}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.room}}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{item.roomDescription}}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{item.location}}
+                            {{item.roomName}}
                         </td>
                         <td class="px-6 py-4">
                             {{item.capacity}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.type}}
+                            {{item.roomType ? 'Theory' : 'Practice'}}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{item.location ? 'LT' : 'NVC'}}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{item.description}}
                         </td>
                         <td class="px-6 py-4 space-x-3">
-                            <button class="p-2 font-medium text-blue-600 dark:text-blue-500 hover:underline"><i
+                            <button (click)="getDetail(item.roomID)" class="p-2 font-medium text-blue-600 dark:text-blue-500 hover:underline"><i
                                     class="fa fa-pen"></i></button>
-                            <button class="p-2 font-medium text-red-600 dark:text-red-500 hover:underline"><i
-                                    class="fa fa-trash"></i></button>
+                            <button (click)="deleteRoom(item.roomID)" class="p-2 font-medium text-red-600 dark:text-red-500 hover:underline">
+                                <i class="fa fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -121,8 +122,8 @@
                     <label for="location" class="block mb-2 text-sm font-medium text-gray-900">Select Location</label>
                     <select id="location" formControlName="location"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                        <option value="LT" selected>Linh Trung</option>
-                        <option value="NVC">Nguyen Van Cu</option>
+                        <option value="1" selected>Linh Trung</option>
+                        <option value="0">Nguyen Van Cu</option>
                     </select>
                     <div class="h-[26px]">
                         <div *ngIf="location && location.errors && (location.touched || location.dirty)"
@@ -138,8 +139,8 @@
                     <label for="roomType" class="block mb-2 text-sm font-medium text-gray-900">Select Type</label>
                     <select id="roomType" formControlName="roomType"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                        <option value="theory" selected>Theory </option>
-                        <option value="practice">Practice</option>
+                        <option value="1" selected>Theory </option>
+                        <option value="0">Practice</option>
                     </select>
                     <div class="h-[26px]">
                         <div *ngIf="roomType && roomType.errors && (roomType.touched || roomType.dirty)"
@@ -170,11 +171,11 @@
 
             <!-- button -->
             <div class="flex justify-center">
-                <button type="submit"
+                <button type="submit" *ngIf="!this.currentID"
                     class="text-white bg-sky-600 hover:bg-sky-700 font-medium rounded-lg text-sm w-1/4 px-5 py-2.5 text-center">
                     Submit
                 </button>
-                <button type="submit" *ngIf="false"
+                <button type="submit" *ngIf="this.currentID"
                     class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm w-1/4 px-5 py-2.5 text-center">
                     Update
                 </button>

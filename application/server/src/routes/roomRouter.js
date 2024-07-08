@@ -4,8 +4,9 @@ import { deleteRoom, getRoom, saveRoom, updateRoom } from "../controllers/roomCo
 let router = express.Router()
 
 router.get('/', getRoom)
+router.get('/:id', getRoom)
 router.post('/', saveRoom)
-router.delete('/', deleteRoom)
+router.delete('/:id', deleteRoom)
 router.put('/', updateRoom)
 
 export {router as initRoomRoute} 

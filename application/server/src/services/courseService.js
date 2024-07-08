@@ -2,7 +2,7 @@ import { Course } from "../models/course.js"
 import { Lecturer } from "../models/lecturer.js"
 import Dbconnection from "./dbConnection.js"
 
-class LecturerService {
+class CourseService {
     constructor() {
         this.connection = Dbconnection.getInstance().connection
         this.table = 'course'
@@ -151,7 +151,7 @@ class LecturerService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET className = ?,cohort = ?,classSize = ?,timeStart = ?,timeEnd = ?,day = ?,location = ?,lecturerID = ?,subjectID = ?,roomID = ?,scheduleID = ? WHERE courseID = ?`
+            const query = `UPDATE ${this.table} SET className = ?,cohort = ?,classSize = ?,timeStart = ?,timeEnd = ?,day = ?,location = ?,lecturerID = ?,subjectID = ?,roomID = ?,scheduleID = ? WHERE courseID = ? AND deleted = ?`
             const result = await this.connection.execute(query, [
                 course.className,
                 course.cohort,
@@ -164,7 +164,8 @@ class LecturerService {
                 course.subjectID,
                 course.roomID,
                 course.scheduleID,
-                course.courseID
+                course.courseID,
+                0
             ])
 
             await this.connection.query('COMMIT');
@@ -177,5 +178,5 @@ class LecturerService {
 
 }
 
-const lecturerService = new LecturerService()
-export default lecturerService
+const courseService = new CourseService()
+export default courseService
