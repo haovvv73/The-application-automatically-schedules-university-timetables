@@ -81,7 +81,7 @@ class ScheduleService {
 
             const {title,yearStart,yearEnd,semester} = schedule
 
-            const query = `INSERT INTO ${this.subTable2}(title,yearStart,yearEnd,semester) 
+            const query = `INSERT INTO ${this.table}(title,yearStart,yearEnd,semester) 
             VALUES(?,?,?,?)`
             const result = await this.connection.execute(query, [title,yearStart,yearEnd,semester])
 
