@@ -7,6 +7,7 @@ export class Course {
         timeStart = '',
         timeEnd = '',
         day = '',
+        type = '',
         location = '',
         lecturerID = '',
         subjectID = '',
@@ -20,6 +21,7 @@ export class Course {
         this.timeStart = timeStart
         this.timeEnd = timeEnd
         this.day = day
+        this.type = type
         this.location = location
         this.lecturerID = lecturerID
         this.subjectID = subjectID

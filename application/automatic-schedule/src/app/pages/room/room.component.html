@@ -81,7 +81,7 @@
 </div>
 
 <!-- view model popup -->
-<app-popup #popup [popupTitle]="title">
+<app-popup #popup [popupTitle]="title" (callbackWhenClose)="clearForm($event)" >
     <div sectionPopup>
         <form class="w-full" [formGroup]="roomForm" (ngSubmit)="onSubmit()">
             <!-- room name -->

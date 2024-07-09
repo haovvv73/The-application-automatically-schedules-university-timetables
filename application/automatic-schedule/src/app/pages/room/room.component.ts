@@ -62,13 +62,15 @@ export class RoomComponent {
     }
   }
 
-  clearForm() {
-    this.roomForm.get('roomName')?.setValue('')
-    this.roomForm.get('capacity')?.setValue('')
-    this.roomForm.get('location')?.setValue('')
-    this.roomForm.get('roomType')?.setValue('')
-    this.roomForm.get('description')?.setValue('')
-    this.currentID = ''
+  clearForm(success : boolean) {
+    if(success){
+      this.roomForm.get('roomName')?.setValue('')
+      this.roomForm.get('capacity')?.setValue('')
+      this.roomForm.get('location')?.setValue('')
+      this.roomForm.get('roomType')?.setValue('')
+      this.roomForm.get('description')?.setValue('')
+      this.currentID = ''
+    }
   }
 
   onClickValidate() {
@@ -98,7 +100,7 @@ export class RoomComponent {
       next: (result: any) => {
         if(result.status){
           this.getAll()
-          this.clearForm()
+          this.clearForm(true)
           this.popupComponent.onClosePopup()
         }else{
           alert("Something wrong")
@@ -117,7 +119,7 @@ export class RoomComponent {
       next: (result: any) => {
         if(result.status){
           this.getAll()
-          this.clearForm()
+          this.clearForm(true)
           this.popupComponent.onClosePopup()
         }else{
           alert("Something wrong")

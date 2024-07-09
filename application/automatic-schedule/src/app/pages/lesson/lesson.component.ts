@@ -1,43 +1,46 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PopupComponent } from '../../component/popup/popup.component';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SubjectServiceService } from '../../services/http/subject-service/subject-service.service';
 
 @Component({
   selector: 'app-lesson',
   standalone: true,
-  imports: [NgFor,PopupComponent,NgIf, FormsModule, ReactiveFormsModule,],
+  imports: [NgFor, PopupComponent, NgIf, FormsModule, ReactiveFormsModule,],
   templateUrl: './lesson.component.html',
   styleUrl: './lesson.component.css',
-  host: {ngSkipHydration: 'true'},
+  host: { ngSkipHydration: 'true' },
 })
 export class LessonComponent {
   title = 'Subject Resource'
   subjectForm!: FormGroup
+  @ViewChild(PopupComponent)
+  private popupComponent!: PopupComponent;
+  currentID: string = ''
+
+  constructor(private subjectServiceService: SubjectServiceService) { }
 
   ngOnInit(): void {
     this.subjectForm = new FormGroup({
-      subject: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")]),
+      subjectName: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")]),
       duration: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")]),
       credit: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")]),
-      subjectType: new FormControl('', [Validators.required,]),
       description: new FormControl('', [Validators.required, Validators.maxLength(254)])
     })
+
+    this.getAll()
   }
-  get subject() {
-    return this.subjectForm.get('subject')
+  get subjectName() {
+    return this.subjectForm.get('subjectName')
   }
 
   get duration() {
     return this.subjectForm.get('duration')
   }
-  
+
   get credit() {
     return this.subjectForm.get('credit')
-  }
-
-  get subjectType() {
-    return this.subjectForm.get('subjectType')
   }
 
   get description() {
@@ -46,66 +49,149 @@ export class LessonComponent {
 
   getForm() {
     return {
-      subject: this.subjectForm.value.subject,
+      subjectName: this.subjectForm.value.subjectName,
       duration: this.subjectForm.value.duration,
       credit: this.subjectForm.value.credit,
-      subjectType: this.subjectForm.value.subjectType,
       description: this.subjectForm.value.description,
     }
   }
 
-  clearForm() {
-    this.subjectForm.get('subject')?.setValue('')
-    this.subjectForm.get('duration')?.setValue('')
-    this.subjectForm.get('credit')?.setValue('')
-    this.subjectForm.get('subjectType')?.setValue('')
-    this.subjectForm.get('description')?.setValue('')
-  }
-
-  onClickValidate() {
-    this.subjectForm.get('subject')?.markAsTouched()
-    this.subjectForm.get('duration')?.markAsTouched()
-    this.subjectForm.get('credit')?.markAsTouched()
-    this.subjectForm.get('subjectType')?.markAsTouched()
-    this.subjectForm.get('description')?.markAsTouched()
-  }
-
-  onSubmit() {
-    console.log('run');
-    this.onClickValidate()
-    if (!this.subjectForm.invalid) {
-      console.log("🚀 ~ subjectForm ~ onSubmit ~ this.getForm():", this.getForm())
+  clearForm(success : boolean) {
+    if(success){
+      this.subjectForm.get('subjectName')?.setValue('')
+      this.subjectForm.get('duration')?.setValue('')
+      this.subjectForm.get('credit')?.setValue('')
+      this.subjectForm.get('description')?.setValue('')
     }
   }
 
+  onClickValidate() {
+    this.subjectForm.get('subjectName')?.markAsTouched()
+    this.subjectForm.get('duration')?.markAsTouched()
+    this.subjectForm.get('credit')?.markAsTouched()
+    this.subjectForm.get('description')?.markAsTouched()
+  }
 
-  columnsKey : any[] = [
+  columnsKey: any[] = [
     'STT',
     'Id',
     'Subject',
     'Credits',
     'Description',
-    'Subject Type',
     'Duration',
     'Action'
   ]
 
-  data : any[] = [
-    {
-      Id:'lesson1',
-      Subject:'sinh',
-      credit: '2',
-      description: 'mon hoc lien quan toi moi truong va dong vat',
-      subjectType: 'ly thuyet',
-      duration: '4',
-    },
-    {
-      Id:'lesson12',
-      Subject:'toan',
-      credit: '2',
-      description: 'mon hoc lien quan toi moi truong va dong vat',
-      subjectType: 'ly thuyet',
-      duration: '4',
-    },
-  ]
+  data: any[] = []
+
+  // save
+  saveSubject(data: any) {
+    this.subjectServiceService.saveSubject(data).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.getAll()
+          this.clearForm(true)
+          this.popupComponent.onClosePopup()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // update
+  updateSubject(data: any) {
+    this.subjectServiceService.updateSubject(data).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.getAll()
+          this.clearForm(true)
+          this.popupComponent.onClosePopup()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // get
+  getAll() {
+    this.subjectServiceService.getSubject().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.data = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  getDetail(id: string) {
+    this.subjectServiceService.getSubjectDetail(id).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.currentID = result.data[0].subjectID
+          this.subjectForm.get('subjectName')?.setValue(result.data[0].subjectName)
+          this.subjectForm.get('duration')?.setValue(result.data[0].duration)
+          this.subjectForm.get('credit')?.setValue(result.data[0].credit)
+          this.subjectForm.get('description')?.setValue(result.data[0].description)
+          this.popupComponent.onOpenPopup()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // delete
+  deleteRoom(id: string) {
+    this.subjectServiceService.deleteSubject(id).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.getAll()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  onSubmit() {
+    this.onClickValidate()
+    if (!this.subjectForm.invalid) {
+      if (!this.currentID) {
+        this.saveSubject(this.getForm())
+
+      } else if (this.currentID) {
+        let formData = this.getForm()
+        const subjectUpdate = {
+          subjectID: this.currentID,
+          ...formData
+        }
+
+        this.updateSubject(subjectUpdate)
+      }
+    }
+  }
 }

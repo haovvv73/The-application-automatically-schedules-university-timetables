@@ -25,6 +25,7 @@ class CourseService {
                         course.timeStart,
                         course.timeEnd,
                         course.day,
+                        course.type,
                         course.location,
                         course.lecturerID,
                         course.subjectID,
@@ -54,6 +55,7 @@ class CourseService {
                     course.timeStart,
                     course.timeEnd,
                     course.day,
+                    course.type,
                     course.location,
                     course.lecturerID,
                     course.subjectID,
@@ -87,10 +89,10 @@ class CourseService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const {className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID} = course
+            const {className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID} = course
 
-            const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID) 
-            VALUES(?,?,?,?,?,?,?,?,?,?,?)`
+            const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID) 
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`
             const result = await this.connection.execute(query, [
                 className,
                 cohort,
@@ -98,6 +100,7 @@ class CourseService {
                 timeStart,
                 timeEnd,
                 day,
+                type,
                 location,
                 lecturerID,
                 subjectID,
@@ -121,8 +124,8 @@ class CourseService {
             for(let course of courses){
                 const {className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID} = course
 
-                const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID) 
-                VALUES(?,?,?,?,?,?,?,?,?,?,?)`
+                const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`
                 const result = await this.connection.execute(query, [
                     className,
                     cohort,
@@ -130,6 +133,7 @@ class CourseService {
                     timeStart,
                     timeEnd,
                     day,
+                    type,
                     location,
                     lecturerID,
                     subjectID,
@@ -151,7 +155,7 @@ class CourseService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET className = ?,cohort = ?,classSize = ?,timeStart = ?,timeEnd = ?,day = ?,location = ?,lecturerID = ?,subjectID = ?,roomID = ?,scheduleID = ? WHERE courseID = ? AND deleted = ?`
+            const query = `UPDATE ${this.table} SET className = ?,cohort = ?,classSize = ?,timeStart = ?,timeEnd = ?,day = ?, type = ?,location = ?,lecturerID = ?,subjectID = ?,roomID = ?,scheduleID = ? WHERE courseID = ? AND deleted = ?`
             const result = await this.connection.execute(query, [
                 course.className,
                 course.cohort,
@@ -159,6 +163,7 @@ class CourseService {
                 course.timeStart,
                 course.timeEnd,
                 course.day,
+                course.type,
                 course.location,
                 course.lecturerID,
                 course.subjectID,

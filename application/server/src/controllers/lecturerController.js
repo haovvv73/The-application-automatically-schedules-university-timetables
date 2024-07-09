@@ -1,4 +1,4 @@
-import { errorResponse } from "../helpers/httpResponse.js"
+import { errorResponse, successResponse } from "../helpers/httpResponse.js"
 import httpStatusCode from "../helpers/httpStatusCode.js"
 import { Lecturer } from "../models/lecturer.js"
 import lecturerService from "../services/lecturerService.js"
@@ -12,12 +12,11 @@ const getLecturer = async (req, res, next) => {
         let data = []
         // get by ID
         if (LecturerID) {
-            data = lecturerService.getUserById(LecturerID)
+            data = await lecturerService.getUserById(LecturerID)
             if (data.length < 1) return errorResponse(res, httpStatusCode.NotFound.message, httpStatusCode.NotFound.code)
         } else { //get all
-            data = lecturerService.getUsers()
+            data = await lecturerService.getUsers()
         }
-
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, data)
 
     } catch (error) {
@@ -36,7 +35,7 @@ const saveLecturer = async (req, res, next) => {
         const newLecturer = new Lecturer(
             '','',email, lecturerName, phone, hashPass, gender, faculty, birthday, address
         )
-        const result = lecturerService.saveUser(newLecturer)
+        const result = await lecturerService.saveUser(newLecturer)
 
         if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
@@ -53,31 +52,32 @@ const deleteLecturer = async (req, res, next) => {
     if (!id) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
-        const result = lecturerService.deleteUserById(id)
+        const result = await lecturerService.deleteUserById(id)
 
         if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }
 
 // PUT
 const updateLecturer = async (req, res, next) => {
-    const { lecturerID, accountID ,email, lecturerName, phone, gender, faculty, birthday, address } = req.body;
-    if (!lecturerID|| !accountID || !email || !lecturerName || !phone || !gender || !faculty || !birthday || !address) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    const { lecturerID ,email, lecturerName, phone, gender, faculty, birthday, address } = req.body;
+    console.log(req.body);
+    if (!lecturerID || !email || !lecturerName || !phone || !gender || !faculty || !birthday || !address) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const newLecturer = new Lecturer(
-            lecturerID, accountID,email, lecturerName, phone, '', gender, faculty, birthday, address
+            lecturerID,'', email, lecturerName, phone, '', gender, faculty, birthday, address
         )
-        const result = lecturerService.updateUser(newLecturer)
+        const result = await lecturerService.updateUser(newLecturer)
 
         if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
         return errorResponse(res, httpStatusCode.NotImplemented.message, httpStatusCode.NotImplemented.code)
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }

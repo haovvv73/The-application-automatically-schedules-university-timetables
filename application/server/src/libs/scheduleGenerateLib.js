@@ -875,66 +875,66 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
     // generate room
     // 2 room ly thuyet - 1 room thuc hanh 
     // danh chan le - phong 1 -> phong 2 -> phong 1
-    for (let days in schedule) {
-        let index = 0
-        const roomThNVC = 'phong thuc hanh NVC'
-        const roomThLT = 'phong thuc hanh LT'
-        const arrRoomLT = shuffleArray(['phong 1', 'phong 2'])
-        const arrRoomNVC = shuffleArray(['phong a', 'phong b'])
+    // for (let days in schedule) {
+    //     let index = 0
+    //     const roomThNVC = 'phong thuc hanh NVC'
+    //     const roomThLT = 'phong thuc hanh LT'
+    //     const arrRoomLT = shuffleArray(['phong 1', 'phong 2'])
+    //     const arrRoomNVC = shuffleArray(['phong a', 'phong b'])
 
-        // filter thuc hanh
-        const courseTH = schedule[days].filter(item => item.type === 'TH')
-        const courseThucHanhLT = courseTH.filter(item => item.location === 1)
-        const courseThucHanhNVC = courseTH.filter(item => item.location === 0)
+    //     // filter thuc hanh
+    //     const courseTH = schedule[days].filter(item => item.type === 'TH')
+    //     const courseThucHanhLT = courseTH.filter(item => item.location === 1)
+    //     const courseThucHanhNVC = courseTH.filter(item => item.location === 0)
 
-        // filter ly thuyet
-        const courseLT = schedule[days].filter(item => item.type === 'LT')
-        const courseLyThuyetLT = courseLT.filter(item => item.location === 1)
-        const courseLyThuyetNVC = courseLT.filter(item => item.location === 0)
+    //     // filter ly thuyet
+    //     const courseLT = schedule[days].filter(item => item.type === 'LT')
+    //     const courseLyThuyetLT = courseLT.filter(item => item.location === 1)
+    //     const courseLyThuyetNVC = courseLT.filter(item => item.location === 0)
 
-        // linh trung get room
-        // LT
-        for (let cou of courseLyThuyetLT) {
-            if (index % 2 == 0) {
-                cou.room = arrRoomLT[0]
-            } else {
-                cou.room = arrRoomLT[1]
-            }
-            index++
-        }
-        // TH
-        for (let cou of courseThucHanhLT) {
-            cou.room = roomThLT
-        }
+    //     // linh trung get room
+    //     // LT
+    //     for (let cou of courseLyThuyetLT) {
+    //         if (index % 2 == 0) {
+    //             cou.room = arrRoomLT[0]
+    //         } else {
+    //             cou.room = arrRoomLT[1]
+    //         }
+    //         index++
+    //     }
+    //     // TH
+    //     for (let cou of courseThucHanhLT) {
+    //         cou.room = roomThLT
+    //     }
 
-        // nguyen van cu get room
-        // LT
-        for (let cou of courseLyThuyetNVC) {
-            if (index % 2 == 0) {
-                cou.room = arrRoomNVC[0]
-            } else {
-                cou.room = arrRoomNVC[1]
-            }
-            index++
-        }
-        // TH
-        for (let cou of courseThucHanhNVC) {
-            cou.room = roomThNVC
-        }
-    }
+    //     // nguyen van cu get room
+    //     // LT
+    //     for (let cou of courseLyThuyetNVC) {
+    //         if (index % 2 == 0) {
+    //             cou.room = arrRoomNVC[0]
+    //         } else {
+    //             cou.room = arrRoomNVC[1]
+    //         }
+    //         index++
+    //     }
+    //     // TH
+    //     for (let cou of courseThucHanhNVC) {
+    //         cou.room = roomThNVC
+    //     }
+    // }
 
-    for (let days in schedule) {
-        for (let cou of schedule[days]) {
-            console.log("daysss2 ======", cou.day);
-            console.log('name:', cou.name);
-            console.log('duration:', cou.duration);
-            console.log('location', cou.location);
-            console.log('start = ', format(cou.timeStart, 'HH:mm'));
-            console.log('end = ', format(cou.timeEnd, 'HH:mm'));
-            console.log('room = ', cou.room);
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        }
-    }
+    // for (let days in schedule) {
+    //     for (let cou of schedule[days]) {
+    //         console.log("daysss2 ======", cou.day);
+    //         console.log('name:', cou.name);
+    //         console.log('duration:', cou.duration);
+    //         console.log('location', cou.location);
+    //         console.log('start = ', format(cou.timeStart, 'HH:mm'));
+    //         console.log('end = ', format(cou.timeEnd, 'HH:mm'));
+    //         console.log('room = ', cou.room);
+    //         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    //     }
+    // }
 
     return schedule
 }

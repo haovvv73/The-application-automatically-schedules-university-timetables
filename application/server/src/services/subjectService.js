@@ -22,7 +22,6 @@ class SubjectService {
                         subject.subjectName,
                         subject.credit,
                         subject.description,
-                        subject.subjectType.readUInt8(0),
                         subject.duration,
                     )
                 )
@@ -33,7 +32,7 @@ class SubjectService {
     }
 
     async getSubjectById(id) {
-        const query = `SELECT * FROM ${this.table} WHERE roomID = ? AND deleted = ?`
+        const query = `SELECT * FROM ${this.table} WHERE subjectID = ? AND deleted = ?`
         const [row] = await this.connection.execute(query, [id,0])
         const result = []
 
@@ -45,7 +44,6 @@ class SubjectService {
                     subject.subjectName,
                     subject.credit,
                     subject.description,
-                    subject.subjectType.readUInt8(0),
                     subject.duration,
                 )
             )
@@ -75,11 +73,11 @@ class SubjectService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const {subjectName,credit,description,subjectType,duration} = subject
+            const {subjectName,credit,description,duration} = subject
 
-            const query = `INSERT INTO ${this.subTable2}(subjectName,credit,description,subjectType,duration) 
-            VALUES(?,?,?,?,?)`
-            const result = await this.connection.execute(query, [subjectName,credit,description,subjectType,duration])
+            const query = `INSERT INTO ${this.table}(subjectName,credit,description,duration) 
+            VALUES(?,?,?,?)`
+            const result = await this.connection.execute(query, [subjectName,credit,description,duration])
 
 
             await this.connection.query('COMMIT');
@@ -95,12 +93,11 @@ class SubjectService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const query = `UPDATE ${this.table} SET subjectName = ?, credit = ?, description = ?, subjectType = ?, duration = ? WHERE subjectID = ? AND deleted = ?`
+            const query = `UPDATE ${this.table} SET subjectName = ?, credit = ?, description = ?, duration = ? WHERE subjectID = ? AND deleted = ?`
             const result = await this.connection.execute(query, [
                 subject.subjectName,
                 subject.credit,
                 subject.description,
-                subject.subjectType,
                 subject.duration,
                 subject.subjectID,
                 0

@@ -1,18 +1,25 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PopupComponent } from '../../component/popup/popup.component';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
 
 @Component({
   selector: 'app-teacher',
   standalone: true,
-  imports: [NgFor,PopupComponent,NgIf, FormsModule, ReactiveFormsModule,],
+  imports: [NgFor, PopupComponent, NgIf, FormsModule, ReactiveFormsModule,],
   templateUrl: './teacher.component.html',
   styleUrl: './teacher.component.css',
 })
 export class TeacherComponent {
   title = 'Lecturer Resource'
   lecturerForm!: FormGroup
+  @ViewChild(PopupComponent)
+  private popupComponent!: PopupComponent;
+  currentID: string = ''
+
+  constructor(private lecturerServiceService: LecturerServiceService) { }
+
   ngOnInit(): void {
     this.lecturerForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -21,9 +28,11 @@ export class TeacherComponent {
       faculty: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")]),
       phone: new FormControl('', [Validators.required, Validators.pattern("^[0-9]{10}$")]),
       birthday: new FormControl('', [Validators.required]),
-      address: new FormControl('', [Validators.required,Validators.pattern("^[a-zA-Z0-9 ]+$")],),
-      gender: new FormControl('', [Validators.required,Validators.pattern("^[a-zA-Z0-9]*$")],),
+      address: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")],),
+      gender: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9]*$")],),
     })
+
+    this.getAll()
   }
 
   get email() {
@@ -46,15 +55,15 @@ export class TeacherComponent {
     return this.lecturerForm.get('phone')
   }
 
-  get birthday() {    
+  get birthday() {
     return this.lecturerForm.get('birthday')
   }
 
-  get address() {    
+  get address() {
     return this.lecturerForm.get('address')
   }
 
-  get gender() {    
+  get gender() {
     return this.lecturerForm.get('gender')
   }
 
@@ -71,15 +80,17 @@ export class TeacherComponent {
     }
   }
 
-  clearForm() {
-    this.lecturerForm.get('email')?.setValue('')
-    this.lecturerForm.get('password')?.setValue('')
-    this.lecturerForm.get('lecturerName')?.setValue('')
-    this.lecturerForm.get('faculty')?.setValue('')
-    this.lecturerForm.get('phone')?.setValue('')
-    this.lecturerForm.get('birthday')?.setValue('')
-    this.lecturerForm.get('address')?.setValue('')
-    this.lecturerForm.get('gender')?.setValue('')
+  clearForm(success: boolean) {
+    if (success) {
+      this.lecturerForm.get('email')?.setValue('')
+      this.lecturerForm.get('password')?.setValue('')
+      this.lecturerForm.get('lecturerName')?.setValue('')
+      this.lecturerForm.get('faculty')?.setValue('')
+      this.lecturerForm.get('phone')?.setValue('')
+      this.lecturerForm.get('birthday')?.setValue('')
+      this.lecturerForm.get('address')?.setValue('')
+      this.lecturerForm.get('gender')?.setValue('')
+    }
   }
 
   onClickValidate() {
@@ -93,15 +104,7 @@ export class TeacherComponent {
     this.lecturerForm.get('gender')?.markAsTouched()
   }
 
-  onSubmit() {
-    console.log('run');
-    this.onClickValidate()
-    if (!this.lecturerForm.invalid) {
-      console.log("🚀 ~ RoomComponent ~ onSubmit ~ this.getForm():", this.getForm())
-    }
-  }
-
-  columnsKey : any[] = [
+  columnsKey: any[] = [
     'STT',
     'Id',
     'Lecturer',
@@ -114,26 +117,119 @@ export class TeacherComponent {
     'Action'
   ]
 
-  data : any[] = [
-    {
-      Id:'Lecturer001',
-      Lecturer:'nguyen van a',
-      gender: 'male',
-      faculty: 'Math',
-      birthday: '20/01/2002', 
-      address: 'lorem street',
-      email: 'lorem@gmail.com',
-      phone: '091234567',
-    },
-    {
-      Id:'Lecturer002',
-      Lecturer:'nguyen van b',
-      gender: 'female',
-      faculty: 'Algorithm',
-      birthday: '20/01/2001', 
-      address: 'lorem street',
-      email: 'lorem2@gmail.com',
-      phone: '091230567',
-    },
-  ]
+  data: any[] = []
+
+  // save
+  saveLecturer(data: any) {
+    this.lecturerServiceService.saveLecturer(data).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.getAll()
+          this.clearForm(true)
+          this.popupComponent.onClosePopup()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // update
+  updateLecturer(data: any) {
+    this.lecturerServiceService.updateLecturer(data).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.getAll()
+          this.clearForm(true)
+          this.popupComponent.onClosePopup()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // get
+  getAll() {
+    this.lecturerServiceService.getLecturer().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.data = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  getDetail(id: string) {
+    this.lecturerServiceService.getLecturerDetail(id).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.currentID = result.data[0].lecturerID
+          this.lecturerForm.get('email')?.setValue(result.data[0].email)
+          this.lecturerForm.get('password')?.setValue('000000000000')
+          this.lecturerForm.get('lecturerName')?.setValue(result.data[0].lecturerName)
+          this.lecturerForm.get('faculty')?.setValue(result.data[0].faculty)
+          this.lecturerForm.get('phone')?.setValue(result.data[0].phone)
+          this.lecturerForm.get('birthday')?.setValue(result.data[0].birthday)
+          this.lecturerForm.get('address')?.setValue(result.data[0].address)
+          this.lecturerForm.get('gender')?.setValue(result.data[0].gender)
+          this.popupComponent.onOpenPopup()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // delete
+  deleteRoom(id: string) {
+    this.lecturerServiceService.deleteLecturer(id).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.getAll()
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  onSubmit() {
+    this.onClickValidate()
+    if (!this.lecturerForm.invalid) {
+      if (!this.currentID) {
+        this.saveLecturer(this.getForm())
+      } else if (this.currentID) {
+        let formData = this.getForm()
+        const lecturerUpdate = {
+          lecturerID: this.currentID,
+          ...formData
+        }
+
+        this.updateLecturer(lecturerUpdate)
+      }
+    }
+  }
 }

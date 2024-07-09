@@ -99,8 +99,13 @@ class LecturerService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            // get detail lecturer
-            const row = getUsers(id)
+
+            const [row] = await this.connection.execute(`
+                SELECT * FROM ${this.table}
+                LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID 
+                WHERE lecturerID = ?`, 
+                [id]
+            )
 
             if (row.length > 0) {
                 const lecturer = row[0]
@@ -179,8 +184,9 @@ class LecturerService {
                 lecturer.lecturerID,
             ])
 
-            const subQuery = `UPDATE ${this.subTable} SET email = ?`
-            await this.connection.execute(subQuery, [lecturer.email])
+            // update Email
+            const [row] = await this.connection.execute(`SELECT accountID FROM ${this.table} WHERE lecturerID = ?`, [lecturer.lecturerID])
+            await this.connection.execute(`UPDATE ${this.subTable} SET email = ? WHERE accountID = ?`, [lecturer.email,row[0].accountID])
 
             await this.connection.query('COMMIT');
             return result[0].affectedRows

@@ -49,10 +49,10 @@
                             {{i+1}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.Id}}
+                            {{item.subjectID}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.Subject}}
+                            {{item.subjectName}}
                         </td>
                         <td class="px-6 py-4">
                             {{item.credit}}
@@ -61,18 +61,14 @@
                             {{item.description}}
                         </td>
                         <td class="px-6 py-4">
-                            {{item.subjectType}}
-                        </td>
-                        <td class="px-6 py-4">
                             {{item.duration}}
                         </td>
                         <td class="px-6 py-4 space-x-3">
-                            <button class="p-2 font-medium text-blue-600">
-                                <i class="fa fa-pen"></i>
-                            </button>
-                            <button class="p-2 font-medium text-red-600">
-                                <i class="fa fa-trash"></i>
-                            </button>
+                            <button (click)="getDetail(item.subjectID)" class="p-2 font-medium text-blue-600 dark:text-blue-500 hover:underline"><i
+                                class="fa fa-pen"></i></button>
+                        <button (click)="deleteRoom(item.subjectID)" class="p-2 font-medium text-red-600 dark:text-red-500 hover:underline">
+                            <i class="fa fa-trash"></i>
+                        </button>
                         </td>
                     </tr>
                 </tbody>
@@ -82,21 +78,21 @@
 </div>
 
 <!-- view model popup -->
-<app-popup #popup [popupTitle]="title">
+<app-popup #popup [popupTitle]="title" (callbackWhenClose)="clearForm($event)" >
     <div sectionPopup>
         <form class="w-full" [formGroup]="subjectForm" (ngSubmit)="onSubmit()">
             <!-- subject -->
             <div>
                 <label for="subjectName" class="block mb-2 text-sm font-medium text-gray-900 ">
                     Subject Name</label>
-                <input type="text" id="lessonName" formControlName="subject"
+                <input type="text" id="lessonName" formControlName="subjectName"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                     placeholder="Name here" />
                 <div class="h-[26px]">
-                    <div *ngIf="subject && subject.errors && (subject.touched || subject.dirty)"
+                    <div *ngIf="subjectName && subjectName.errors && (subjectName.touched || subjectName.dirty)"
                         class="ml-1 text-[13px] font-semibold">
-                        <span *ngIf="subject.errors?.['required']" class="text-rose-500">*subject is required</span>
-                        <span *ngIf="subject.errors?.['pattern']" class="text-rose-500"> *No special Character</span>
+                        <span *ngIf="subjectName.errors?.['required']" class="text-rose-500">*subject is required</span>
+                        <span *ngIf="subjectName.errors?.['pattern']" class="text-rose-500"> *No special Character</span>
                     </div>
                 </div>
             </div>
@@ -137,22 +133,6 @@
                 </div>
             </div>
 
-            <!-- subject type -->
-            <div class="flex-1">
-                <label for="subjectType" class="block mb-2 text-sm font-medium text-gray-900">Select Type</label>
-                <select id="subjectType" formControlName="subjectType"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                    <option value="theory" selected>Theory </option>
-                    <option value="practice">Practice</option>
-                </select>
-                <div class="h-[26px]">
-                    <div *ngIf="subjectType && subjectType.errors && (subjectType.touched || subjectType.dirty)"
-                        class="ml-1 text-[13px] font-semibold">
-                        <span *ngIf="subjectType.errors?.['required']" class="text-rose-500">*Subject-Type is required</span>
-                    </div>
-                </div>
-            </div>
-
             <!-- description -->
             <div>
                 <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
@@ -163,7 +143,8 @@
                 <div class="h-[26px]">
                     <div *ngIf="description && description.errors && (description.touched || description.dirty)"
                         class="ml-1 text-[13px] font-semibold">
-                        <span *ngIf="description.errors?.['required']" class="text-rose-500">*description is required</span>
+                        <span *ngIf="description.errors?.['required']" class="text-rose-500">*description is
+                            required</span>
                         <span *ngIf="description.errors?.['maxlength']" class="text-rose-500">*Max 254 Character </span>
                     </div>
                 </div>
@@ -171,11 +152,11 @@
 
             <!-- button -->
             <div class="flex justify-center">
-                <button type="submit"
+                <button type="submit" *ngIf="!this.currentID"
                     class="text-white bg-sky-600 hover:bg-sky-700 font-medium rounded-lg text-sm w-1/4 px-5 py-2.5 text-center">
                     Submit
                 </button>
-                <button type="submit" *ngIf="false"
+                <button type="submit" *ngIf="this.currentID"
                     class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm w-1/4 px-5 py-2.5 text-center">
                     Update
                 </button>

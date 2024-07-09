@@ -2,6 +2,8 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PopupComponent } from '../../component/popup/popup.component';
+import { SubjectServiceService } from '../../services/http/subject-service/subject-service.service';
+import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
 
 @Component({
   selector: 'app-schedule-generate',
@@ -17,6 +19,8 @@ export class ScheduleGenerateComponent implements OnInit {
   @ViewChild(PopupComponent)
   private popupComponent!: PopupComponent;
 
+  constructor(private subjectServiceService: SubjectServiceService, private lecturerServiceService: LecturerServiceService) { }
+
   // key data show
   columnsKeyRoom: any[] = [
     ' ',
@@ -31,10 +35,9 @@ export class ScheduleGenerateComponent implements OnInit {
 
   columnsKeySubject: any[] = [
     ' ',
-    'Subject',
+    'subject Name',
     'Credits',
     'Description',
-    'Subject-Type',
     'Duration'
   ]
 
@@ -51,28 +54,8 @@ export class ScheduleGenerateComponent implements OnInit {
   ]
 
   // data show
-  dataTeacher: any[] = [
-    {
-      Id: 'teacher001',
-      teacher: 'nguyen van a',
-      gender: 'male',
-      faculty: 'Math',
-      birthday: '20/01/2002',
-      address: 'lorem street',
-      email: 'lorem@gmail.com',
-      phone: '091234567',
-    },
-    {
-      Id: 'teacher002',
-      teacher: 'nguyen van b',
-      gender: 'female',
-      faculty: 'Algorithm',
-      birthday: '20/01/2001',
-      address: 'lorem street',
-      email: 'lorem2@gmail.com',
-      phone: '091230567',
-    },
-  ]
+  dataTeacher: any[] = []
+  dataSubject: any[] = []
 
   dataRoom: any[] = [
     {
@@ -81,7 +64,6 @@ export class ScheduleGenerateComponent implements OnInit {
       roomDescription: 'Phong hoi truong',
       location: 'NVC',
       capacity: '150',
-      type: 'ly thuyet',
     },
     {
       Id: 'room002',
@@ -89,55 +71,18 @@ export class ScheduleGenerateComponent implements OnInit {
       roomDescription: 'Phong may tinh',
       location: 'Linh Trung',
       capacity: '100',
-      type: 'thuc hanh',
     },
 
-  ]
-
-  dataSubject: any[] = [
-    {
-      Id: 'lesson1',
-      subject: 'sinh',
-      description: 'mon hoc lien quan toi moi truong va dong vat',
-      duration: '4',
-      credits: '3',
-      subjectType: 'ly thuyet',
-    },
-    {
-      Id: 'lesson12',
-      subject: 'toan',
-      description: 'hieu kien thuc toan dai so',
-      duration: '3',
-      credits: '2',
-      subjectType: 'ly thuyet',
-    }
   ]
 
   // data generate
   indexCourse : number | undefined
-  dataCourse: any[] = [
-    {
-      className: 'Toan Roi Rac',
-      coHort: 'K20',
-      classSize: '125',
-      location: 'Linh Trung',
-      subjectID: 'lesson1',
-      teacherID: ['teacher001', 'teacher002']
-    },
-    {
-      className: 'Toan Roi Rac',
-      coHort: 'K20',
-      classSize: '125',
-      location: 'Linh Trung',
-      subjectID: 'lesson1',
-      teacherID: []
-    }
-  ]
+  dataCourse: any[] = []
   dataRoomSelect: any[] = []
 
   getTeacher(Id: string) {
-    let teacher = this.dataTeacher.find(teacher => teacher.Id == Id)
-    if (teacher) return teacher.teacher
+    let teacher = this.dataTeacher.find(teacher => teacher.lecturerID == Id)
+    if (teacher) return teacher.lecturerName
     return "_null_"
   }
 
@@ -155,6 +100,7 @@ export class ScheduleGenerateComponent implements OnInit {
       classSize: new FormControl('', [Validators.required]),
       location: new FormControl('', [Validators.required]),
       subjectID: new FormControl('', [Validators.required]),
+      type: new FormControl('', [Validators.required]),
     })
   }
 
@@ -219,6 +165,10 @@ export class ScheduleGenerateComponent implements OnInit {
     return this.courseForm.get('subjectID')
   }
 
+  get type() {
+    return this.courseForm.get('type')
+  }
+
   getCourseForm() {
     return {
       className: this.courseForm.value.className,
@@ -226,17 +176,19 @@ export class ScheduleGenerateComponent implements OnInit {
       classSize: this.courseForm.value.classSize,
       location: this.courseForm.value.location,
       subjectID: this.courseForm.value.subjectID,
+      type: this.courseForm.value.type,
     }
   }
 
   clearCourseForm( success : boolean) 
   { 
     if(success){
-      this.courseForm.get('className')?.setValue('')    
+      this.courseForm.get('className')?.setValue('')
       this.courseForm.get('coHort')?.setValue('')
       this.courseForm.get('classSize')?.setValue('')
       this.courseForm.get('subjectID')?.setValue('')
       this.courseForm.get('location')?.setValue('')
+      this.courseForm.get('type')?.setValue('')
     }
   }
 
@@ -246,6 +198,7 @@ export class ScheduleGenerateComponent implements OnInit {
     this.courseForm.get('classSize')?.markAsTouched()
     this.courseForm.get('subjectID')?.markAsTouched()
     this.courseForm.get('location')?.markAsTouched()
+    this.courseForm.get('type')?.markAsTouched()
   }
 
   // room function  
@@ -274,30 +227,35 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
-  // subject function
+  // subjectName function
   onSelectSubject(id: string) {
-    let subject = this.dataSubject.find(item => item.Id == id)
+    let subject = this.dataSubject.find(item => item.subjectID == id)
     if(subject){
-      this.courseForm.get('subjectID')?.setValue(subject.Id)
-      this.courseForm.get('className')?.setValue(subject.subject)
+      this.courseForm.get('subjectID')?.setValue(subject.subjectID)
+      this.courseForm.get('className')?.setValue(subject.subjectName)
     }
   }
 
   // teacher function
   onSelectTeacher(id: string) {
-    if(this.indexCourse){
-      const teacherList =this.dataCourse[this.indexCourse].teacherID
-      const result =teacherList.find( (Id: string) => Id === id)
+    console.log(id);
+    console.log(this.indexCourse);
+    
+    if(this.indexCourse || this.indexCourse == 0){
+      const teacherList =this.dataCourse[this.indexCourse].lecturerID
+      const result = teacherList.find( (Id: string) => Id === id)
       if(!result){
-        this.dataCourse[this.indexCourse].teacherID.push(id)
+        this.dataCourse[this.indexCourse].lecturerID.push(id)
+      }else{
+        this.dataCourse[this.indexCourse].lecturerID = this.dataCourse[this.indexCourse].lecturerID.filter( (Id: string) => Id != id)
       }
     }
   }
 
   onTeacherChecked(id: string) {
     if(!this.indexCourse) return false
-    const teacherList =this.dataCourse[this.indexCourse].teacherID
-    const result =teacherList.find( (Id: string) => Id === id)
+    const teacherList = this.dataCourse[this.indexCourse].lecturerID
+    const result = teacherList.find( (Id: string) => Id == id)
     if (result) {
       return true
     } else {
@@ -307,7 +265,7 @@ export class ScheduleGenerateComponent implements OnInit {
 
   onUnSelectTeacher(){
     if(this.indexCourse){
-      this.dataCourse[this.indexCourse].teacherID = []
+      this.dataCourse[this.indexCourse].lecturerID = []
     }
   }
 
@@ -320,8 +278,10 @@ export class ScheduleGenerateComponent implements OnInit {
     this.onClickValidateCourseForm()
     if(!this.courseForm.invalid){
       const newCourse = this.getCourseForm();
+      console.log(newCourse);
+      
       this.dataCourse.push({
-        teacherID : [],
+        lecturerID : [],
         ...newCourse
       })
       // close popup
@@ -330,8 +290,54 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
-  onGenerate() {
+  getSubject(){
+    this.subjectServiceService.getSubject().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.dataSubject = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
 
+  getLecturer(){
+    this.lecturerServiceService.getLecturer().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.dataTeacher = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  deleteCourse(ind:any){
+    this.dataCourse = this.dataCourse.filter((item,index)=> index != ind)
+  }
+
+  viewCourse(ind:number){
+    const courseFound = this.dataCourse.find((item,index)=> index == ind)
+
+    this.courseForm.get('className')?.setValue(courseFound.className)
+    this.courseForm.get('coHort')?.setValue(courseFound.coHort)
+    this.courseForm.get('classSize')?.setValue(courseFound.classSize)
+    this.courseForm.get('subjectID')?.setValue(courseFound.subjectID)
+    this.courseForm.get('location')?.setValue(courseFound.location)
+    this.courseForm.get('type')?.setValue(courseFound.type)
+  }
+
+  onGenerate() {
 
   }
 }
