@@ -216,7 +216,7 @@ const getTime = (day, coursePara) => {
     // preference
     // @time = minute
     const course = {
-        name: coursePara.name,
+        className: coursePara.className,
         duration: coursePara.duration,
         location: coursePara.location,
         type: coursePara.type,

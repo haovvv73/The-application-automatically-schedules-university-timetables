@@ -66,19 +66,27 @@ const updateSchedule = async (req, res) => {
 const createSchedule = async (req, res) => {
 
     try {
+        // get teacher => add course
+        // get teacher same course
+        // prepare course => generate
+
+        //  wait answer from client
+
+        // fit answer => done
+        
         const rawCourses = [
-            { name: 'Pháp luật đại cương', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', teacher: 'lorem' },
+            { className: 'Pháp luật đại cương', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', teacher: 'lorem' },
         ]
 
         const rawTeacherSameCourse = [
             {
-                name: 'Pháp luật đại cương', duration: 4, type: 'LT', room: '',
+                className: 'Pháp luật đại cương', duration: 4, type: 'LT', room: '',
                 timeStart: set(new Date(), { hours: 7, minutes: 30, seconds: 0, milliseconds: 0 }),
                 timeEnd: set(new Date(), { hours: 8, minutes: 20, seconds: 0, milliseconds: 0 }),
                 day: 'mon', teacher: 'lorem', location: 1,
             },
             {
-                name: 'Pháp luật đại cương', duration: 4, location: 0, type: 'LT',
+                className: 'Pháp luật đại cương', duration: 4, location: 0, type: 'LT',
                 timeStart: set(new Date(), { hours: 13, minutes: 30, seconds: 0, milliseconds: 0 }),
                 timeEnd: set(new Date(), { hours: 14, minutes: 20, seconds: 0, milliseconds: 0 }),
                 day: 'mon', room: '', teacher: 'lorem'
