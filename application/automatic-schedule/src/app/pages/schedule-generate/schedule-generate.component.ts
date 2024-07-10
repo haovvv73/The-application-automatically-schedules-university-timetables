@@ -76,7 +76,7 @@ export class ScheduleGenerateComponent implements OnInit {
   ]
 
   // data generate
-  indexCourse : number | undefined
+  indexCourse: number | undefined
   dataCourse: any[] = []
   dataRoomSelect: any[] = []
 
@@ -180,9 +180,8 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
-  clearCourseForm( success : boolean) 
-  { 
-    if(success){
+  clearCourseForm(success: boolean) {
+    if (success) {
       this.courseForm.get('className')?.setValue('')
       this.courseForm.get('coHort')?.setValue('')
       this.courseForm.get('classSize')?.setValue('')
@@ -230,7 +229,7 @@ export class ScheduleGenerateComponent implements OnInit {
   // subjectName function
   onSelectSubject(id: string) {
     let subject = this.dataSubject.find(item => item.subjectID == id)
-    if(subject){
+    if (subject) {
       this.courseForm.get('subjectID')?.setValue(subject.subjectID)
       this.courseForm.get('className')?.setValue(subject.subjectName)
     }
@@ -240,22 +239,22 @@ export class ScheduleGenerateComponent implements OnInit {
   onSelectTeacher(id: string) {
     console.log(id);
     console.log(this.indexCourse);
-    
-    if(this.indexCourse || this.indexCourse == 0){
-      const teacherList =this.dataCourse[this.indexCourse].lecturerID
-      const result = teacherList.find( (Id: string) => Id === id)
-      if(!result){
+
+    if (this.indexCourse || this.indexCourse == 0) {
+      const teacherList = this.dataCourse[this.indexCourse].lecturerID
+      const result = teacherList.find((Id: string) => Id === id)
+      if (!result) {
         this.dataCourse[this.indexCourse].lecturerID.push(id)
-      }else{
-        this.dataCourse[this.indexCourse].lecturerID = this.dataCourse[this.indexCourse].lecturerID.filter( (Id: string) => Id != id)
+      } else {
+        this.dataCourse[this.indexCourse].lecturerID = this.dataCourse[this.indexCourse].lecturerID.filter((Id: string) => Id != id)
       }
     }
   }
 
   onTeacherChecked(id: string) {
-    if(!this.indexCourse) return false
+    if (!this.indexCourse) return false
     const teacherList = this.dataCourse[this.indexCourse].lecturerID
-    const result = teacherList.find( (Id: string) => Id == id)
+    const result = teacherList.find((Id: string) => Id == id)
     if (result) {
       return true
     } else {
@@ -263,25 +262,25 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
-  onUnSelectTeacher(){
-    if(this.indexCourse){
+  onUnSelectTeacher() {
+    if (this.indexCourse) {
       this.dataCourse[this.indexCourse].lecturerID = []
     }
   }
 
   // course function
-  onSaveIndex(index : number){
+  onSaveIndex(index: number) {
     this.indexCourse = index
   }
 
   onSaveCourse() {
     this.onClickValidateCourseForm()
-    if(!this.courseForm.invalid){
+    if (!this.courseForm.invalid) {
       const newCourse = this.getCourseForm();
       console.log(newCourse);
-      
+
       this.dataCourse.push({
-        lecturerID : [],
+        lecturerID: [],
         ...newCourse
       })
       // close popup
@@ -290,7 +289,7 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
-  getSubject(){
+  getSubject() {
     this.subjectServiceService.getSubject().subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -306,7 +305,7 @@ export class ScheduleGenerateComponent implements OnInit {
     })
   }
 
-  getLecturer(){
+  getLecturer() {
     this.lecturerServiceService.getLecturer().subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -322,12 +321,12 @@ export class ScheduleGenerateComponent implements OnInit {
     })
   }
 
-  deleteCourse(ind:any){
-    this.dataCourse = this.dataCourse.filter((item,index)=> index != ind)
+  deleteCourse(ind: any) {
+    this.dataCourse = this.dataCourse.filter((item, index) => index != ind)
   }
 
-  viewCourse(ind:number){
-    const courseFound = this.dataCourse.find((item,index)=> index == ind)
+  viewCourse(ind: number) {
+    const courseFound = this.dataCourse.find((item, index) => index == ind)
 
     this.courseForm.get('className')?.setValue(courseFound.className)
     this.courseForm.get('coHort')?.setValue(courseFound.coHort)

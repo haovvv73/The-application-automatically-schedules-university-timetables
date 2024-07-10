@@ -85,9 +85,9 @@ class ScheduleService {
             VALUES(?,?,?,?)`
             const result = await this.connection.execute(query, [title,yearStart,yearEnd,semester])
 
-
+             
             await this.connection.query('COMMIT');
-            return result[0].affectedRows
+            return [result[0].affectedRows,result[0].insertId]
         } catch (error) {
             await this.connection.query('ROLLBACK');
             throw error;

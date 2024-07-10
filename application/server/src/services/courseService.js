@@ -25,9 +25,9 @@ class CourseService {
                         course.timeStart,
                         course.timeEnd,
                         course.day,
-                        course.type,
-                        course.location,
-                        course.lecturerID,
+                        course.type.readUInt8(0),
+                        course.location.readUInt8(0),
+                        JSON.parse(course.lecturerID),
                         course.subjectID,
                         course.roomID,
                         course.scheduleID,
@@ -55,14 +55,44 @@ class CourseService {
                     course.timeStart,
                     course.timeEnd,
                     course.day,
-                    course.type,
-                    course.location,
-                    course.lecturerID,
+                    course.type.readUInt8(0),
+                    course.location.readUInt8(0),
+                    JSON.parse(course.lecturerID),
                     course.subjectID,
                     course.roomID,
                     course.scheduleID,
                 )
             )
+        }
+
+        return result
+    }
+
+    async getCourseByTeacher(lecturerID){
+        const result = []
+        for(let lecID of lecturerID){
+            const query = `SELECT * FROM ${this.table} WHERE lecturerID LIKE ? OR  lecturerID LIKE ? OR  lecturerID LIKE ?  OR  lecturerID LIKE ? AND deleted = ?  `
+            const [row] = await this.connection.execute(query, [`%[${lecID},%`,`%,${lecID},%`,`%,${lecID}]%`,`%[${lecID}]%`,0])
+            if (row.length > 0) {
+                const course = row[0]
+                result.push(
+                    new Course(
+                        course.courseID,
+                        course.className,
+                        course.cohort,
+                        course.classSize,
+                        course.timeStart,
+                        course.timeEnd,
+                        course.day,
+                        course.type.readUInt8(0),
+                        course.location.readUInt8(0),
+                        JSON.parse(course.lecturerID),
+                        course.subjectID,
+                        course.roomID,
+                        course.scheduleID,
+                    )
+                )
+            }
         }
 
         return result
@@ -90,7 +120,6 @@ class CourseService {
             await this.connection.query('START TRANSACTION');
 
             const {className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID} = course
-
             const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID) 
             VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`
             const result = await this.connection.execute(query, [
@@ -102,7 +131,7 @@ class CourseService {
                 day,
                 type,
                 location,
-                lecturerID,
+                JSON.stringify(lecturerID),
                 subjectID,
                 roomID,
                 scheduleID
@@ -120,9 +149,9 @@ class CourseService {
     async saveCourses(courses) {
         try {
             await this.connection.query('START TRANSACTION');
-
+            let allResult = 0
             for(let course of courses){
-                const {className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,roomID,scheduleID} = course
+                const {className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,type,roomID,scheduleID} = course
 
                 const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID) 
                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`
@@ -135,15 +164,17 @@ class CourseService {
                     day,
                     type,
                     location,
-                    lecturerID,
+                    JSON.stringify(lecturerID),
                     subjectID,
                     roomID,
                     scheduleID
                 ])
+
+                allResult += result[0].affectedRows
             }
 
             await this.connection.query('COMMIT');
-            return result[0].affectedRows
+            return allResult
         } catch (error) {
             await this.connection.query('ROLLBACK');
             throw error;
@@ -165,7 +196,7 @@ class CourseService {
                 course.day,
                 course.type,
                 course.location,
-                course.lecturerID,
+                JSON.stringify(course.lecturerID),
                 course.subjectID,
                 course.roomID,
                 course.scheduleID,

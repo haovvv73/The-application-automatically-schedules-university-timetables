@@ -9,10 +9,11 @@ export class Course {
         day = '',
         type = '',
         location = '',
-        lecturerID = '',
+        lecturerID = [],
         subjectID = '',
         roomID = '',
-        scheduleID = ''
+        scheduleID = '',
+        duration = 0
     ){
         this.courseID = courseID
         this.className = className
@@ -27,5 +28,6 @@ export class Course {
         this.subjectID = subjectID
         this.roomID = roomID
         this.scheduleID = scheduleID
+        this.duration = duration
     }
 }

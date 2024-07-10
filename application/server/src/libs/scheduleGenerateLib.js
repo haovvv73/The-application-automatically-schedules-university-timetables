@@ -1,24 +1,8 @@
 import { format, addMinutes, subMinutes, set, getHours, getMinutes, areIntervalsOverlapping, compareAsc, isAfter, isEqual, min, max, differenceInMinutes, isBefore } from 'date-fns'
 
 let courses = [
-    // { name: 'Pháp luật đại cương', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', teacher: 'lorem' },
-    // { name: 'Anh văn 1', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', teacher: 'lorem2' },
-    // { name: 'Anh văn 1', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', },
-    // { name: 'Đại số tuyến tính', duration: 2, location: 0, type: 'TH', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế 1', duration: 1, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Anh văn 12', duration: 2, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', },
-    // { name: 'Thể dục 1', duration: 2, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Thể dục asdadasd', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Triết học Mác, Lênin', duration: 2, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Giải tích 1A', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Vi tích phân 1A', duration: 1, location: 0, type: 'TH', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Thực hành Đại số tuyến tính', duration: 2, location: 0, type: 'TH', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế 222', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế 333333', duration: 4, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế qwe', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế zzzz', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế xxx', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
-    // { name: 'Kinh tế ccccc', duration: 3, location: 0, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '' },
+    // { name: 'Pháp luật đại cương', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', LecturerID: 'lorem' },
+    // { name: 'Anh văn 1', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', LecturerID: 'lorem2' },
 ];
 
 let teacherSameCourse = [
@@ -27,12 +11,6 @@ let teacherSameCourse = [
     //     timeStart: set(new Date(), { hours: 7, minutes: 30, seconds: 0, milliseconds: 0 }),
     //     timeEnd: set(new Date(), { hours: 8, minutes: 20, seconds: 0, milliseconds: 0 }),
     //     day: 'mon', teacher: 'lorem', location: 1,
-    // },
-    // {
-    //     name: 'Pháp luật đại cương', duration: 4, location: 0, type: 'LT',
-    //     timeStart: set(new Date(), { hours: 13, minutes: 30, seconds: 0, milliseconds: 0 }),
-    //     timeEnd: set(new Date(), { hours: 14, minutes: 20, seconds: 0, milliseconds: 0 }),
-    //     day: 'mon', room: '', teacher: 'lorem'
     // },
 ]
 
@@ -216,15 +194,20 @@ const getTime = (day, coursePara) => {
     // preference
     // @time = minute
     const course = {
+        courseID: "",
         className: coursePara.className,
-        duration: coursePara.duration,
-        location: coursePara.location,
-        type: coursePara.type,
+        cohort: coursePara.cohort,
+        classSize: coursePara.cohort,
         timeStart: set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }),
         timeEnd: set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }),
         day: day,
-        room: coursePara.room,
-        teacher: coursePara.teacher
+        type: coursePara.type,
+        location: coursePara.location,
+        lecturerID: coursePara.lecturerID,
+        subjectID: coursePara.subjectID,
+        roomID: coursePara.roomID,
+        scheduleID: coursePara.scheduleID,
+        duration: coursePara.duration,
     }
 
     const breakTime = 10
@@ -280,9 +263,6 @@ const getTime = (day, coursePara) => {
     })
 
     // morning generate - check >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // timebreak - check
-    // time location  - check
-    // time conflict
     if (courseMorning.length != 0) {
         // generate
         course.timeStart = set(course.timeStart, {
@@ -391,7 +371,23 @@ const getTime = (day, coursePara) => {
     }
 
     // conflict generate morning
-    const thisTeacherCourse = teacherSameCourse.filter(cou => cou.teacher == course.teacher && cou.day == course.day)
+
+    const thisTeacherCourse = teacherSameCourse.filter(cou => {
+        let check = false
+        for(let i of cou.lecturerID){
+            if(course.lecturerID.includes(i)){
+                check = true;
+                break;
+            }
+        }
+
+        if( check && cou.day == course.day){
+            return true
+        }else{
+            return false
+        }
+    })
+    
     if (thisTeacherCourse.length > 0) {
         const teacherSameCourseMorning = thisTeacherCourse.filter(item => {
             const checklunchTimeStartLT = set(new Date(), { hours: 11, minutes: 51, seconds: 0, milliseconds: 0 });
@@ -444,10 +440,6 @@ const getTime = (day, coursePara) => {
     }
 
     // afternoon generate  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // check lunch time - check
-    // timebreak
-    // time location
-    // time conflict
     const interval1 = {
         start: set(new Date(), {
             hours: course.timeStart.getHours(),
@@ -872,6 +864,36 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
         }
     }
 
+    // for (let days in schedule) {
+    //     for (let cou of schedule[days]) {
+    //         console.log("daysss2 ======", cou.day);
+    //         console.log('name:', cou.className);
+    //         console.log('duration:', cou.duration);
+    //         console.log('location', cou.location);
+    //         console.log('start = ', format(cou.timeStart, 'HH:mm'));
+    //         console.log('end = ', format(cou.timeEnd, 'HH:mm'));
+    //         console.log('room = ', cou.roomID);
+    //         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    //     }
+    // }
+    
+    let scheduleResult = {...schedule}
+    // reset data
+    courses = []
+    teacherSameCourse = []
+    schedule = {
+        mon: [],
+        tue: [],
+        wed: [],
+        thu: [],
+        fri: [],
+        sat: [],
+        // sun: [],
+    }
+    return scheduleResult
+}
+
+const roomGenerate = ()=>{
     // generate room
     // 2 room ly thuyet - 1 room thuc hanh 
     // danh chan le - phong 1 -> phong 2 -> phong 1
@@ -922,20 +944,5 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
     //         cou.room = roomThNVC
     //     }
     // }
-
-    // for (let days in schedule) {
-    //     for (let cou of schedule[days]) {
-    //         console.log("daysss2 ======", cou.day);
-    //         console.log('name:', cou.name);
-    //         console.log('duration:', cou.duration);
-    //         console.log('location', cou.location);
-    //         console.log('start = ', format(cou.timeStart, 'HH:mm'));
-    //         console.log('end = ', format(cou.timeEnd, 'HH:mm'));
-    //         console.log('room = ', cou.room);
-    //         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    //     }
-    // }
-
-    return schedule
 }
-export { scheduleGenerate }
+export { scheduleGenerate, roomGenerate }

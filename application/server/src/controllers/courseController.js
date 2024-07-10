@@ -3,7 +3,7 @@ import httpStatusCode from "../helpers/httpStatusCode.js"
 import { Course } from "../models/course.js"
 import courseService from "../services/courseService.js"
 
-const getCourse = async () => {
+const getCourse = async (req, res) => {
     const scheduleID = req.params.id
     if (!scheduleID) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
     try {
@@ -20,7 +20,7 @@ const getCourse = async () => {
     }
 }
 
-const getDetailCourse = async () => {
+const getDetailCourse = async (req, res) => {
     const courseID = req.params.id
     if (!courseID) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
     try {
@@ -37,7 +37,7 @@ const getDetailCourse = async () => {
     }
 }
 
-const deleteCourse = async () => {
+const deleteCourse = async (req, res) => {
     const courseID = req.params.id
     if (!courseID) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
@@ -52,9 +52,9 @@ const deleteCourse = async () => {
     }
 }
 
-const saveCourse = async () => {
-    const course = req.body.course
-
+const saveCourse = async (req, res) => {
+    const course = req.body
+    
     try {
         if (course && course.length > 0) {
             const data = []
@@ -80,12 +80,12 @@ const saveCourse = async () => {
         }
 
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }
 
-const updateCourse = async () => {
+const updateCourse = async (req, res) => {
     const { courseID, className, cohort, classSize, timeStart, timeEnd, day, type, location, lecturerID, subjectID, roomID, scheduleID } = req.body
     if (!courseID || !className || !cohort || !classSize || !timeStart || !timeEnd || !day || !lecturerID || !subjectID || !roomID || !scheduleID) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 

@@ -1,9 +1,12 @@
 import { errorResponse, successResponse } from "../helpers/httpResponse.js";
 import httpStatusCode from '../helpers/httpStatusCode.js';
 import { scheduleGenerate } from "../libs/scheduleGenerateLib.js";
-import { format, set} from 'date-fns'
+import { format, parseISO, set } from 'date-fns'
 import scheduleService from "../services/scheduleService.js";
 import { Schedule } from "../models/schedule.js";
+import { Course } from "../models/course.js";
+import courseService from "../services/courseService.js";
+import subjectService from "../services/subjectService.js";
 
 const getSchedules = async (req, res) => {
     const scheduleID = req.params.id
@@ -65,46 +68,75 @@ const updateSchedule = async (req, res) => {
 
 const createSchedule = async (req, res) => {
 
+    const { course, schedule } = await req.body
+    if (!course | !schedule) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+
+    // course | schedule 
+    // className: 'Pháp luật đại cương', cohort , duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', LecturerID: [1,2]
     try {
-        // get teacher => add course
-        // get teacher same course
-        // prepare course => generate
+        // save schedule
+        const result = await scheduleService.saveSchedule(schedule)
 
-        //  wait answer from client
+        // prepareCourse
+        const listLecturerID = []
+        const modelCourses = []
+        for (let cou of course) {
+            const { lecturerID } = cou
+            if (lecturerID) listLecturerID.push(...lecturerID)
+            let subjectFind = await subjectService.getSubjectById(cou.subjectID)
+            modelCourses.push(
+                new Course(
+                    '', // courseID
+                    cou.className,
+                    cou.coHort,
+                    cou.classSize,
+                    '', //time start
+                    '', //time end
+                    '', // day
+                    cou.type,
+                    cou.location,
+                    cou.lecturerID,
+                    cou.subjectID,
+                    '', //roomID
+                    result[1],
+                    subjectFind[0].duration
+                )
+            )
+        }
 
-        // fit answer => done
-        
-        const rawCourses = [
-            { className: 'Pháp luật đại cương', duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', teacher: 'lorem' },
-        ]
+        const rawTeacherSameCourse = await courseService.getCourseByTeacher(listLecturerID)
+        const modelTeacherCourse = []
+        for (let cou of rawTeacherSameCourse) {
+            modelTeacherCourse.push(
+                new Course(
+                    cou.courseID,
+                    cou.className,
+                    cou.cohort,
+                    cou.classSize,
+                    parseISO(cou.timeStart),
+                    parseISO(cou.timeEnd),
+                    cou.day,
+                    cou.type,
+                    cou.location,
+                    cou.lecturerID,
+                    cou.subjectID,
+                    cou.roomID,
+                    cou.scheduleID
+                )
+            )
+        }
 
-        const rawTeacherSameCourse = [
-            {
-                className: 'Pháp luật đại cương', duration: 4, type: 'LT', room: '',
-                timeStart: set(new Date(), { hours: 7, minutes: 30, seconds: 0, milliseconds: 0 }),
-                timeEnd: set(new Date(), { hours: 8, minutes: 20, seconds: 0, milliseconds: 0 }),
-                day: 'mon', teacher: 'lorem', location: 1,
-            },
-            {
-                className: 'Pháp luật đại cương', duration: 4, location: 0, type: 'LT',
-                timeStart: set(new Date(), { hours: 13, minutes: 30, seconds: 0, milliseconds: 0 }),
-                timeEnd: set(new Date(), { hours: 14, minutes: 20, seconds: 0, milliseconds: 0 }),
-                day: 'mon', room: '', teacher: 'lorem'
-            },
-        ]
+        const scheduleResult = scheduleGenerate(modelCourses, modelTeacherCourse)
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, scheduleResult)
 
-        // save schedule 
-        // generate course
-        // save course
-        // return schedule-detail
-
-        const schedule = await scheduleGenerate(rawCourses, rawTeacherSameCourse)
-
-        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, schedule)
     } catch (error) {
         console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }
 
-export { createSchedule, getSchedules, deleteSchedule, updateSchedule }
+const createRoomSchedule = async () => {
+
+}
+
+export { createSchedule, getSchedules, deleteSchedule, updateSchedule, createRoomSchedule }
