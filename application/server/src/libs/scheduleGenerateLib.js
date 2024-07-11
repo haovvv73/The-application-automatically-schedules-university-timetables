@@ -893,7 +893,7 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
     return scheduleResult
 }
 
-const roomGenerate = ()=>{
+const roomGenerate = (courses,room)=>{
     // generate room
     // 2 room ly thuyet - 1 room thuc hanh 
     // danh chan le - phong 1 -> phong 2 -> phong 1

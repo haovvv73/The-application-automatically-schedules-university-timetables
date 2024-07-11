@@ -4,6 +4,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { PopupComponent } from '../../component/popup/popup.component';
 import { SubjectServiceService } from '../../services/http/subject-service/subject-service.service';
 import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
+import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
+import { RoomServiceService } from '../../services/http/room-service/room-service.service';
 
 @Component({
   selector: 'app-schedule-generate',
@@ -19,20 +21,24 @@ export class ScheduleGenerateComponent implements OnInit {
   @ViewChild(PopupComponent)
   private popupComponent!: PopupComponent;
 
-  constructor(private subjectServiceService: SubjectServiceService, private lecturerServiceService: LecturerServiceService) { }
+  constructor(
+    private subjectServiceService: SubjectServiceService,
+    private lecturerServiceService: LecturerServiceService,
+    private scheduleServiceService: ScheduleServiceService,
+    private roomServiceService : RoomServiceService
+  ) { }
 
   // key data show
   columnsKeyRoom: any[] = [
     ' ',
-    'Id',
-    'Room',
+    'room ID',
+    'room Name',
     'Room Description',
     'Location',
     'Capacity',
-    'Type',
+    'room Type',
     // 'Action'
   ]
-
   columnsKeySubject: any[] = [
     ' ',
     'subject Name',
@@ -40,7 +46,6 @@ export class ScheduleGenerateComponent implements OnInit {
     'Description',
     'Duration'
   ]
-
   columnsKeyTeacher: any[] = [
     ' ',
     'Id',
@@ -56,24 +61,7 @@ export class ScheduleGenerateComponent implements OnInit {
   // data show
   dataTeacher: any[] = []
   dataSubject: any[] = []
-
-  dataRoom: any[] = [
-    {
-      Id: 'room001',
-      room: 'F023',
-      roomDescription: 'Phong hoi truong',
-      location: 'NVC',
-      capacity: '150',
-    },
-    {
-      Id: 'room002',
-      room: 'F033',
-      roomDescription: 'Phong may tinh',
-      location: 'Linh Trung',
-      capacity: '100',
-    },
-
-  ]
+  dataRoom: any[] = []
 
   // data generate
   indexCourse: number | undefined
@@ -104,7 +92,7 @@ export class ScheduleGenerateComponent implements OnInit {
     })
   }
 
-  // scheduleForm
+  // scheduleForm >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   get title() {
     return this.scheduleForm.get('title')
   }
@@ -144,7 +132,7 @@ export class ScheduleGenerateComponent implements OnInit {
     this.scheduleForm.get('yearEnd')?.markAsTouched()
   }
 
-  // courseForm
+  // courseForm >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   get className() {
     return this.courseForm.get('className')
   }
@@ -204,21 +192,21 @@ export class ScheduleGenerateComponent implements OnInit {
   onSelectRoom(event: Event, id: string) {
     const input = event.target as HTMLInputElement;
     if (input.checked) {
-      let roomSelect = this.dataRoom.find(item => item.Id == id)
+      let roomSelect = this.dataRoom.find(item => item.roomID == id)
       if (roomSelect) {
         this.dataRoomSelect.push(roomSelect)
       }
     } else {
-      this.dataRoomSelect = this.dataRoomSelect.filter(item => item.Id != id)
+      this.dataRoomSelect = this.dataRoomSelect.filter(item => item.roomID != id)
     }
   }
 
   onUnselectRoom(id: string) {
-    this.dataRoomSelect = this.dataRoomSelect.filter(item => item.Id != id)
+    this.dataRoomSelect = this.dataRoomSelect.filter(item => item.roomID != id)
   }
 
   onRoomChecked(id: string) {
-    let roomSelect = this.dataRoomSelect.find(item => item.Id == id)
+    let roomSelect = this.dataRoomSelect.find(item => item.roomID == id)
     if (roomSelect) {
       return true
     } else {
@@ -237,9 +225,6 @@ export class ScheduleGenerateComponent implements OnInit {
 
   // teacher function
   onSelectTeacher(id: string) {
-    console.log(id);
-    console.log(this.indexCourse);
-
     if (this.indexCourse || this.indexCourse == 0) {
       const teacherList = this.dataCourse[this.indexCourse].lecturerID
       const result = teacherList.find((Id: string) => Id === id)
@@ -289,6 +274,7 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
+  // CRUD
   getSubject() {
     this.subjectServiceService.getSubject().subscribe({
       next: (result: any) => {
@@ -321,6 +307,22 @@ export class ScheduleGenerateComponent implements OnInit {
     })
   }
 
+  getRoom(){
+    this.roomServiceService.getRoom().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.dataRoom = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
   deleteCourse(ind: any) {
     this.dataCourse = this.dataCourse.filter((item, index) => index != ind)
   }
@@ -337,6 +339,50 @@ export class ScheduleGenerateComponent implements OnInit {
   }
 
   onGenerate() {
+    console.log('run');
+    this.onClickValidateScheduleForm()
 
+    if (!this.scheduleForm.invalid) {
+      // prepare data
+      let dataPost = {
+        course: [...this.dataCourse],
+        schedule: this.getScheduleForm(),
+        room: this.dataRoomSelect,
+      }
+
+      // validate course
+      let checkRoom = dataPost.room.length > 0
+      let checkCourse =  dataPost.course.length > 0 ? true : false 
+      for (let cou of dataPost.course) {
+        if (cou.lecturerID.length < 1) {
+          checkCourse = false
+          break
+        }
+      }
+
+      if(!checkCourse){
+        alert('Missing Course !')
+      }else if(!checkCourse && dataPost.course.length > 0){
+        alert('Course missing lecturer, fill in please!')
+      }else if(!checkRoom) {
+        alert('Schedule missing room, fill in please!')
+      }
+
+      if (checkCourse && checkRoom) {
+        this.scheduleServiceService.saveSchedule(dataPost).subscribe({
+          next: (result: any) => {
+            if (result.status) {
+              console.log(result.data);
+            } else {
+              alert("Something wrong")
+            }
+          },
+          error: (error: any) => {
+            console.log(">> error >>", error)
+            alert("Something wrong")
+          }
+        })
+      }
+    }
   }
 }
