@@ -878,6 +878,7 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
     // }
     
     let scheduleResult = {...schedule}
+    let courseMissing = [...dump]
     // reset data
     courses = []
     teacherSameCourse = []
@@ -890,59 +891,59 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
         sat: [],
         // sun: [],
     }
-    return scheduleResult
+    return [scheduleResult,courseMissing]
 }
 
-const roomGenerate = (courses,room)=>{
+const roomGenerate = (room, roomUsed, scheduleClone)=>{
     // generate room
-    // 2 room ly thuyet - 1 room thuc hanh 
-    // danh chan le - phong 1 -> phong 2 -> phong 1
-    // for (let days in schedule) {
-    //     let index = 0
-    //     const roomThNVC = 'phong thuc hanh NVC'
-    //     const roomThLT = 'phong thuc hanh LT'
-    //     const arrRoomLT = shuffleArray(['phong 1', 'phong 2'])
-    //     const arrRoomNVC = shuffleArray(['phong a', 'phong b'])
+    for (let days in scheduleClone) {
+        let index = 0
+        const roomThNVC = 'phong thuc hanh NVC'
+        const roomThLT = 'phong thuc hanh LT'
+        const arrRoomLT = shuffleArray(['phong 1', 'phong 2'])
+        const arrRoomNVC = shuffleArray(['phong a', 'phong b'])
 
-    //     // filter thuc hanh
-    //     const courseTH = schedule[days].filter(item => item.type === 'TH')
-    //     const courseThucHanhLT = courseTH.filter(item => item.location === 1)
-    //     const courseThucHanhNVC = courseTH.filter(item => item.location === 0)
+        const courseLT = scheduleClone[days].filter(item => item.type === 'LT')
+        const courseTH = scheduleClone[days].filter(item => item.type === 'TH')
+        // filter thuc hanh
+        const courseThucHanhLT = courseTH.filter(item => item.location === 1)
+        const courseThucHanhNVC = courseTH.filter(item => item.location === 0)
 
-    //     // filter ly thuyet
-    //     const courseLT = schedule[days].filter(item => item.type === 'LT')
-    //     const courseLyThuyetLT = courseLT.filter(item => item.location === 1)
-    //     const courseLyThuyetNVC = courseLT.filter(item => item.location === 0)
+        // filter ly thuyet
+        const courseLyThuyetLT = courseLT.filter(item => item.location === 1)
+        const courseLyThuyetNVC = courseLT.filter(item => item.location === 0)
 
-    //     // linh trung get room
-    //     // LT
-    //     for (let cou of courseLyThuyetLT) {
-    //         if (index % 2 == 0) {
-    //             cou.room = arrRoomLT[0]
-    //         } else {
-    //             cou.room = arrRoomLT[1]
-    //         }
-    //         index++
-    //     }
-    //     // TH
-    //     for (let cou of courseThucHanhLT) {
-    //         cou.room = roomThLT
-    //     }
+        // linh trung get room
+        // LT
+        for (let cou of courseLyThuyetLT) {
+            if (index % 2 == 0) {
+                cou.room = arrRoomLT[0]
+            } else {
+                cou.room = arrRoomLT[1]
+            }
+            index++
+        }
+        // TH
+        for (let cou of courseThucHanhLT) {
+            cou.room = roomThLT
+        }
 
-    //     // nguyen van cu get room
-    //     // LT
-    //     for (let cou of courseLyThuyetNVC) {
-    //         if (index % 2 == 0) {
-    //             cou.room = arrRoomNVC[0]
-    //         } else {
-    //             cou.room = arrRoomNVC[1]
-    //         }
-    //         index++
-    //     }
-    //     // TH
-    //     for (let cou of courseThucHanhNVC) {
-    //         cou.room = roomThNVC
-    //     }
-    // }
+        // nguyen van cu get room
+        // LT
+        for (let cou of courseLyThuyetNVC) {
+            if (index % 2 == 0) {
+                cou.room = arrRoomNVC[0]
+            } else {
+                cou.room = arrRoomNVC[1]
+            }
+            index++
+        }
+        // TH
+        for (let cou of courseThucHanhNVC) {
+            cou.room = roomThNVC
+        }
+    }
+
+    return scheduleClone
 }
 export { scheduleGenerate, roomGenerate }

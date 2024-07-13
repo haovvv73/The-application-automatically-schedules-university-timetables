@@ -98,6 +98,36 @@ class CourseService {
         return result
     }
 
+    async getCourseByRoom(roomID){
+        const result = []
+        for(let roomId of roomID){
+            const query = `SELECT * FROM ${this.table} WHERE roomID = ? AND deleted = ?`
+            const [row] = await this.connection.execute(query, [roomId,0])
+            if (row.length > 0) {
+                const course = row[0]
+                result.push(
+                    new Course(
+                        course.courseID,
+                        course.className,
+                        course.cohort,
+                        course.classSize,
+                        course.timeStart,
+                        course.timeEnd,
+                        course.day,
+                        course.type.readUInt8(0),
+                        course.location.readUInt8(0),
+                        JSON.parse(course.lecturerID),
+                        course.subjectID,
+                        course.roomID,
+                        course.scheduleID,
+                    )
+                )
+            }
+        }
+
+        return result
+    }
+
     // DELETE
     async deleteCourseById(id) {
         try {

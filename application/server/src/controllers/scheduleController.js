@@ -1,6 +1,6 @@
 import { errorResponse, successResponse } from "../helpers/httpResponse.js";
 import httpStatusCode from '../helpers/httpStatusCode.js';
-import { scheduleGenerate } from "../libs/scheduleGenerateLib.js";
+import { roomGenerate, scheduleGenerate } from "../libs/scheduleGenerateLib.js";
 import { format, parseISO, set } from 'date-fns'
 import scheduleService from "../services/scheduleService.js";
 import { Schedule } from "../models/schedule.js";
@@ -68,8 +68,8 @@ const updateSchedule = async (req, res) => {
 
 const createSchedule = async (req, res) => {
 
-    const { course, schedule } = await req.body
-    if (!course | !schedule) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    const { course, schedule, room } = await req.body
+    if (!course | !schedule | !room) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     // course | schedule 
     // className: 'Pháp luật đại cương', cohort , duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', LecturerID: [1,2]
@@ -104,6 +104,7 @@ const createSchedule = async (req, res) => {
             )
         }
 
+        // get course same teacher
         const rawTeacherSameCourse = await courseService.getCourseByTeacher(listLecturerID)
         const modelTeacherCourse = []
         for (let cou of rawTeacherSameCourse) {
@@ -126,8 +127,39 @@ const createSchedule = async (req, res) => {
             )
         }
 
-        const scheduleResult = scheduleGenerate(modelCourses, modelTeacherCourse)
-        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, scheduleResult)
+        // get room used
+        const rawRoomUsed = await courseService.getCourseByRoom(room)
+        const roomUsed = []
+        for (let cou of rawRoomUsed) {
+            roomUsed.push(
+                new Course(
+                    cou.courseID,
+                    cou.className,
+                    cou.cohort,
+                    cou.classSize,
+                    parseISO(cou.timeStart),
+                    parseISO(cou.timeEnd),
+                    cou.day,
+                    cou.type,
+                    cou.location,
+                    cou.lecturerID,
+                    cou.subjectID,
+                    cou.roomID,
+                    cou.scheduleID
+                )
+            )
+        }
+        
+        const [scheduleResult,courseMissing] = scheduleGenerate(modelCourses, modelTeacherCourse)
+        const [finalResult, courseMissingRoom] = roomGenerate(room, roomUsed, scheduleResult)
+
+        objJson = {
+            scheduleGenerate : finalResult,
+            courseMissing,
+            courseMissingRoom,
+        }
+
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, objJson)
 
     } catch (error) {
         console.log(error);
@@ -135,7 +167,7 @@ const createSchedule = async (req, res) => {
     }
 }
 
-const createRoomSchedule = async () => {
+const continueSchedule = async () => {
 
 }
 
