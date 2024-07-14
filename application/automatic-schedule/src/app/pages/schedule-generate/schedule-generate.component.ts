@@ -1,23 +1,33 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { format } from 'date-fns';
 import { PopupComponent } from '../../component/popup/popup.component';
 import { SubjectServiceService } from '../../services/http/subject-service/subject-service.service';
 import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
 import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
 import { RoomServiceService } from '../../services/http/room-service/room-service.service';
+import { ScheduleTableComponent } from '../../component/schedule-table/schedule-table.component';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import { EnvUrl } from '../../env-url';
 
 @Component({
   selector: 'app-schedule-generate',
   standalone: true,
-  imports: [NgFor, FormsModule, ReactiveFormsModule, NgIf, PopupComponent, NgClass],
+  imports: [NgFor, FormsModule, ReactiveFormsModule, NgIf, PopupComponent, NgClass, ScheduleTableComponent],
   templateUrl: './schedule-generate.component.html',
   styleUrl: './schedule-generate.component.css'
 })
 export class ScheduleGenerateComponent implements OnInit {
+  envUrl = EnvUrl
   titlePage = 'Schedule Generate'
   scheduleForm!: FormGroup
   courseForm!: FormGroup
+  roomConflictMode = false
+  courseConflictMode = false
+  scheduleBeforeSave = false
+  isTableView = false
   @ViewChild(PopupComponent)
   private popupComponent!: PopupComponent;
 
@@ -25,7 +35,9 @@ export class ScheduleGenerateComponent implements OnInit {
     private subjectServiceService: SubjectServiceService,
     private lecturerServiceService: LecturerServiceService,
     private scheduleServiceService: ScheduleServiceService,
-    private roomServiceService : RoomServiceService
+    private roomServiceService: RoomServiceService,
+    private toastr: ToastrService,
+    private router: Router
   ) { }
 
   // key data show
@@ -62,6 +74,17 @@ export class ScheduleGenerateComponent implements OnInit {
   dataTeacher: any[] = []
   dataSubject: any[] = []
   dataRoom: any[] = []
+  courseMissing: any[] = []
+  courseMissingMessage: any[] = []
+  dataCourseBeforeSave = {
+    mon: [] as any[],
+    tue: [] as any[],
+    wed: [] as any[],
+    thu: [] as any[],
+    fri: [] as any[],
+    sat: [] as any[],
+  }
+  dataCourseBeforeSaveTable: any[] = []
 
   // data generate
   indexCourse: number | undefined
@@ -85,7 +108,7 @@ export class ScheduleGenerateComponent implements OnInit {
     this.courseForm = new FormGroup({
       className: new FormControl('', [Validators.required]),
       coHort: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")]),
-      classSize: new FormControl('', [Validators.required]),
+      classSize: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")]),
       location: new FormControl('', [Validators.required]),
       subjectID: new FormControl('', [Validators.required]),
       type: new FormControl('', [Validators.required]),
@@ -214,6 +237,11 @@ export class ScheduleGenerateComponent implements OnInit {
     }
   }
 
+  getRoomName(id:string){
+    let roomFind = this.dataRoomSelect.find(r => r.roomID == id)
+    if (roomFind) return roomFind.roomName
+    return '_null_'
+  }
   // subjectName function
   onSelectSubject(id: string) {
     let subject = this.dataSubject.find(item => item.subjectID == id)
@@ -237,7 +265,7 @@ export class ScheduleGenerateComponent implements OnInit {
   }
 
   onTeacherChecked(id: string) {
-    if (!this.indexCourse) return false
+    if (this.indexCourse == undefined) return false
     const teacherList = this.dataCourse[this.indexCourse].lecturerID
     const result = teacherList.find((Id: string) => Id == id)
     if (result) {
@@ -248,13 +276,13 @@ export class ScheduleGenerateComponent implements OnInit {
   }
 
   onUnSelectTeacher() {
-    if (this.indexCourse) {
+    if (this.indexCourse != undefined) {
       this.dataCourse[this.indexCourse].lecturerID = []
     }
   }
 
   // course function
-  onSaveIndex(index: number) {
+  onSaveIndex(index: number | undefined) {
     this.indexCourse = index
   }
 
@@ -262,16 +290,39 @@ export class ScheduleGenerateComponent implements OnInit {
     this.onClickValidateCourseForm()
     if (!this.courseForm.invalid) {
       const newCourse = this.getCourseForm();
-      console.log(newCourse);
 
-      this.dataCourse.push({
-        lecturerID: [],
-        ...newCourse
-      })
+      if (this.indexCourse != undefined) {
+        this.dataCourse[this.indexCourse] = {
+          lecturerID: this.dataCourse[this.indexCourse].lecturerID,
+          ...newCourse
+        }
+      } else {
+        this.dataCourse.push({
+          lecturerID: [],
+          ...newCourse
+        })
+      }
+
       // close popup
       this.clearCourseForm(true)
       this.popupComponent.onClosePopup()
     }
+  }
+
+  deleteCourse(ind: any) {
+    this.dataCourse = this.dataCourse.filter((item, index) => index != ind)
+    this.onSaveIndex(undefined)
+  }
+
+  viewCourse(ind: number) {
+    const courseFound = this.dataCourse.find((item, index) => index == ind)
+
+    this.courseForm.get('className')?.setValue(courseFound.className)
+    this.courseForm.get('coHort')?.setValue(courseFound.coHort)
+    this.courseForm.get('classSize')?.setValue(courseFound.classSize)
+    this.courseForm.get('subjectID')?.setValue(courseFound.subjectID)
+    this.courseForm.get('location')?.setValue(courseFound.location)
+    this.courseForm.get('type')?.setValue(courseFound.type)
   }
 
   // CRUD
@@ -307,7 +358,7 @@ export class ScheduleGenerateComponent implements OnInit {
     })
   }
 
-  getRoom(){
+  getRoom() {
     this.roomServiceService.getRoom().subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -323,25 +374,79 @@ export class ScheduleGenerateComponent implements OnInit {
     })
   }
 
-  deleteCourse(ind: any) {
-    this.dataCourse = this.dataCourse.filter((item, index) => index != ind)
+  // navigate
+  rollback() {
+    this.roomConflictMode = false
+    this.courseConflictMode = false
+    this.scheduleBeforeSave = false
   }
 
-  viewCourse(ind: number) {
-    const courseFound = this.dataCourse.find((item, index) => index == ind)
+  goRoomConflict() {
+    this.roomConflictMode = true
+    this.courseConflictMode = false
+    this.scheduleBeforeSave = false
+  }
 
-    this.courseForm.get('className')?.setValue(courseFound.className)
-    this.courseForm.get('coHort')?.setValue(courseFound.coHort)
-    this.courseForm.get('classSize')?.setValue(courseFound.classSize)
-    this.courseForm.get('subjectID')?.setValue(courseFound.subjectID)
-    this.courseForm.get('location')?.setValue(courseFound.location)
-    this.courseForm.get('type')?.setValue(courseFound.type)
+  goCourseConflict() {
+    this.roomConflictMode = false
+    this.courseConflictMode = true
+    this.scheduleBeforeSave = false
+  }
+
+  goScheduleBeforeUpdate() {
+    this.roomConflictMode = false
+    this.courseConflictMode = false
+    this.scheduleBeforeSave = true
+  }
+
+  // schedule table 
+  onTableView() {
+    this.isTableView = true
+  }
+
+  offTableView() {
+    this.isTableView = false
+  }
+
+  bindingScheduleTable(data: any) {
+    const mockData = []
+    // dataRoomSelect_roomID
+    for (let key in data) {
+      for (let item of data[key]) {
+        let obj = {
+          className: item.className,
+          day: item.day,
+          timeStart: item.timeStart,
+          timeEnd: item.timeEnd,
+          location: item.location,
+          room: '',
+          teacher: ''
+        }
+        let roomFind = this.dataRoomSelect.find(r => r.roomID == item.roomID)
+        if (roomFind) obj.room = roomFind.roomName
+
+        for(let id of item.lecturerID){
+          let name = this.getTeacher(id)
+          if(obj.teacher.length > 0){
+            obj.teacher += (',' + name)
+          }else{
+            obj.teacher += name
+          }
+        }
+        mockData.push(obj)
+      }
+    }
+
+    this.dataCourseBeforeSaveTable = mockData
+  }
+
+  // time
+  formatTimeHourMinute(time: any) {
+    return format(time, 'HH:mm');
   }
 
   onGenerate() {
-    console.log('run');
     this.onClickValidateScheduleForm()
-
     if (!this.scheduleForm.invalid) {
       // prepare data
       let dataPost = {
@@ -352,7 +457,7 @@ export class ScheduleGenerateComponent implements OnInit {
 
       // validate course
       let checkRoom = dataPost.room.length > 0
-      let checkCourse =  dataPost.course.length > 0 ? true : false 
+      let checkCourse = dataPost.course.length > 0 ? true : false
       for (let cou of dataPost.course) {
         if (cou.lecturerID.length < 1) {
           checkCourse = false
@@ -360,11 +465,11 @@ export class ScheduleGenerateComponent implements OnInit {
         }
       }
 
-      if(!checkCourse){
+      if (dataPost.course.length < 1) {
         alert('Missing Course !')
-      }else if(!checkCourse && dataPost.course.length > 0){
+      } else if (!checkCourse && dataPost.course.length > 0) {
         alert('Course missing lecturer, fill in please!')
-      }else if(!checkRoom) {
+      } else if (!checkRoom) {
         alert('Schedule missing room, fill in please!')
       }
 
@@ -372,7 +477,35 @@ export class ScheduleGenerateComponent implements OnInit {
         this.scheduleServiceService.saveSchedule(dataPost).subscribe({
           next: (result: any) => {
             if (result.status) {
-              console.log(result.data);
+              // clear data
+              // this.clearScheduleForm()
+              // this.dataCourse = []
+              // this.dataRoomSelect = []
+
+              if (result.data) {
+                console.log(result.data);
+                const objJson = result.data
+
+                // check conflict
+                if (objJson.courseMissing.length > 0) {
+                  this.courseMissing = [...objJson.courseMissing]
+                  this.toastr.error("Schedule conflict")
+                  this.goCourseConflict()
+                } else if (objJson.courseMissingRoom.length > 0) {
+                  // courseMissingMessage
+                  let arr = []
+                  for (let msg in objJson.roomMessage) arr.push(objJson.roomMessage[msg])
+                  this.courseMissingMessage = arr
+                  this.toastr.error("Schedule conflict")
+                  this.goRoomConflict()
+                } else {
+                  this.dataCourseBeforeSave = objJson.scheduleGenerate
+                  this.bindingScheduleTable(objJson.scheduleGenerate)
+                  this.toastr.success("Generate Schedule success")
+                  this.goScheduleBeforeUpdate()
+                }
+
+              }
             } else {
               alert("Something wrong")
             }
@@ -384,5 +517,36 @@ export class ScheduleGenerateComponent implements OnInit {
         })
       }
     }
+  }
+
+  onSaveSchedule() {
+    const course = [
+      ...this.dataCourseBeforeSave.mon,
+      ...this.dataCourseBeforeSave.tue,
+      ...this.dataCourseBeforeSave.wed,
+      ...this.dataCourseBeforeSave.thu,
+      ...this.dataCourseBeforeSave.fri,
+      ...this.dataCourseBeforeSave.sat,
+    ]
+    const data = {
+      schedule: this.getScheduleForm(),
+      course
+    }
+    this.scheduleServiceService.continueSchedule(data).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.toastr.success(result.message)
+          setTimeout(()=>{
+            this.router.navigate([this.envUrl.schedule_admin])
+          },1000)
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
   }
 }

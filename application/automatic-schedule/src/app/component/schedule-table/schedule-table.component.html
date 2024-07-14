@@ -1,0 +1,56 @@
+<!-- view table content -->
+<div class="w-full bg-[#E3E1D9] flex-1 overflow-auto mb-1 rounded-md">
+    <div class="w-full flex">
+        <!-- room col -->
+        <!-- dummy div -->
+        <!-- <div class="w-[4%]">
+            <div class="h-12 bg-[#B4B4B8] sticky top-0 border border-black/10"></div>
+            <div *ngFor="let item of ['F203','F029','E029','F203','F029','E029','F203','F029','E029']; let i = index"
+                class="h-[70px] border border-black/10 flex flex-col items-center justify-center text-black text-xs font-semibold"
+                [ngClass]="{'bg-[#C7C8CC]': (i % 2 === 0), 'bg-[#B4B4B8]': (i % 2 !== 0)}">
+                <span>{{item}}</span>
+                <span>L.TRUNG</span>
+            </div>
+        </div> -->
+
+        <!-- schedule col / each course -->
+        <div *ngFor="let day of weekDay;let i = index" class="w-[17%]">
+            <!-- day -->
+            <div class="h-12 justify-center items-center space-x-2 flex font-semibold 
+                        sticky top-0 border border-black/10 text-black text-xs uppercase"
+                [ngClass]="{'bg-[#B4B4B8]': (i % 2 !== 0), 'bg-[#C7C8CC]': (i % 2 === 0)}">
+                <span> {{day}} </span>
+            </div>
+
+            <!-- course  -->
+            <div *ngFor="let course of courses">
+                <div>
+                    <div *ngIf="course.day === day.slice(0,3)"
+                        class="cursor-pointer p-1 h-[120px] flex flex-col text-center border border-black/10 bg-[#F2EFE5] overflow-auto text-xs hover:border-sky-500">
+                        <!-- time -->
+                        <div>
+                            <div class="flex items-center flex-wrap justify-start gap-1" >
+                                <i class="fa fa-clock mr-1 text-sky-500 w-5"></i>
+                                <span class="font-semibold my-1"> {{ formatTimeHourMinute(course.timeStart)}} - {{formatTimeHourMinute(course.timeEnd)}} </span>
+                            </div>
+                            <div class="flex items-center flex-wrap justify-start gap-1">
+                                <i class="fa fa-map-marker-alt text-red-500 w-5"></i>
+                                <span>{{course.room}}_{{course.location}}</span>
+                            </div>
+                            <div class="flex items-center flex-wrap justify-start gap-1">
+                                <i class="fa fa-chalkboard-teacher text-[#74a0bf] w-5"></i>
+                                <span>{{course.teacher}}</span>
+                            </div>
+                        </div>
+
+                        <!-- title - address - room -->
+                        <div class="flex-1 flex items-center justify-center p-1 bg-white/70 space-y-2 mt-1">
+                            <span class="font-semibold">{{course.className}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

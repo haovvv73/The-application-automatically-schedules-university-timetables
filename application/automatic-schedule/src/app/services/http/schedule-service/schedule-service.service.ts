@@ -14,6 +14,10 @@ export class ScheduleServiceService extends BaseHttpService {
     return this.get(this.url)
   }
 
+  continueSchedule(data:any){
+    return this.post(this.url+ 'continue',data)
+  }
+
   getScheduleDetail(id:string){
     return this.get(this.url,id)
   }

@@ -863,25 +863,26 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
             }
         }
     }
-
-    // for (let days in schedule) {
-    //     for (let cou of schedule[days]) {
-    //         console.log("daysss2 ======", cou.day);
-    //         console.log('name:', cou.className);
-    //         console.log('duration:', cou.duration);
-    //         console.log('location', cou.location);
-    //         console.log('start = ', format(cou.timeStart, 'HH:mm'));
-    //         console.log('end = ', format(cou.timeEnd, 'HH:mm'));
-    //         console.log('room = ', cou.roomID);
-    //         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    //     }
-    // }
+    // console.log(rawTeacherSameCourse);
+    for (let days in schedule) {
+        for (let cou of schedule[days]) {
+            console.log("daysss2 ======", cou.day);
+            console.log('name:', cou.className);
+            console.log('duration:', cou.duration);
+            console.log('location', cou.location);
+            console.log('start = ', format(cou.timeStart, 'HH:mm'));
+            console.log('end = ', format(cou.timeEnd, 'HH:mm'));
+            console.log('room = ', cou.roomID);
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        }
+    }
     
     let scheduleResult = {...schedule}
     let courseMissing = [...dump]
     // reset data
     courses = []
     teacherSameCourse = []
+    dump = []
     schedule = {
         mon: [],
         tue: [],
@@ -894,56 +895,117 @@ const scheduleGenerate = (rawCourses, rawTeacherSameCourse) => {
     return [scheduleResult,courseMissing]
 }
 
+const roomOverlapRooms = (room,roomUsed)=>{
+    for(let rUsed of roomUsed){
+        let check = isOverlap(rUsed,room)
+        if(check &&  rUsed.day == room.day){ return true }
+    }
+    return false
+}
+
 const roomGenerate = (room, roomUsed, scheduleClone)=>{
     // generate room
+    const courseMissingRoom = []
+    const message = {
+        theory_LT : '',
+        theory_NVC : '',
+        practice_LT : '',
+        practice_NVC : '',
+    } 
     for (let days in scheduleClone) {
-        let index = 0
-        const roomThNVC = 'phong thuc hanh NVC'
-        const roomThLT = 'phong thuc hanh LT'
-        const arrRoomLT = shuffleArray(['phong 1', 'phong 2'])
-        const arrRoomNVC = shuffleArray(['phong a', 'phong b'])
 
-        const courseLT = scheduleClone[days].filter(item => item.type === 'LT')
-        const courseTH = scheduleClone[days].filter(item => item.type === 'TH')
+        // linh trung
+        let arrRoomLT_LT = room.filter(r => r.location == 1 &&  r.roomType == 1 )
+        let arrRoomTH_LT = room.filter(r => r.location == 1  && r.roomType == 0)
+        // nguyen van cu
+        let arrRoomLT_NVC = room.filter(r => r.location == 0 &&  r.roomType == 1)
+        let arrRoomTH_NVC = room.filter(r => r.location == 0 && r.roomType == 0)
+
+        // course prepare
+        const courseLT = scheduleClone[days].filter(item => item.type == 1)
+        const courseTH = scheduleClone[days].filter(item => item.type == 0)
+
         // filter thuc hanh
-        const courseThucHanhLT = courseTH.filter(item => item.location === 1)
-        const courseThucHanhNVC = courseTH.filter(item => item.location === 0)
-
+        const courseThucHanhLT = courseTH.filter(item => item.location == 1)
+        const courseThucHanhNVC = courseTH.filter(item => item.location == 0)
         // filter ly thuyet
-        const courseLyThuyetLT = courseLT.filter(item => item.location === 1)
-        const courseLyThuyetNVC = courseLT.filter(item => item.location === 0)
+        const courseLyThuyetLT = courseLT.filter(item => item.location == 1)
+        const courseLyThuyetNVC = courseLT.filter(item => item.location == 0)
 
         // linh trung get room
         // LT
         for (let cou of courseLyThuyetLT) {
-            if (index % 2 == 0) {
-                cou.room = arrRoomLT[0]
-            } else {
-                cou.room = arrRoomLT[1]
+            arrRoomLT_LT = shuffleArray(arrRoomLT_LT)
+            for(let r of arrRoomLT_LT){
+                cou.roomID = r.roomID
+                let check = roomOverlapRooms(cou,roomUsed)
+                if(!check){
+                    break;
+                }else{
+                    cou.roomID = ''
+                }
             }
-            index++
+            if(cou.roomID == ''){
+                courseMissingRoom.push(cou)
+                message.theory_LT = 'Số lượng phòng lý thuyết linh trung không đủ'
+            }
         }
         // TH
         for (let cou of courseThucHanhLT) {
-            cou.room = roomThLT
+            arrRoomTH_LT = shuffleArray(arrRoomTH_LT)
+            for(let r of arrRoomTH_LT){
+                cou.roomID = r.roomID
+                let check = roomOverlapRooms(cou,roomUsed)
+                if(!check){
+                    break;
+                }else{
+                    cou.roomID = ''
+                }
+            }
+            if(cou.roomID == ''){
+                courseMissingRoom.push(cou)
+                message.practice_LT = 'Số lượng phòng thực hành linh trung không đủ'
+            }
         }
 
         // nguyen van cu get room
         // LT
         for (let cou of courseLyThuyetNVC) {
-            if (index % 2 == 0) {
-                cou.room = arrRoomNVC[0]
-            } else {
-                cou.room = arrRoomNVC[1]
+            arrRoomLT_NVC = shuffleArray(arrRoomLT_NVC)
+            for(let r of arrRoomLT_NVC){
+                cou.roomID = r.roomID
+                let check = roomOverlapRooms(cou,roomUsed)
+                if(!check){
+                    break;
+                }else{
+                    cou.roomID = ''
+                }
             }
-            index++
+            if(cou.roomID == ''){
+                courseMissingRoom.push(cou)
+                message.theory_NVC = 'Số lượng phòng lý thuyết nguyễn văn cừ không đủ'
+            }
         }
         // TH
         for (let cou of courseThucHanhNVC) {
-            cou.room = roomThNVC
+            arrRoomTH_NVC = shuffleArray(arrRoomTH_NVC)
+            for(let r of arrRoomTH_NVC){
+                cou.roomID = r.roomID
+                let check = roomOverlapRooms(cou,roomUsed)
+                if(!check){
+                    break;
+                }else{
+                    cou.roomID = ''
+                }
+            }
+            if(cou.roomID == ''){
+                courseMissingRoom.push(cou)
+                message.practice_NVC = 'Số lượng phòng thực hành nguyễn văn cừ không đủ'
+            }
         }
     }
-
-    return scheduleClone
+    // console.log(scheduleClone);
+    // console.log(courseMissingRoom);
+    return [scheduleClone,courseMissingRoom,message]
 }
 export { scheduleGenerate, roomGenerate }

@@ -10,8 +10,11 @@ class CourseService {
 
     // READ
     async getCourses(scheduleID) {
-        const query = `SELECT * FROM ${this.table} WHERE scheduleID = ? AND deleted = ? `
-        const [row] = await this.connection.execute(query, [scheduleID,0])
+        const query = `SELECT * FROM ${this.table} 
+        LEFT JOIN subject as su ON su.subjectID = ${this.table}.subjectID
+        LEFT JOIN schedule as s ON ${this.table}.scheduleID = s.scheduleID
+        WHERE ${this.table}.scheduleID = ? AND s.deleted = ? `
+        const [row] = await this.connection.execute(query, [scheduleID, 0])
         const result = []
 
         if (row.length > 0) {
@@ -31,6 +34,7 @@ class CourseService {
                         course.subjectID,
                         course.roomID,
                         course.scheduleID,
+                        course.duration
                     )
                 )
             }
@@ -40,8 +44,11 @@ class CourseService {
     }
 
     async getCourseById(id) {
-        const query = `SELECT * FROM ${this.table} WHERE courseID  = ?  AND deleted = ?  `
-        const [row] = await this.connection.execute(query, [id,0])
+        const query = `SELECT * FROM ${this.table} 
+        LEFT JOIN subject as su ON su.subjectID = ${this.table}.subjectID
+        LEFT JOIN schedule as s ON ${this.table}.scheduleID = s.scheduleID
+        WHERE ${this.table}.courseID = ? AND s.deleted = ? `
+        const [row] = await this.connection.execute(query, [id, 0])
         const result = []
 
         if (row.length > 0) {
@@ -68,41 +75,48 @@ class CourseService {
         return result
     }
 
-    async getCourseByTeacher(lecturerID){
+    async getCourseByTeacher(lecturerID) {
         const result = []
-        for(let lecID of lecturerID){
-            const query = `SELECT * FROM ${this.table} WHERE lecturerID LIKE ? OR  lecturerID LIKE ? OR  lecturerID LIKE ?  OR  lecturerID LIKE ? AND deleted = ?  `
-            const [row] = await this.connection.execute(query, [`%[${lecID},%`,`%,${lecID},%`,`%,${lecID}]%`,`%[${lecID}]%`,0])
+        for (let lecID of lecturerID) {
+            const query = `SELECT * FROM ${this.table} 
+            LEFT JOIN schedule as s
+            ON ${this.table}.scheduleID = s.scheduleID
+            WHERE lecturerID LIKE ? OR  lecturerID LIKE ? OR  lecturerID LIKE ?  OR  lecturerID LIKE ? AND s.deleted = ?  `
+            const [row] = await this.connection.execute(query, [`%[${lecID},%`, `%,${lecID},%`, `%,${lecID}]%`, `%[${lecID}]%`, 0])
             if (row.length > 0) {
-                const course = row[0]
-                result.push(
-                    new Course(
-                        course.courseID,
-                        course.className,
-                        course.cohort,
-                        course.classSize,
-                        course.timeStart,
-                        course.timeEnd,
-                        course.day,
-                        course.type.readUInt8(0),
-                        course.location.readUInt8(0),
-                        JSON.parse(course.lecturerID),
-                        course.subjectID,
-                        course.roomID,
-                        course.scheduleID,
+                for (let course of row) {
+                    result.push(
+                        new Course(
+                            course.courseID,
+                            course.className,
+                            course.cohort,
+                            course.classSize,
+                            course.timeStart,
+                            course.timeEnd,
+                            course.day,
+                            course.type.readUInt8(0),
+                            course.location.readUInt8(0),
+                            JSON.parse(course.lecturerID),
+                            course.subjectID,
+                            course.roomID,
+                            course.scheduleID,
+                        )
                     )
-                )
+                }
             }
         }
 
         return result
     }
 
-    async getCourseByRoom(roomID){
+    async getCourseByRoom(roomID) {
         const result = []
-        for(let roomId of roomID){
-            const query = `SELECT * FROM ${this.table} WHERE roomID = ? AND deleted = ?`
-            const [row] = await this.connection.execute(query, [roomId,0])
+        for (let roomId of roomID) {
+            const query = `SELECT * FROM ${this.table} 
+            LEFT JOIN schedule as s
+            ON ${this.table}.scheduleID = s.scheduleID
+            WHERE roomID = ? AND s.deleted = ? `
+            const [row] = await this.connection.execute(query, [roomId, 0])
             if (row.length > 0) {
                 const course = row[0]
                 result.push(
@@ -134,7 +148,7 @@ class CourseService {
             await this.connection.query('START TRANSACTION');
 
             const query = `UPDATE ${this.table} SET delete = ? WHERE courseID = ?`
-            const result = await this.connection.execute(query, [1,id])
+            const result = await this.connection.execute(query, [1, id])
 
             await this.connection.query('COMMIT');
             return result[0].affectedRows
@@ -149,7 +163,7 @@ class CourseService {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const {className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID} = course
+            const { className, cohort, classSize, timeStart, timeEnd, day, type, location, lecturerID, subjectID, roomID, scheduleID } = course
             const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID) 
             VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`
             const result = await this.connection.execute(query, [
@@ -180,8 +194,8 @@ class CourseService {
         try {
             await this.connection.query('START TRANSACTION');
             let allResult = 0
-            for(let course of courses){
-                const {className,cohort,classSize,timeStart,timeEnd,day,location,lecturerID,subjectID,type,roomID,scheduleID} = course
+            for (let course of courses) {
+                const { className, cohort, classSize, timeStart, timeEnd, day, location, lecturerID, subjectID, type, roomID, scheduleID } = course
 
                 const query = `INSERT INTO ${this.table}(className,cohort,classSize,timeStart,timeEnd,day,type,location,lecturerID,subjectID,roomID,scheduleID) 
                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`

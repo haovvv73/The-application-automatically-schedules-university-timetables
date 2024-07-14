@@ -15,7 +15,7 @@ const getCourse = async (req, res) => {
 
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, data)
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }

@@ -24,7 +24,7 @@ export class TeacherComponent {
     this.lecturerForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      lecturerName: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9]*$")]),
+      lecturerName: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]*$")]),
       faculty: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")]),
       phone: new FormControl('', [Validators.required, Validators.pattern("^[0-9]{10}$")]),
       birthday: new FormControl('', [Validators.required]),

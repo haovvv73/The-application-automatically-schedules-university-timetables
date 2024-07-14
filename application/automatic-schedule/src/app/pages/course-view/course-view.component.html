@@ -2,11 +2,12 @@
     <!-- toolbar -->
     <div class="px-2 mt-2 flex items-center justify-between">
         <button
+            (click)="goBack()"
             class="shadow-md rounded-md px-3 border border-gray-500 bg-gray-500 text-white hover:bg-white hover:text-gray-500">
             <i class="fa fa-arrow-left"></i>
         </button>
 
-        <div class="flex items-center space-x-2">
+        <div class="items-center space-x-2 hidden">
             <button
                 class="bg-sky-500 shadow-md rounded-full px-2 py-1 border text-white hover:bg-white hover:text-sky-500">
                 <i class="fa fa-pen"></i>
@@ -36,23 +37,23 @@
     <div class="space-y-2 px-4 grid grid-rows-2 grid-flow-col">
         <div class="items-center flex space-x-2">
             <span class="rounded-xl px-2 bg-gradient-to-b from-blue-300 to-sky-300 font-semibold">Class Name:</span>
-            <span>20TTH - Toan Roi Rac</span>
+            <span>{{course.className}}</span>
         </div>
         <div class="items-center flex space-x-2">
-            <span class="rounded-xl px-2 bg-gradient-to-b from-blue-300 to-sky-300 font-semibold"> Periods:</span>
-            <span>12</span>
+            <span class="rounded-xl px-2 bg-gradient-to-b from-blue-300 to-sky-300 font-semibold"> Day:</span>
+            <span>{{course.day}}</span>
         </div>
         <div class="items-center flex space-x-2">
             <span class="rounded-xl px-2 bg-gradient-to-b from-blue-300 to-sky-300 font-semibold">Co-Hort:</span>
-            <span>150 person</span>
+            <span>{{course.cohort}} person</span>
         </div>
         <div class="items-center flex space-x-2">
             <span class="rounded-xl px-2 bg-gradient-to-b from-blue-300 to-sky-300 font-semibold">Class Size:</span>
-            <span>120 person</span>
+            <span>{{course.classSize}}  person</span>
         </div>
         <div class="items-center flex space-x-2">
             <span class="rounded-xl px-2 bg-gradient-to-b from-blue-300 to-sky-300 font-semibold">Time:</span>
-            <span>1h30p - 5h</span>
+            <span>{{formatTimeHourMinute(course.timeStart)}} - {{formatTimeHourMinute(course.timeEnd)}}</span>
         </div>
     </div>
 
@@ -69,16 +70,16 @@
                         <i class="fa fa-store-alt text-lg"></i>
                     </div>
                 </div>
-                <p>ID: <span class="text-gray-600 ml-2">ROOM001</span></p>
-                <p>Room: <span class="text-gray-600 ml-2">F302</span></p>
-                <p>Description: <span class="text-gray-600 ml-2">Room for student and teacher math</span></p>
-                <p>Location: <span class="text-gray-600 ml-2">Linh Trung</span></p>
-                <p>Capacity: <span class="text-gray-600 ml-2">200 person</span></p>
-                <p>Type: <span class="text-gray-600 ml-2">Ly Thuyet</span></p>
-
+                <p>ID: <span class="text-gray-600 ml-2">{{room.roomID}}</span></p>
+                <p>Room: <span class="text-gray-600 ml-2">{{room.roomName}}</span></p>
+                <p>Description: <span class="text-gray-600 ml-2">{{room.description}}</span></p>
+                <p>Location: <span class="text-gray-600 ml-2">{{room.location == 1 ? 'Linh Trung' : 'Nguyen Van Cu' }}</span></p>
+                <p>Capacity: <span class="text-gray-600 ml-2">{{room.capacity}} person</span></p>
+                <p>Type: <span class="text-gray-600 ml-2">{{room.roomType == 1 ? 'Theory' : 'Practice' }}</span></p>
             </div>
             <div
-                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white font-semibold sticky bottom-0 left-0 right-0 p-1 text-center">
+                class="bg-sky-500 hover:bg-sky-600 cursor-pointer 
+                text-white font-semibold sticky bottom-0 left-0 right-0 p-1 text-center hidden">
                 Edit
             </div>
         </div>
@@ -87,24 +88,27 @@
         <div class="flex-1 rounded-xl shadow-md overflow-hidden border-sky-500 border-2">
             <div class="max-h-[299px] overflow-auto flex flex-col space-y-1 bg-gray-100 p-4 h-full">
                 <div class="w-full flex items-center mb-2">
-                    <span class="font-semibold pl-1 border-l-4 border-sky-500">TEACHER</span>
+                    <span class="font-semibold pl-1 border-l-4 border-sky-500">LECTURER</span>
                     <div
                         class="w-[35px] h-[35px] flex items-center justify-center rounded-full shadow-lg ml-auto bg-white border">
                         <i class="fa fa-chalkboard-teacher text-lg"></i>
                     </div>
                 </div>
-                <p>ID: <span class="text-gray-600 ml-2">TEACHER001</span></p>
-                <p>Teacher: <span class="text-gray-600 ml-2">LOREM nguyen</span></p>
-                <p>Gender: <span class="text-gray-600 ml-2">Male</span></p>
-                <p>Falculty: <span class="text-gray-600 ml-2">Mathematic</span></p>
-                <p>Birthday: <span class="text-gray-600 ml-2">20/01/1999</span></p>
-                <p>Address: <span class="text-gray-600 ml-2">Lorem street, KP lorem</span></p>
-                <p>Email: <span class="text-gray-600 ml-2">Lorem&#64;gmail.com</span></p>
-                <p>Phone: <span class="text-gray-600 ml-2">0899807322</span></p>
-
+                <div *ngFor="let item of lecturer; index as i" >
+                    <p class="font-semibold" >lecturer {{i + 1}}</p>
+                    <p>ID: <span class="text-gray-600 ml-2">{{item.lecturerID}}</span></p>
+                    <p>Teacher: <span class="text-gray-600 ml-2">{{item.lecturerName}}</span></p>
+                    <p>Gender: <span class="text-gray-600 ml-2">{{item.gender == 'M' ? 'Male' : 'Female'}}</span></p>
+                    <p>Faculty: <span class="text-gray-600 ml-2">{{item.faculty}}</span></p>
+                    <p>Birthday: <span class="text-gray-600 ml-2">{{item.birthday}}</span></p>
+                    <p>Address: <span class="text-gray-600 ml-2">{{item.address}}</span></p>
+                    <p>Email: <span class="text-gray-600 ml-2">{{item.email}}</span></p>
+                    <p>Phone: <span class="text-gray-600 ml-2">{{item.phone}}</span></p>
+                </div>
             </div>
             <div
-                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white font-semibold sticky bottom-0 left-0 right-0 p-1 text-center">
+                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white 
+                font-semibold sticky bottom-0 left-0 right-0 p-1 text-center hidden">
                 Edit
             </div>
         </div>
@@ -113,21 +117,22 @@
         <div class="flex-1 rounded-xl shadow-md overflow-hidden border-sky-500 border-2">
             <div class="max-h-[299px] overflow-auto flex flex-col space-y-1 bg-gray-100 p-4 h-full">
                 <div class="w-full flex items-center mb-2">
-                    <span class="font-semibold pl-1 border-l-4 border-sky-500">LESSON</span>
+                    <span class="font-semibold pl-1 border-l-4 border-sky-500">SUBJECT</span>
                     <div
                         class="w-[35px] h-[35px] flex items-center justify-center rounded-full shadow-lg ml-auto bg-white border">
                         <i class="fa fa-book text-lg"></i>
                     </div>
                 </div>
-                <p>ID: <span class="text-gray-600 ml-2">LESSON001</span></p>
-                <p>Lesson: <span class="text-gray-600 ml-2">Toan Roi Rac</span></p>
-                <p>Description: <span class="text-gray-600 ml-2">Math for student 1st year</span></p>
-                <p>Index: <span class="text-gray-600 ml-2">3</span></p>
-                <p>Type: <span class="text-gray-600 ml-2">Ly Thuyet</span></p>
+                <p>ID: <span class="text-gray-600 ml-2">{{subject.subjectID}}</span></p>
+                <p>subject: <span class="text-gray-600 ml-2">{{subject.subjectName}}</span></p>
+                <p>Description: <span class="text-gray-600 ml-2">{{subject.description}}</span></p>
+                <p>Credit: <span class="text-gray-600 ml-2">{{subject.credit}}</span></p>
+                <p>Duration: <span class="text-gray-600 ml-2">{{subject.duration}}</span></p>
 
             </div>
             <div
-                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white font-semibold sticky bottom-0 left-0 right-0 p-1 text-center">
+                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white 
+                font-semibold sticky bottom-0 left-0 right-0 p-1 text-center hidden">
                 Edit
             </div>
         </div>
@@ -142,13 +147,14 @@
                         <i class="fa fa-calendar-alt text-lg"></i>
                     </div>
                 </div>
-                <p>ID: <span class="text-gray-600 ml-2">schedule001</span></p>
-                <p>Schedule: <span class="text-gray-600 ml-2">Lop dai tra</span></p>
-                <p>Year: <span class="text-gray-600 ml-2">2020-2021</span></p>
-                <p>Semester: <span class="text-gray-600 ml-2">HK 1</span></p>
+                <p>ID: <span class="text-gray-600 ml-2">{{schedule.scheduleID}}</span></p>
+                <p>Schedule: <span class="text-gray-600 ml-2">{{schedule.title}}</span></p>
+                <p>Year: <span class="text-gray-600 ml-2">{{schedule.yearStart}} & {{schedule.yearEnd}}</span></p>
+                <p>Semester: <span class="text-gray-600 ml-2">HK {{schedule.Semester}}</span></p>
             </div>
             <div
-                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white font-semibold sticky bottom-0 left-0 right-0 p-1 text-center">
+                class="bg-sky-500 hover:bg-sky-600 cursor-pointer text-white font-semibold 
+                sticky bottom-0 left-0 right-0 p-1 text-center hidden">
                 Edit
             </div>
         </div>

@@ -27,13 +27,13 @@
             *ngFor="let item of data"
         >
             <a 
-                [routerLink]=" 3 > 2 ? ['/app/admin/schedule-view/1'] : ['/app/user/schedule-view/1']"
+                [routerLink]="['/app/admin/schedule-view/', item.scheduleID]"
                 class="bg-gradient-to-b from-sky-400 to-blue-400 rounded-md p-3 h-full w-full text-white cursor-pointer flex flex-col"
             >
                 <h2 class="text-lg line-clamp-2 mb-4">{{item.title}}</h2>
                 <div class="mt-auto flex items-center justify-between flex-wrap space-y-1">
                     <span class="border bg-white px-1 rounded-md text-gray-600" >HK {{item.semester}}</span>
-                    <span class="break-all" ><i class="fa fa-calendar mr-1"></i> {{item.semesterYearStart}} - {{item.semesterYearEnd}} </span>
+                    <span class="break-all" ><i class="fa fa-calendar mr-1"></i> {{item.yearStart}} - {{item.yearEnd}} </span>
                 </div>
             </a>
         </div>

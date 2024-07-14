@@ -7,6 +7,7 @@ import { Schedule } from "../models/schedule.js";
 import { Course } from "../models/course.js";
 import courseService from "../services/courseService.js";
 import subjectService from "../services/subjectService.js";
+import roomService from "../services/roomService.js";
 
 const getSchedules = async (req, res) => {
     const scheduleID = req.params.id
@@ -75,7 +76,7 @@ const createSchedule = async (req, res) => {
     // className: 'Pháp luật đại cương', cohort , duration: 1, location: 1, type: 'LT', timeStart: 0, timeEnd: 0, day: '', room: '', LecturerID: [1,2]
     try {
         // save schedule
-        const result = await scheduleService.saveSchedule(schedule)
+        // const result = await scheduleService.saveSchedule(schedule)
 
         // prepareCourse
         const listLecturerID = []
@@ -98,7 +99,7 @@ const createSchedule = async (req, res) => {
                     cou.lecturerID,
                     cou.subjectID,
                     '', //roomID
-                    result[1],
+                    '',
                     subjectFind[0].duration
                 )
             )
@@ -128,7 +129,8 @@ const createSchedule = async (req, res) => {
         }
 
         // get room used
-        const rawRoomUsed = await courseService.getCourseByRoom(room)
+        const rID = room.map(r => r.roomID)
+        const rawRoomUsed = await courseService.getCourseByRoom(rID)
         const roomUsed = []
         for (let cou of rawRoomUsed) {
             roomUsed.push(
@@ -149,14 +151,23 @@ const createSchedule = async (req, res) => {
                 )
             )
         }
-        
-        const [scheduleResult,courseMissing] = scheduleGenerate(modelCourses, modelTeacherCourse)
-        const [finalResult, courseMissingRoom] = roomGenerate(room, roomUsed, scheduleResult)
 
-        objJson = {
-            scheduleGenerate : finalResult,
+        const modelRoom = []
+        for (let r of rID) {
+            let item = await roomService.getRoomById(r)
+            if (item.length > 0) {
+                modelRoom.push(item[0])
+            }
+        }
+
+        const [scheduleResult, courseMissing] = scheduleGenerate(modelCourses, modelTeacherCourse)
+        const [scheduleClone, courseMissingRoom, message] = roomGenerate(modelRoom, roomUsed, scheduleResult)
+
+        const objJson = {
+            scheduleGenerate: scheduleClone,
             courseMissing,
             courseMissingRoom,
+            roomMessage: message
         }
 
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, objJson)
@@ -167,8 +178,43 @@ const createSchedule = async (req, res) => {
     }
 }
 
-const continueSchedule = async () => {
+const continueSchedule = async (req, res) => {
+    const { course, schedule } = await req.body
+    if (!course | !schedule) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
+    try {
+        // save schedule
+        const result = await scheduleService.saveSchedule(schedule)
+
+        const modelCourses = []
+        for (let cou of course) {
+            modelCourses.push(
+                new Course(
+                    '', // courseID
+                    cou.className,
+                    cou.cohort,
+                    cou.classSize,
+                    cou.timeStart, //time start
+                    cou.timeEnd, //time end
+                    cou.day, // day
+                    cou.type,
+                    cou.location,
+                    cou.lecturerID,
+                    cou.subjectID,
+                    cou.roomID, //roomID
+                    result[1], // scheduleID
+                    cou.duration
+                )
+            )
+        }
+
+        // save course
+        await courseService.saveCourses(modelCourses)
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
+    } catch (error) {
+        console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
 }
 
-export { createSchedule, getSchedules, deleteSchedule, updateSchedule, createRoomSchedule }
+export { createSchedule, getSchedules, deleteSchedule, updateSchedule, continueSchedule }
