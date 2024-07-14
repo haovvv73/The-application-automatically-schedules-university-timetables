@@ -37,6 +37,24 @@ const getDetailCourse = async (req, res) => {
     }
 }
 
+const getCourseAndRoom =  async (req, res) => {
+    const lecturerID = req.params.id
+    if (!lecturerID) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    try {
+        let data = []
+        // get by ID
+        if (lecturerID) {
+            data = await courseService.getCourseAndRoomByTeacher(lecturerID)
+        }
+
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, data)
+    } catch (error) {
+        console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
+}
+
+
 const deleteCourse = async (req, res) => {
     const courseID = req.params.id
     if (!courseID) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
@@ -109,4 +127,5 @@ export {
     deleteCourse,
     saveCourse,
     updateCourse,
+    getCourseAndRoom
 }

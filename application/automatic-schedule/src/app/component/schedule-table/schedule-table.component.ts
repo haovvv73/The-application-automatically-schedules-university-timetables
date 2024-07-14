@@ -20,17 +20,7 @@ export class ScheduleTableComponent implements OnChanges {
     'saturday',
   ]
 
-  courses : any[] = [
-    // {
-    //   className: 'xu ly bien hinh va xu ly anh',
-    //   day: 'monday',
-    //   timeStart: '9h',
-    //   timeEnd: '10h',
-    //   location: 'LT',
-    //   room: 'E304',
-    //   teacher:'vo tran gia haoooo'
-    // },
-  ]
+  courses : any[] = []
 
   ngOnChanges(changes: SimpleChanges): void {
     this.courses = changes['dataCourse'].currentValue

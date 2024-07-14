@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ViewtableComponent } from '../../component/viewtable/viewtable.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { format } from 'date-fns';
 import { CourseServiceService } from '../../services/http/course-service/course-service.service';
 import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
@@ -20,21 +20,27 @@ export class ScheduleViewComponent implements OnInit {
   envUrl = EnvUrl
   title = ''
   data: any[] = []
-  dataRoom : any[] = []
+  dataRoom: any[] = []
   dataTeacher: any[] = []
+  dataCourseBeforeSaveTable: any[] = []
+  isAdmin = false
 
   constructor(
     private courseServiceService: CourseServiceService,
     private route: ActivatedRoute,
     private lecturerServiceService: LecturerServiceService,
     private roomServiceService: RoomServiceService,
-    private scheduleServiceService: ScheduleServiceService
+    private scheduleServiceService: ScheduleServiceService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    let href = this.router.url.split('/');
+    let userPathSegment = href[2]
+    this.isAdmin = userPathSegment == 'user' ? false : true
     // console.log(id);
-    if(id){
+    if (id) {
       this.getAll(id)
       this.getLecturer()
       this.getRoom()
@@ -44,21 +50,20 @@ export class ScheduleViewComponent implements OnInit {
 
   // time
   formatTimeHourMinute(time: any) {
-    if(time){
+    if (time) {
       return format(time, 'HH:mm');
-    }else{
+    } else {
       return "00:00"
     }
   }
 
   // api call
-  getAll(id:string) {
+  getAll(id: string) {
     this.courseServiceService.getCourse(id).subscribe({
       next: (result: any) => {
         if (result.status) {
           this.data = result.data
           // console.log(this.data);
-          
         } else {
           alert("Something wrong")
         }
@@ -102,7 +107,7 @@ export class ScheduleViewComponent implements OnInit {
     })
   }
 
-  getSchedule(id:string){
+  getSchedule(id: string) {
     this.scheduleServiceService.getScheduleDetail(id).subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -119,7 +124,7 @@ export class ScheduleViewComponent implements OnInit {
   }
 
   // 
-  getRoomName(id:string){
+  getRoomName(id: string) {
     let roomFind = this.dataRoom.find(r => r.roomID == id)
     if (roomFind) return roomFind.roomName
     return '_null_'
@@ -129,6 +134,36 @@ export class ScheduleViewComponent implements OnInit {
     let teacher = this.dataTeacher.find(teacher => teacher.lecturerID == Id)
     if (teacher) return teacher.lecturerName
     return "_null_"
+  }
+
+  bindingScheduleTable(data: any) {
+    const mockData = []
+    // dataRoomSelect_roomID
+    for (let item of data) {
+      let obj = {
+        className: item.className,
+        day: item.day,
+        timeStart: item.timeStart,
+        timeEnd: item.timeEnd,
+        location: item.location,
+        room: '',
+        teacher: ''
+      }
+      let roomFind = this.dataRoom.find(r => r.roomID == item.roomID)
+      if (roomFind) obj.room = roomFind.roomName
+
+      for (let id of item.lecturerID) {
+        let name = this.getTeacher(id)
+        if (obj.teacher.length > 0) {
+          obj.teacher += (',' + name)
+        } else {
+          obj.teacher += name
+        }
+      }
+      mockData.push(obj)
+    }
+
+    this.dataCourseBeforeSaveTable = mockData
   }
 
 }

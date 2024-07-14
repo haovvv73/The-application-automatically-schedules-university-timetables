@@ -5,7 +5,7 @@
             <!-- logo -->
             <h1 class="text-3xl font-semibold border-l-[6px] border-sky-500 pl-3">{{title}}</h1>
             <!-- method button -->
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2" *ngIf="isAdmin">
                 <!-- edit -->
                 <button
                     class="bg-sky-500 shadow-md rounded-full px-2 py-1 border text-white hover:bg-white hover:text-sky-500">
@@ -31,7 +31,7 @@
                 <i class="fa fa-file-excel"></i>
             </button> -->
             <!-- button table view -->
-            <button (click)="viewTable.onOpenViewtable()"
+            <button (click)="viewTable.onOpenViewtable(); this.bindingScheduleTable(data)"
                 class="bg-sky-500 hover:bg-sky-400 px-4 py-2 rounded-md font-semibold text-white">
                 <i class="fa fa-table"></i>
             </button>
@@ -141,5 +141,5 @@
     </div>
 
     <!-- view table component -->
-    <app-viewtable #viewTable></app-viewtable>
+    <app-viewtable #viewTable [dataCourse]="dataCourseBeforeSaveTable" ></app-viewtable>
 </div>

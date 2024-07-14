@@ -109,6 +109,40 @@ class CourseService {
         return result
     }
 
+    async getCourseAndRoomByTeacher(lecID) {
+        const result = []
+        const query = `SELECT * FROM ${this.table} 
+            LEFT JOIN schedule as s
+            ON ${this.table}.scheduleID = s.scheduleID
+            LEFT JOIN room as r
+            ON ${this.table}.roomID = r.roomID
+            WHERE lecturerID LIKE ? OR  lecturerID LIKE ? OR  lecturerID LIKE ?  OR  lecturerID LIKE ? AND s.deleted = ?  `
+        const [row] = await this.connection.execute(query, [`%[${lecID},%`, `%,${lecID},%`, `%,${lecID}]%`, `%[${lecID}]%`, 0])
+        if (row.length > 0) {
+            for (let course of row) {
+                result.push(
+                    new Course(
+                        course.courseID,
+                        course.className,
+                        course.cohort,
+                        course.classSize,
+                        course.timeStart,
+                        course.timeEnd,
+                        course.day,
+                        course.type.readUInt8(0),
+                        course.location.readUInt8(0),
+                        JSON.parse(course.lecturerID),
+                        course.subjectID,
+                        course.roomID,
+                        course.scheduleID,
+                        course.roomName,
+                    )
+                )
+            }
+        }
+        return result
+    }
+
     async getCourseByRoom(roomID) {
         const result = []
         for (let roomId of roomID) {
