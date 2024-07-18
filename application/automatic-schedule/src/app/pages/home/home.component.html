@@ -1,31 +1,5 @@
 <div class="p-4 flex flex-col gap-3">
   <div class="w-full flex gap-3" >
-    <!-- [1] Chart Request for the week -->
-    <div class="flex-1 h-auto border rounded-xl shadow-md overflow-hidden space-y-4">
-      <!-- title  -->
-      <div class="px-6 pt-3">
-        <h1 class="text-xl font-semibold ">Request statistics for the week</h1>
-      </div>
-
-      <!-- date-time -->
-      <div class="px-3">
-        <div class="px-1 text-[14px] rounded-lg bg-black/10 w-fit ml-auto flex items-center gap-3">
-          <button class="hover:text-black/60"> <i class="fa fa-angle-left"></i> </button>
-          <div>
-            <span>15/04/2024</span> <span> - </span> <span>22/04/2024</span>
-          </div>
-          <button class="hover:text-black/60"> <i class="fa fa-angle-right"></i> </button>
-        </div>
-      </div>
-
-      <!-- chart -->
-      <div class="chart-container">
-        <ngx-charts-pie-chart [results]="dataPC" [view]="viewPC" [animations]="animationPC" [scheme]="colorSchemePC"
-          [labels]="labelsPC" [doughnut]="doughnut" [tooltipText]="percentageFormatterPC" [legend]="legendVBC"></ngx-charts-pie-chart>
-      </div>
-
-    </div>
-
     <!-- [2] Request for the week -->
     <div class="flex-1 h-auto border rounded-xl shadow-md overflow-hidden space-y-4">
       <!-- title  -->

@@ -18,6 +18,10 @@ export class CourseServiceService extends BaseHttpService {
     return this.get(this.url+'detail/',id)
   }
 
+  getCourseAndRoom(id:string){
+    return this.get(this.url+'courseAndRoom/',id)
+  }
+
   saveCourse(schedule :any){
     return this.post(this.url,schedule)
   }

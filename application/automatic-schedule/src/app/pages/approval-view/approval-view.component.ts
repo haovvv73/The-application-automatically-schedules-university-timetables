@@ -1,271 +1,159 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CourseServiceService } from '../../services/http/course-service/course-service.service';
+import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
+import { RoomServiceService } from '../../services/http/room-service/room-service.service';
+import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
+import { ScheduleTableComponent } from '../../component/schedule-table/schedule-table.component';
 
 @Component({
   selector: 'app-approval-view',
   standalone: true,
-  imports: [NgFor,NgIf,NgClass],
+  imports: [NgFor, NgIf, NgClass,ScheduleTableComponent],
   templateUrl: './approval-view.component.html',
   styleUrl: './approval-view.component.css'
 })
-export class ApprovalViewComponent {
-  title = 'Thoi Khoa Bieu Lop Dai Tra'
+export class ApprovalViewComponent implements OnInit {
+  title = ''
+  
+  test = false
 
-  weekDay = [
-    'monday_day',
-    'monday_night',
-    'tuesday_day',
-    'tuesday_night',
-    'wednesday_day',
-    'wednesday_night',
-    'thursday_day',
-    'thursday_night',
-    'friday_day',
-    'friday_night',
-    'saturday_day',
-    'saturday_night',
-    'sunday_day',
-    'sunday_night',
-  ]
+  data: any[] = []
+  dataCourseBeforeSaveTable: any[] = []
+  dataRoom: any[] = []
+  dataTeacher: any[] = []
 
-  courses = [
-    {
-      ID: 1,
-      name: 'xu ly bien hinh va xu ly anh',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'vo tran gia haoooo'
-    },
-    {
-      ID: 2,
-      name: 'hoa dai cuong 2',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'tuesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'tuesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'saturday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'saturday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'tuesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'tuesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'monday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'wednesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'wednesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'wednesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'wednesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'wednesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'wednesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'tuesday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },    {
-      ID: 1,
-      name: 'c program 2',
-      day: 'thursday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 2,
-      name: 'c program 3',
-      day: 'sunday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
-    },
-    {
-      ID: 3,
-      name: 'c program 1',
-      day: 'friday',
-      timeStart: '9h',
-      timeEnd: '10h',
-      address: 'Linh Trung',
-      room: 'E304',
-      teacher:'lorem teacher'
+  constructor(
+    private courseServiceService: CourseServiceService,
+    private route: ActivatedRoute,
+    private lecturerServiceService: LecturerServiceService,
+    private roomServiceService: RoomServiceService,
+    private scheduleServiceService: ScheduleServiceService,
+    private router: Router
+  ) { }
+
+  async ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    let href = this.router.url.split('/');
+
+    // console.log(id);
+    if (id) {
+      await this.getAll(id)
+      await this.getLecturer()
+      await this.getRoom()
+      await this.getSchedule(id)
+      await this.bindingScheduleTable(this.data)
     }
-  ]
-
-  slicePatternWithComma(text : string, comma:string){
-    const words = text.split(comma)
-    return words
   }
+
+  // api call
+  getAll(id: string) {
+    this.courseServiceService.getCourse(id).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.data = result.data
+          // console.log(this.data);
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  getLecturer() {
+    this.lecturerServiceService.getLecturer().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.dataTeacher = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  getRoom() {
+    this.roomServiceService.getRoom().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.dataRoom = result.data
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  getSchedule(id: string) {
+    this.scheduleServiceService.getScheduleDetail(id).subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.title = result.data[0].title
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
+  }
+
+  // binding 
+  getTeacher(Id: string) {
+    let teacher = this.dataTeacher.find(teacher => teacher.lecturerID == Id)
+    if (teacher) return teacher.lecturerName
+    return "_null_"
+  }
+
+  getRoomName(id: string) {
+    let roomFind = this.dataRoom.find(r => r.roomID == id)
+    if (roomFind) return roomFind.roomName
+    return '_null_'
+  }
+
+  bindingScheduleTable(data: any) {
+    const mockData = []
+    // dataRoomSelect_roomID
+    for (let item of data) {
+      let obj = {
+        className: item.className,
+        day: item.day,
+        timeStart: item.timeStart,
+        timeEnd: item.timeEnd,
+        location: item.location,
+        room: '',
+        teacher: ''
+      }
+      let roomFind = this.dataRoom.find(r => r.roomID == item.roomID)
+      if (roomFind) obj.room = roomFind.roomName
+
+      for (let id of item.lecturerID) {
+        let name = this.getTeacher(id)
+        if (obj.teacher.length > 0) {
+          obj.teacher += (',' + name)
+        } else {
+          obj.teacher += name
+        }
+      }
+      mockData.push(obj)
+    }
+
+    this.dataCourseBeforeSaveTable = mockData
+  }
+
 }

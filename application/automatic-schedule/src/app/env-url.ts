@@ -17,6 +17,8 @@ export enum EnvUrl {
     courseView_admin = '/app/admin/course-view/',
     
     approval_admin = '/app/admin/approval',
+
+    notification_admin = '/app/admin/notice',
     
     // user
     home_user = '/app/user/',
@@ -25,6 +27,5 @@ export enum EnvUrl {
     scheduleView_user = '/app/user/schedule-view/',
     courseView_user = '/app/user/course-view/',
 
-    // notification
-    notification = '/app/notice/notification',
+    notification_user = '/app/user/notice',
 }

@@ -371,7 +371,6 @@ const getTime = (day, coursePara) => {
     }
 
     // conflict generate morning
-
     const thisTeacherCourse = teacherSameCourse.filter(cou => {
         let check = false
         for(let i of cou.lecturerID){

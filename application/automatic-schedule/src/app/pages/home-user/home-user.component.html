@@ -34,59 +34,46 @@
                 <div class="p-2 bg-red-400">Total Reject</div>
             </div>
         </div>
+
         <!-- chart -->
         <div class="border rounded-xl shadow-md overflow-hidden ">
             <!-- title  -->
             <div class="p-6">
-                <h1 class="text-xl font-semibold ">Class for the week</h1>
+                <h1 class="text-xl font-semibold ">Request for the week</h1>
             </div>
-            <div class="p-3">
-                <ngx-charts-bar-vertical [results]="dataVBC" [view]="viewVBC" [animations]="animationsVBC"
-                    [legend]="legendVBC" [xAxis]="xAxisVBC" [yAxis]="yAxisLabelVBC" [showYAxisLabel]="showYAxisLabelVBC"
-                    [yAxisLabel]="yAxisLabelVBC"
-                    [dataLabelFormatting]="dataLabelFormatterVBC"></ngx-charts-bar-vertical>
+            <!-- list -->
+            <div class="overflow-x-auto max-h-[464px] overflow-y-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 left-0 right-0">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Type
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Description
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of [1,2,3,4,1,1,1]"
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 ">
+                            <th scope="row" class="px-6 py-4 font-medium text-sky-500 whitespace-nowrap ">
+                                Wait
+                            </th>
+                            <td class="px-6 py-4">
+                                Giảng viên A: đổi giờ dạy ngày thứ ba môn PHP cơ sở NVC
+                            </td>
+                            <td class="px-6 py-4">
+                                <span>09:56</span> <br>
+                                <span>18-04-2024</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
-
-    <!-- [2] -->
-    <div class=" md:flex-1 border rounded-xl shadow-md overflow-hidden h-auto">
-        <!-- title  -->
-        <div class="p-6">
-            <h1 class="text-xl font-semibold ">Request for the week</h1>
-        </div>
-        <!-- list -->
-        <div class="overflow-x-auto max-h-[464px] overflow-y-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 left-0 right-0">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Type
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Description
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Date
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of [1,2,3,4,1,1,1]"
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 ">
-                        <th scope="row" class="px-6 py-4 font-medium text-sky-500 whitespace-nowrap ">
-                            Wait
-                        </th>
-                        <td class="px-6 py-4">
-                            Giảng viên A: đổi giờ dạy ngày thứ ba môn PHP cơ sở NVC
-                        </td>
-                        <td class="px-6 py-4">
-                            <span>09:56</span> <br>
-                            <span>18-04-2024</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -105,8 +92,8 @@
             </div>
         </div>
 
+        <!-- table view-->
         <div class="flex max-h-[450px] overflow-y-auto">
-            <!-- table view left-->
             <div class="flex-1">
                 <table class="w-full border-separate border-spacing-0 text-center">
                     <thead class="sticky top-0 right-0 left-0 border bg-white">
@@ -115,45 +102,28 @@
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Mon</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Tues</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Wed</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Thur</th>
+                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Thu</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Fri</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Sat</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Sun</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <tr *ngFor="let item2 of [1,2,3,4,5,6]">
-                            <td class="border border-black/20 py-5 px-2 font-semibold">{{item2}}</td>
-                            <td *ngFor="let item of [1,2,3,4,5,6,7]" [ngClass]="{'bg-rose-500': item2 == 1}" class="border border-black/20 text-white">
-                                {{item2 == 1? 'PHP-E203': ''}}
+                        <tr *ngFor="let ind of getMax()">
+                            <td class="border border-black/20 text-black ">
+                                {{ind + 1}}
                             </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- table view right-->
-            <div class="flex-1">
-                <table class="w-full border-separate border-spacing-0 text-center">
-                    <thead class="sticky top-0 right-0 left-0 border bg-white">
-                        <tr>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold"></th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Mon</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Tues</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Wed</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Thur</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Fri</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Sat</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Sun</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr *ngFor="let item2 of [7,8,9,10,11,12]">
-                            <td class="border border-black/20 py-5 px-2 font-semibold">{{item2}}</td>
-                            <td *ngFor="let item of [1,2,3,4,5,6,7]" [ngClass]="{'bg-orange-500': item2 == 11}" class="border border-black/20 text-white">
-                                {{item2 == 11? 'PHP-E203': ''}}
+                            <td *ngFor="let dt of [data2,data3,data4,data5,data6,data7]" 
+                            [routerLink]=" dt[ind] && [url,dt[ind]?.scheduleID]"
+                            class="border border-black/20 text-white bg-sky-500 hover:bg-sky-400 transition cursor-pointer">
+                                <p>{{dt[ind]?.className}}</p>
+                                <div>
+                                    <span>{{dt[ind]?.roomName}}</span>
+                                    <span>
+                                        {{dt[ind] && formatTimeHourMinute(dt[ind]?.timeStart) + ' -'}} 
+                                        {{dt[ind] && formatTimeHourMinute(dt[ind]?.timeEnd)}}
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

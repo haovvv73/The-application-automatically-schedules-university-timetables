@@ -1,8 +1,9 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { PopupComponent } from '../../component/popup/popup.component';
 import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
+import { EnvUrl } from '../../env-url';
 
 @Component({
   selector: 'app-schedule',
@@ -13,8 +14,10 @@ import { ScheduleServiceService } from '../../services/http/schedule-service/sch
 })
 export class ScheduleComponent implements OnInit {
   title = "Schedule"
-
-  constructor(private scheduleServiceService: ScheduleServiceService) { }
+  envUrl = EnvUrl
+  url = ''
+  isAdmin = false
+  constructor(private scheduleServiceService: ScheduleServiceService,private router: Router) { }
 
   data: any[] = [
     // {
@@ -28,6 +31,12 @@ export class ScheduleComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAll()
+    let href = this.router.url.split('/');
+    let userPathSegment = href[2]
+    this.url = userPathSegment == 'user' ? this.envUrl.scheduleView_user : this.envUrl.scheduleView_admin
+    this.isAdmin = userPathSegment == 'user' ? false : true
+    // console.log(this.url);
+    
   }
 
   // get
