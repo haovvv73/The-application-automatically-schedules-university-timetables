@@ -1,15 +1,42 @@
 <div class="p-3">
     <!-- request list -->
     <div class="mx-4 mt-4 pb-3 border-b">
-        <h1 class="text-3xl font-semibold border-l-[6px] border-blue-500 pl-3">{{title}}</h1>
+        <div class="mb-5 flex justify-between">
+            <h1 class="text-3xl font-semibold border-l-[6px] border-blue-500 pl-3">{{title}}</h1>
+            <!-- update -->
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" value="" class="sr-only peer">
+                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
+                    peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer 
+                    dark:bg-gray-700 peer-checked:after:translate-x-full 
+                    rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white 
+                    after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white 
+                    after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 
+                    after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                </div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Allow Request</span>
+            </label>
+            <!--  -->
+            <button class="bg-green-500 hover:bg-green-400 px-3 py-1.5 rounded-md font-semibold text-white">
+                <i class="fa fa-paper-plane"></i> Save
+            </button>
+        </div>
+        <div class="items-center flex gap-5">
+            <button class="py-5 text-lg font-semibold 0"  (click)="test = false">
+                <span [ngClass]="{'bg-sky-500':!test, 'bg-gray-500':test}" class="border p-1 px-2 rounded-md text-white">
+                    Schedule's Request
+                </span>
+            </button>
+            <button class="py-5 text-lg font-semibold"  (click)="test = true">
+                <span [ngClass]="{'bg-sky-500':test, 'bg-gray-500':!test}" 
+                class="border p-1 px-2 rounded-md text-white">
+                    Request History
+                </span>
+            </button>
+        </div>
         <div class="mt-2">
-
-            <div class="relative max-h-[40vh] overflow-y-auto overflow-x-auto  sm:rounded-lg">
+            <div class="relative max-h-[50vh] overflow-y-auto overflow-x-auto  sm:rounded-lg">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-y-auto">
-                    <caption
-                        class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
-                        <span class="border p-1 bg-sky-500 rounded-md text-white" >Schedule's Request</span>
-                    </caption>
                     <thead
                         class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
                         <tr>
@@ -18,6 +45,12 @@
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Teacher
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Time request 1st
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Time request 2st
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 description
@@ -31,24 +64,45 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="bg-white dark:bg-gray-800"
-                            *ngFor="let item of [1,1,2,3,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]">
+                        <tr class="bg-white dark:bg-gray-800" *ngFor="let item of [1]">
                             <th scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 1
                             </th>
-                            <td class="px-6 py-4">
-                                Blacker
+                            <td class="px-4 py-2">
+                                Gia Hao
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
+                                <div class="flex gap-5 items-center">
+                                    <span [ngClass]="{'line-through':test}" >Monday 07:00 - 07:50</span>
+                                    <button
+                                        [ngClass]="{'hidden':test}"
+                                        class="h-[35px] w-[35px] font-medium text-green-600 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                                        <i class="fa fa-check-circle text-xl"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="flex gap-5 items-center">
+                                    <span>Friday 07:00 - 07:50</span>
+                                    <button
+                                        [ngClass]="{'hidden':test}"
+                                        class="h-[35px] w-[35px] font-medium text-green-600 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                                        <i class="fa fa-check-circle text-xl"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-4 py-2">
                                 change time Toan Roi rac from monday to friday
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
                                 Personal reason
                             </td>
-                            <td class="px-6 py-4 text-right flex items-start gap-5">
-                                <button class="font-medium text-green-600 dark:text-green-500">Accept</button>
-                                <button class="font-medium text-red-600 dark:text-red-500">Reject</button>
+                            <td class="px-4 py-2">
+                                <button
+                                    class="h-[35px] w-[35px] font-medium text-red-600 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                                    <i class="fa fa-ban text-xl"></i>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -62,64 +116,10 @@
     <div class="px-4 pt-2">
         <div
             class="p-5 flex gap-2 items-center text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
-            <span class="text-base font-normal border p-1 rounded-md bg-pink-600 text-white" >Before Update</span> 
-            <span>Thoi Khoa Bieu Lop Dai Tra</span>
+            <span class="text-base font-normal border p-1 rounded-md bg-pink-600 text-white">Before Update</span>
+            <span>{{title}}</span>
         </div>
         <!-- view table content -->
-        <div class="w-full bg-[#E3E1D9] flex-1 overflow-auto mb-1 rounded-md">
-            <div class="w-full flex">
-                <!-- room col -->
-                <div class="w-[4%]">
-                    <!-- dummy div -->
-                    <div class="h-12 bg-[#B4B4B8] sticky top-0 border border-black/10"></div>
-                    <div *ngFor="let item of ['F203','F029','E029','F203','F029','E029','F203','F029','E029']; let i = index"
-                        class="h-[70px] border border-black/10 flex flex-col items-center justify-center text-black text-xs font-semibold"
-                        [ngClass]="{'bg-[#C7C8CC]': (i % 2 === 0), 'bg-[#B4B4B8]': (i % 2 !== 0)}">
-                        <span>{{item}}</span>
-                        <span>L.TRUNG</span>
-                    </div>
-                </div>
-
-                <!-- schedule col / each course -->
-                <div *ngFor="let day of weekDay;let i = index" class="w-[7%]">
-                    <!-- day -->
-                    <div class="h-12 justify-center items-center space-x-2 flex font-semibold 
-                                sticky top-0 border border-black/10 text-black text-xs"
-                        [ngClass]="{'bg-[#B4B4B8]': (i % 2 !== 0), 'bg-[#C7C8CC]': (i % 2 === 0)}">
-                        <span> {{slicePatternWithComma(day,'_')[0]}} </span>
-                        <span *ngIf="slicePatternWithComma(day,'_')[1] === 'day' "><i class="fa fa-sun"></i></span>
-                        <span *ngIf="slicePatternWithComma(day,'_')[1] === 'night' "><i class="fa fa-moon"></i></span>
-                    </div>
-
-                    <!-- course  -->
-                    <div *ngFor="let course of courses">
-                        <div *ngIf="course.day === slicePatternWithComma(day,'_')[0]"
-                            routerLink="/app/admin/course-view/1"
-                            class="cursor-pointer p-1 h-[70px] flex flex-col text-center border border-black/10 bg-[#F2EFE5] overflow-auto text-xs hover:border-sky-500">
-                            <!-- time -->
-                            <div>
-                                <i class="fa fa-clock mr-1 text-sky-500"></i>
-                                <span class="font-semibold my-1"> {{course.timeStart}} - {{course.timeEnd}} </span>
-                            </div>
-                            <!-- title - address - room -->
-                            <div class="flex-1 flex items-center justify-center p-1 bg-white/70 space-y-2">
-                                <span class="font-semibold">{{course.name}}</span>
-
-                                <!-- <div class="flex items-center flex-wrap justify-center gap-1">
-                                            <i class="fa fa-map-marker-alt text-red-500"></i>
-                                            <span>{{course.address}}</span>
-                                        </div>                           -->
-
-                                <!-- <div class="flex items-center flex-wrap justify-center gap-1">
-                                            <i class="fa fa-chalkboard-teacher text-[#74a0bf]"></i>
-                                            <span>{{course.teacher}}</span>
-                                        </div> -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+        <app-schedule-table [dataCourse]="dataCourseBeforeSaveTable" />
     </div>
 </div>

@@ -135,6 +135,7 @@ class CourseService {
                         course.subjectID,
                         course.roomID,
                         course.scheduleID,
+                        0,
                         course.roomName,
                     )
                 )

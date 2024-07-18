@@ -37,6 +37,7 @@ export const routes: Routes = [
           { path: 'schedule-view/:id', component: ScheduleViewComponent },
           { path: 'course-view/:id', component: CourseViewComponent },
           { path: 'schedule-generate', component: ScheduleGenerateComponent},
+          { path: 'notice', component: NotificationComponent},
           {
             path: '**',
             redirectTo: 'notfound'
@@ -53,6 +54,7 @@ export const routes: Routes = [
           { path: 'request', component: RequestComponent },
           { path: 'schedule-view/:id', component: ScheduleViewComponent },
           { path: 'course-view/:id', component: CourseViewComponent },
+          { path: 'notice', component: NotificationComponent},
           {
             path: '**',
             redirectTo: 'notfound'
@@ -78,20 +80,7 @@ export const routes: Routes = [
             redirectTo: 'notfound'
           },
         ],
-      },
-      // NOTICE route
-      {
-        path: 'notice',
-        children: [
-          { path: '', redirectTo: 'notification', pathMatch: 'full' },
-          { path: 'notification', component: NotificationComponent },
-          {
-            path: '**',
-            redirectTo: 'notfound'
-          },
-        ],
-        component: DashboardTemplateComponent,
-      },
+      }
     ]
   },
   {

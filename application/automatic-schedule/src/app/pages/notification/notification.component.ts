@@ -12,30 +12,30 @@ export class NotificationComponent {
   title = "Notification"
   data:any[] =[
     {
-      id:1,
-      title:'change time schedule angain',
-      description:'set up perspiciatist nde comnis iste natus error sit voluptatem accusiantium dileremque laudantium Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam provident aliquam incidunt iure aut perferendis consequuntur iusto porro, cupiditate in repudiandae eos doloribus tenetur impedit. Obcaecati tenetur explicabo facilis.',
-      sender:'Admin HCMUS',
-      type:'Request',
-      date:'20-01-2024',
-      dateTime:'9:30'
-    },
-    {
       id:2,
-      title:'sent new message',
-      description:'set up perspiciatist nde comnis iste natus error sit voluptatem accusiantium dileremque laudantium Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-      sender:'Darren Smith',
-      type:'Message',
-      date:'20-01-2024',
+      title:'Accept your request',
+      description:'Yêu cầu thay đổi của bạn ở thời khóa biểu lớp tài năng HK 1 năm 2024-2028 đã thành công',
+      sender:'Admin HCMUS',
+      type:'Success',
+      date:'19-07-2024',
       dateTime:'9:30'
     },
     {
       id:1,
-      title:'sent new message',
-      description:'set up perspiciatist nde comnis iste.',
-      sender:'Darren Smith',
+      title:'Reject your request',
+      description:'Lý do thay đổi môn học của bạn tại thời khóa biểu lớp đại trà HK 1 năm học 2024-2028 không chính đáng',
+      sender:'Admin Hcmus',
+      type:'Reject',
+      date:'16-07-2024',
+      dateTime:'9:30'
+    },
+    {
+      id:1,
+      title:'New schedule time-table',
+      description:'Đã có thời khóa biểu mới cho lớp đại trà HK 1 năm học 2024-2028.',
+      sender:'Admin HCMUS',
       type:'Message',
-      date:'20-01-2024',
+      date:'15-07-2024',
       dateTime:'9:30'
     },
   ]

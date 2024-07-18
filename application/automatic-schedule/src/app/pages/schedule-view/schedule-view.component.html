@@ -1,20 +1,25 @@
-<div class="p-3">
+<div [ngClass]="{'hidden':requestMode}" class="p-3">
     <!-- toolbar -->
     <div class=" mx-4 mt-4 pb-3 border-b">
         <div class="mb-5 flex justify-between">
             <!-- logo -->
             <h1 class="text-3xl font-semibold border-l-[6px] border-sky-500 pl-3">{{title}}</h1>
             <!-- method button -->
-            <div class="flex items-center space-x-2" *ngIf="isAdmin">
+            <div class="flex items-center space-x-2">
                 <!-- edit -->
-                <button
+                <button *ngIf="isAdmin"
                     class="bg-sky-500 shadow-md rounded-full px-2 py-1 border text-white hover:bg-white hover:text-sky-500">
                     <i class="fa fa-pen"></i>
                 </button>
                 <!-- delete -->
-                <button
+                <button *ngIf="isAdmin"
                     class="bg-red-500 shadow-md rounded-full px-[9px] py-1 border text-white hover:bg-white hover:text-red-500">
                     <i class="fa fa-times"></i>
+                </button>
+                <!-- request button -->
+                <button *ngIf="!isAdmin" (click)="goRequest()"
+                    class="bg-sky-500 hover:bg-sky-400 px-3 py-1.5 rounded-md font-semibold text-white">
+                    <i class="fa fa-paper-plane"></i> Request
                 </button>
             </div>
         </div>
@@ -125,8 +130,7 @@
                                         {{item.duration}}
                                     </td>
                                     <td class="px-4 py-4">
-                                        <a [routerLink]="[envUrl.courseView_admin,item.courseID]" 
-                                        class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full 
+                                        <a [routerLink]="[envUrl.courseView_admin,item.courseID]" class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full 
                                         hover:bg-gray-100 flex items-center justify-center">
                                             <i class="fa fa-eye text-lg"></i>
                                         </a>
@@ -141,5 +145,188 @@
     </div>
 
     <!-- view table component -->
-    <app-viewtable #viewTable [dataCourse]="dataCourseBeforeSaveTable" ></app-viewtable>
+    <app-viewtable #viewTable [dataCourse]="dataCourseBeforeSaveTable"></app-viewtable>
+</div>
+
+<div [ngClass]="{'hidden':!requestMode}" class="p-3">
+    <div class=" mx-4 mt-4 pb-3">
+        <div class="mb-5 flex justify-between">
+            <!-- logo -->
+            <h1 class="text-3xl font-semibold border-l-[6px] border-orange-500 pl-3">
+                <span class="text-orange-500">Request To</span> {{title}}
+            </h1>
+            <!-- method button -->
+            <div class="flex items-center space-x-2">
+            </div>
+        </div>
+    </div>
+    <div class="flex items-start gap-10">
+        <!-- form request -->
+        <div class="w-[30%]">
+            <form [formGroup]="requestForm" (ngSubmit)="onSubmit()"
+                class="flex-1 border py-2 px-3 rounded-lg shadow-sm border-sky-400">
+                <span class="font-semibold text-gray-500">Course Name:</span>
+                <!-- 1st change time -->
+                <div>
+                    <p class="mb-2"> <strong>1ST</strong> change course time:</p>
+                    <div class="flex gap-2">
+                        <!-- new day -->
+                        <select id="location" formControlName="day1"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ">
+                            <option selected>--Select--</option>
+                            <option value="mon">Mon</option>
+                            <option value="tue">Tue</option>
+                            <option value="wed">Wed</option>
+                            <option value="thu">Thu</option>
+                            <option value="fri">Fri</option>
+                        </select>
+                        <!-- time start -->
+                        <input type="time" id="small-input" formControlName="timeStart1"
+                            class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                            placeholder="Start">
+                        <div class="flex items-center">
+                            <i class="fa fa-long-arrow-alt-right"></i>
+                        </div>
+                        <!-- time end -->
+                        <input type="time" id="small-input" formControlName="timeEnd1"
+                            class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                            placeholder="End">
+                    </div>
+                </div>
+                <div class="h-[20px] overflow-hidden">
+                    <!--  validate -->
+                    <div *ngIf="day1 && day1.errors && (day1.touched || day1.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="day1.errors?.['required']" class="text-rose-500">*Day is required</span>
+                    </div>
+                    <div *ngIf="timeStart1 && timeStart1.errors && (timeStart1.touched || timeStart1.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="timeStart1.errors?.['required']" class="text-rose-500">*Time-Start is
+                            required</span>
+                    </div>
+                    <div *ngIf="timeEnd1 && timeEnd1.errors && (timeEnd1.touched || timeEnd1.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="timeEnd1.errors?.['required']" class="text-rose-500">*Time-End is required</span>
+                    </div>
+                </div>
+
+                <!-- 2nd change time -->
+                <div>
+                    <p class="mb-2"> <strong>2ST</strong> change course time:</p>
+                    <div class="flex gap-2">
+                        <!-- new day -->
+                        <select id="location" formControlName="day2"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ">
+                            <option selected>--Select--</option>
+                            <option value="mon">Mon</option>
+                            <option value="tue">Tue</option>
+                            <option value="wed">Wed</option>
+                            <option value="thu">Thu</option>
+                            <option value="fri">Fri</option>
+                        </select>
+                        <!-- time start -->
+                        <input type="time" id="small-input" formControlName="timeStart2"
+                            class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                            placeholder="Start">
+                        <div class="flex items-center">
+                            <i class="fa fa-long-arrow-alt-right"></i>
+                        </div>
+                        <!-- time end -->
+                        <input type="time" id="small-input" formControlName="timeEnd2"
+                            class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                            placeholder="End">
+                    </div>
+                </div>
+                <div class="h-[26px] overflow-hidden">
+                    <!--  validate -->
+                    <div *ngIf="day2 && day2.errors && (day2.touched || day2.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="day2.errors?.['required']" class="text-rose-500">*Day is required</span>
+                    </div>
+                    <div *ngIf="timeStart2 && timeStart2.errors && (timeStart2.touched || timeStart2.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="timeStart2.errors?.['required']" class="text-rose-500">*Time-Start is
+                            required</span>
+                    </div>
+                    <div *ngIf="timeEnd2 && timeEnd2.errors && (timeEnd2.touched || timeEnd2.dirty)"
+                        class="ml-1 text-[13px] font-semibold">
+                        <span *ngIf="timeEnd2.errors?.['required']" class="text-rose-500">*Time-End is required</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div>
+                        <textarea rows="2" formControlName="reason"
+                            class="block p-2.5 w-full text-sm resize-none text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                            placeholder="Write your reason here...">
+                        </textarea>
+                        <div class="h-[20px]">
+                            <div *ngIf="reason && reason.errors && (reason.touched || reason.dirty)"
+                                class="ml-1 text-[13px]  font-semibold">
+                                <span *ngIf="reason.errors?.['required']" class="text-rose-500">*Reason is
+                                    required</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button
+                            class="select-none rounded-lg bg-gray-900 py-2 px-4 
+                            text-center align-middle font-sans text-xs font-bold uppercase 
+                            text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg 
+                            hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+                            type="submit">
+                            Request
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- teacher schedule-->
+        <div class="flex-1 flex max-h-[450px] overflow-y-auto rounded-lg">
+            <div class="flex-1">
+                <table class="w-full border-separate border-spacing-0 text-center bg-[#B4B4B8] rounded-md">
+                    <thead class="sticky top-0 right-0 left-0 border">
+                        <tr>
+                            <!-- <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold"></th> -->
+                            <th scope="col" class="w-[12%] border border-black/20 p-2 font-semibold">Monday</th>
+                            <th scope="col" class="w-[12%] border border-black/20 p-2 font-semibold">Tuesday</th>
+                            <th scope="col" class="w-[12%] border border-black/20 p-2 font-semibold">wednesday</th>
+                            <th scope="col" class="w-[12%] border border-black/20 p-2 font-semibold">Thursday</th>
+                            <th scope="col" class="w-[12%] border border-black/20 p-2 font-semibold">Friday</th>
+                            <th scope="col" class="w-[12%] border border-black/20 p-2 font-semibold">Saturday</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let ind of getMax()">
+                            <!-- <td class="border border-black/20 text-black ">
+                                    {{ind + 1}}
+                                </td> -->
+                            <td *ngFor="let dt of [data2,data3,data4,data5,data6,data7]"
+                                class="border border-black/20 text-white bg-[#C7C8CC]">
+                                <div *ngIf="dt[ind]" >
+                                    <p>{{dt[ind].className}}</p>
+                                    <span>{{dt[ind].roomName}} </span>
+                                    <span>
+                                        {{formatTimeHourMinute(dt[ind].timeStart) + ' -'}}
+                                        {{formatTimeHourMinute(dt[ind].timeEnd)}}
+                                    </span>
+                                    <span>{{ dt[ind].location === 1 ? 'LT' : '' }}</span>
+                                    <span>{{ dt[ind].location === 0 ? 'NVC' : '' }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- schedule -->
+    <div class="mt-6 space-x-2">
+        <h1 class="text-2xl font-semibold bg-pink-600 rounded-md w-fit text-white py-1 px-3 mr-2">
+            Schedule Before Release
+        </h1>
+        <app-schedule-table [dataCourse]="dataCourseBeforeSaveTable" />
+    </div>
 </div>

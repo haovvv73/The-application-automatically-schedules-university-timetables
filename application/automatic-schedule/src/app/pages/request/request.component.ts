@@ -1,11 +1,11 @@
-import { NgClass, NgFor } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { PopupComponent } from '../../component/popup/popup.component';
 
 @Component({
   selector: 'app-request',
   standalone: true,
-  imports: [NgFor, NgClass, PopupComponent],
+  imports: [NgFor, NgClass, PopupComponent, NgIf],
   templateUrl: './request.component.html',
   styleUrl: './request.component.css',
 })

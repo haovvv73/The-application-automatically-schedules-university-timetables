@@ -92,7 +92,7 @@
             </div>
         </div>
 
-        <!-- table view left-->
+        <!-- table view-->
         <div class="flex max-h-[450px] overflow-y-auto">
             <div class="flex-1">
                 <table class="w-full border-separate border-spacing-0 text-center">
@@ -102,19 +102,28 @@
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Mon</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Tues</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Wed</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Thur</th>
+                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Thu</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Fri</th>
                             <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Sat</th>
-                            <th scope="col" class="w-[12%] border border-black/20 py-5 px-2 font-semibold">Sun</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <tr *ngFor="let item2 of [1,2,3,4,5,6]">
-                            <td class="border border-black/20 py-5 px-2 font-semibold">{{item2}}</td>
-                            <td *ngFor="let item of [1,2,3,4,5,6,7]" [ngClass]="{'bg-rose-500': item2 == 1}"
-                                class="border border-black/20 text-white">
-                                {{item2 == 1? 'PHP-E203': ''}}
+                        <tr *ngFor="let ind of getMax()">
+                            <td class="border border-black/20 text-black ">
+                                {{ind + 1}}
+                            </td>
+                            <td *ngFor="let dt of [data2,data3,data4,data5,data6,data7]" 
+                            [routerLink]=" dt[ind] && [url,dt[ind]?.scheduleID]"
+                            class="border border-black/20 text-white bg-sky-500 hover:bg-sky-400 transition cursor-pointer">
+                                <p>{{dt[ind]?.className}}</p>
+                                <div>
+                                    <span>{{dt[ind]?.roomName}}</span>
+                                    <span>
+                                        {{dt[ind] && formatTimeHourMinute(dt[ind]?.timeStart) + ' -'}} 
+                                        {{dt[ind] && formatTimeHourMinute(dt[ind]?.timeEnd)}}
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
