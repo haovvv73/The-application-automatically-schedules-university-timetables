@@ -4,6 +4,7 @@ import { EnvUrl } from '../../env-url';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIf, NgStyle } from '@angular/common';
 import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +17,11 @@ export class RegisterComponent implements OnInit {
   envUrl = EnvUrl
   registerForm!: FormGroup
 
-  constructor(private authService: AuthServiceService, private router: Router) { }
+  constructor(
+    private authService: AuthServiceService,
+    private router: Router,
+    private tokenServiceService: TokenServiceService
+  ) { }
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
@@ -26,8 +31,8 @@ export class RegisterComponent implements OnInit {
       faculty: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")]),
       phone: new FormControl('', [Validators.required, Validators.pattern("^[0-9]{10}$")]),
       birthday: new FormControl('', [Validators.required]),
-      address: new FormControl('', [Validators.required,Validators.pattern("^[a-zA-Z0-9 ]+$")],),
-      gender: new FormControl('', [Validators.required,Validators.pattern("^[a-zA-Z0-9]*$")],),
+      address: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9 ]+$")],),
+      gender: new FormControl('', [Validators.required, Validators.pattern("^[a-zA-Z0-9]*$")],),
     })
   }
 
@@ -51,15 +56,15 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('phone')
   }
 
-  get birthday() {    
+  get birthday() {
     return this.registerForm.get('birthday')
   }
 
-  get address() {    
+  get address() {
     return this.registerForm.get('address')
   }
 
-  get gender() {    
+  get gender() {
     return this.registerForm.get('gender')
   }
 
@@ -106,6 +111,7 @@ export class RegisterComponent implements OnInit {
         next: (result: any) => {
           console.log(">> result >> ", result);
           if (result.status) {
+            this.tokenServiceService.setToken(result.data)
             this.router.navigate([this.envUrl.schedule_user])
           } else {
             alert("Register failed")

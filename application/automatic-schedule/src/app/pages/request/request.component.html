@@ -3,7 +3,7 @@
     <div class=" mx-4 mt-4 pb-3 border-b">
         <div class="mb-5 flex justify-between">
             <h1 class="text-3xl font-semibold border-l-[6px] border-blue-500 pl-3">{{title}}</h1>
-            <div>
+            <div class="hidden" >
                 <button class="hover:bg-slate-200 rounded-full h-8 w-8"> <i class="fa fa-cog"></i> </button>
             </div>
         </div>
@@ -53,36 +53,38 @@
                     <tbody>
                         <tr *ngFor="let item of data, index as i"
                             class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
                                 {{i+1}}
                             </td>
-                            <!-- <td class="px-6 py-4">
+                            <!-- <td class="px-4 py-2">
                                 {{item.Id}}
                             </td> -->
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
                                 {{item.request}}
                             </td>
-                            <td class="px-6 py-4">
-                                {{item.requestDescription}}
+                            <td class="px-4 py-2">
+                                TKB Lop Dai Tra 2024-2028
                             </td>
-                            <td class="px-6 py-4">
-                                {{item.time}}
+                            <td class="px-4 py-2">
+                                <span > <i class="fa fa-circle"></i> Monday 07:00 - 07:50</span>
+                                <hr class="my-2" >
+                                <span> <i class="fa fa-circle"></i> Friday 07:00 - 07:50</span>
                             </td>
-                            <td class="px-6 py-4">
-                                {{item.date}}
+                            <td class="px-4 py-2">
+                                {{item.time}} - {{item.date}}
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
                                 <div class="p-1 w-[70px] text-center rounded-md text-white"
                                     [ngClass]="[getStatusColor(item.status)]">
                                     {{item.status}}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 flex items-center">
+                            <td class="px-4 py-2 flex items-center">
                                 <!-- detail -->
-                                <button
+                                <!-- <button
                                     class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full hover:bg-gray-100">
                                     <i class="fa fa-eye text-lg"></i>
-                                </button>
+                                </button> -->
                                 <!-- cancel -->
                                 <button
                                     class="h-[35px] w-[35px] font-medium rounded-full hover:bg-gray-100 text-orange-600">

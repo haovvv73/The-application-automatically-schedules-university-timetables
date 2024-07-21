@@ -24,7 +24,7 @@ export class ScheduleTableComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.courses = changes['dataCourse'].currentValue
-    console.log(this.courses);
+    // console.log(this.courses);
   }
 
   formatTimeHourMinute(time: any) {

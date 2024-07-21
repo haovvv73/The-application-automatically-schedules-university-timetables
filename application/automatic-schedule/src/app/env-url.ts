@@ -17,6 +17,7 @@ export enum EnvUrl {
     courseView_admin = '/app/admin/course-view/',
     
     approval_admin = '/app/admin/approval',
+    approvalView_admin = '/app/admin/approval-view',
 
     notification_admin = '/app/admin/notice',
     

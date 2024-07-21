@@ -1,19 +1,28 @@
 import { NgClass, NgFor } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
+import { EnvUrl } from '../../env-url';
 
 @Component({
   selector: 'app-approval',
   standalone: true,
-  imports: [NgFor,NgClass,RouterLink],
+  imports: [NgFor, NgClass, RouterLink],
   templateUrl: './approval.component.html',
   styleUrl: './approval.component.css'
 })
-export class ApprovalComponent {
+export class ApprovalComponent implements OnInit {
+  url = EnvUrl.approvalView_admin
   title = "Approval"
   borderColor = 'border-sky-400'
   statusSelect = 0
   statusList = ['All', 'Wait', 'Accept', 'Cancel', 'Reject']
+
+  constructor(private scheduleServiceService: ScheduleServiceService) { }
+
+  ngOnInit(): void {
+    this.getAll()
+  }
 
   columnsKey: any[] = [
     'No',
@@ -24,79 +33,40 @@ export class ApprovalComponent {
     'action'
   ]
 
-  statusColor = {
-    Wait: 'bg-gray-400',
-    Accept: 'bg-green-400',
-    Reject: 'bg-red-400',
-    Cancel: 'bg-orange-400',
-    All: 'bg-sky-400'
-  }
-
-  borderColorMap = {
-    All: 'border-sky-400',
-    Wait: 'border-gray-400',
-    Accept: 'border-green-400',
-    Reject: 'border-red-400',
-    Cancel: 'border-orange-400'
-  }
-
   data: any[] = [
-    {
-      Id: 'scheduleRquest001',
-      scheduleName: 'Thoi khoa bieu lop dai tra',
-      semester: '1',
-      year: '2024-2028',
-      request: '5 request',
-    },
-    {
-      Id: 'scheduleRquest002',
-      scheduleName: 'Thoi khoa bieu lop dai tra',
-      semester: '1',
-      year: '2024-2028',
-      request: '5 request',
-    },
+    // {
+    //   Id: 'scheduleRquest001',
+    //   scheduleName: 'Thoi khoa bieu lop dai tra',
+    //   semester: '1',
+    //   year: '2024-2028',
+    //   request: '5 request',
+    // },
+    // {
+    //   Id: 'scheduleRquest002',
+    //   scheduleName: 'Thoi khoa bieu lop dai tra',
+    //   semester: '1',
+    //   year: '2024-2028',
+    //   request: '5 request',
+    // },
   ]
 
-  getStatusColor(status: string) {
-    switch (status) {
-      case 'Wait':
-        return this.statusColor.Wait
-      case 'Accept':
-        return this.statusColor.Accept
-      case 'Reject':
-        return this.statusColor.Reject
-      case 'Cancel':
-        return this.statusColor.Cancel
-      case 'All':
-        return this.statusColor.All
-      default:
-        return this.statusColor.Wait
-    }
+  getAll() {
+    this.scheduleServiceService.getSchedule().subscribe({
+      next: (result: any) => {
+        if (result.status) {
+          this.data = result.data
+          console.log(this.data);
+          
+        } else {
+          alert("Something wrong")
+        }
+      },
+      error: (error: any) => {
+        console.log(">> error >>", error)
+        alert("Something wrong")
+      }
+    })
   }
 
-  getBorderColor(status: string) {
-    switch (status) {
-      case 'Wait':
-        this.borderColor = this.borderColorMap.Wait
-        break
-      case 'Accept':
-        this.borderColor = this.borderColorMap.Accept
-        break
-      case 'Reject':
-        this.borderColor = this.borderColorMap.Reject
-        break
-      case 'Cancel':
-        this.borderColor = this.borderColorMap.Cancel
-        break
-      default:
-        this.borderColor = this.borderColorMap.All
-    }
-  }
 
-  onSelectStatus(index: number) {
-    // set color border
-    this.getBorderColor(this.statusList[index])
-    // set statusColor
-    this.statusSelect = index
-  }
 }

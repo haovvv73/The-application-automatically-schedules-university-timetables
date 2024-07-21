@@ -8,6 +8,8 @@ import { Course } from "../models/course.js";
 import courseService from "../services/courseService.js";
 import subjectService from "../services/subjectService.js";
 import roomService from "../services/roomService.js";
+import { Noti } from "../models/notification.js";
+import notification from "../services/notificationService.js";
 
 const getSchedules = async (req, res) => {
     const scheduleID = req.params.id
@@ -25,7 +27,7 @@ const getSchedules = async (req, res) => {
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, data)
 
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }
@@ -187,7 +189,10 @@ const continueSchedule = async (req, res) => {
         const result = await scheduleService.saveSchedule(schedule)
 
         const modelCourses = []
+        const listLecturerID = []
         for (let cou of course) {
+            const { lecturerID } = cou
+            if (lecturerID) listLecturerID.push(...lecturerID)
             modelCourses.push(
                 new Course(
                     '', // courseID
@@ -209,7 +214,28 @@ const continueSchedule = async (req, res) => {
         }
 
         // save course
-        await courseService.saveCourses(modelCourses)
+        let check = await courseService.saveCourses(modelCourses)
+        if (check) {
+            const message = 'New schedule time-table'
+            const description = 'New Schedule For' + schedule.Title + ' in Semester ' + schedule.semester + ' ' + schedule.timeStart + schedule.timeEnd
+
+            // Format the date and time
+            for (let lecID of listLecturerID) {
+                const event = new Date();
+                const dateTime = event.toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }).split(', ');
+                // save DB
+                const noti = new Noti('', '', message, 'message', description, 'HCMUS ADMIN', dateTime[1], dateTime[0])
+                await notification.saveNotification(noti)
+
+                const userSocketId = req.getUserSocketId(lecID);
+                if (userSocketId) {
+                    req.io.to(userSocketId).emit(
+                        'notification', noti
+                    );
+                }
+            }
+        }
+
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
     } catch (error) {
         console.log(error);

@@ -10,7 +10,7 @@ import { PopupComponent } from '../../component/popup/popup.component';
   styleUrl: './request.component.css',
 })
 export class RequestComponent {
-  title = "Request"
+  title = "Request History"
   borderColor = 'border-sky-400'
   statusSelect = 0
   statusList = ['All','Wait','Accept','Cancel','Reject']
@@ -18,8 +18,8 @@ export class RequestComponent {
   columnsKey: any[] = [
     'STT',
     'request',
-    'request Description',
-    'time',
+    'schedule',
+    'time change',
     'date',
     'status',
     'Action'
@@ -44,7 +44,7 @@ export class RequestComponent {
   data: any[] = [
     {
       Id: 'request01',
-      request: 'lorem request oo1oasd',
+      request: 'Change Time Toan Roi Rac',
       requestDescription: 'lorem request to give salkdalsdk aslkdnjasl',
       time: '12h30p',
       date: '20/05/2002',

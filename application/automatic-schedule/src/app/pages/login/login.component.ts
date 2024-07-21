@@ -4,6 +4,7 @@ import { EnvUrl } from '../../env-url';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 
 @Component({
   selector: 'app-login',
@@ -16,12 +17,16 @@ export class LoginComponent implements OnInit {
   envUrl = EnvUrl
   loginForm!: FormGroup
 
-  constructor(private authService: AuthServiceService, private router: Router) { }
+  constructor(
+    private authService: AuthServiceService,
+     private router: Router,
+     private tokenServiceService : TokenServiceService
+    ) { }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)])
+      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     })
   }
 
@@ -59,7 +64,9 @@ export class LoginComponent implements OnInit {
         next: (result: any) => {
           console.log(">> result >> ", result);
           if(result.status){
-            this.router.navigate([this.envUrl.schedule_admin])
+              // console.log(result.data);
+              this.tokenServiceService.setToken(result.data)
+              this.router.navigate([this.envUrl.schedule_admin])
           }else{
             alert("Wrong email or password")
           }

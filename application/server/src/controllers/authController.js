@@ -4,7 +4,7 @@ import { Lecturer } from "../models/lecturer.js";
 import accountService from "../services/accountService.js";
 import lecturerService from "../services/lecturerService.js";
 import { comparePassword, hashPassword } from "../util/passwordUtil.js";
-import { createToken } from "../util/tokenUtil.js";
+import { createToken, decodeToken } from "../util/tokenUtil.js";
 
 
 const login = async (req, res, next) => {
@@ -49,7 +49,7 @@ const register = async (req, res, next) => {
         // hash password
         const hashPass = await hashPassword(password)
         const newUser = new Lecturer(
-            '','',email, lecturerName, phone, hashPass, gender, faculty, birthday, address
+            '', '', email, lecturerName, phone, hashPass, gender, faculty, birthday, address
         )
 
         // save user in db
@@ -69,4 +69,48 @@ const register = async (req, res, next) => {
     }
 }
 
-export { login, register }
+const checkIsAdmin = async (req, res, next) => {
+    const { token } = req.body;
+    const userToken = decodeToken(token)
+    // validate
+    if (!userToken) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+
+    try {
+        const {accountID} = userToken
+        const result = await accountService.getAccountByID(accountID)
+        if (result.length < 1) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+        const user = result[0]
+        console.log(user);
+        if (user.permissionRead == 0 || user.permissionCreate == 0 || user.permissionUpdate == 0 || user.permissionDelete == 0) {
+            return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+        }
+
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, user)
+    } catch (error) {
+        console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
+}
+
+const checkIsUser = async (req, res, next) => {
+    const { token } = req.body;
+    
+    const userToken = decodeToken(token)
+    // validate
+    if (!userToken) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+
+    try {
+        const {accountID} = userToken
+        const result = await accountService.getAccountByID(accountID)
+        if (result.length < 1) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+
+        const user = result[0]
+        return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, user)
+    } catch (error) {
+        console.log(error);
+        return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
+    }
+}
+
+
+export { login, register, checkIsAdmin, checkIsUser }

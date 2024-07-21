@@ -40,16 +40,18 @@
                                 {{item.Id}}
                             </td> -->
                             <td class="px-6 py-4">
-                                {{item.scheduleName}}
+                                {{item.title}}
                             </td>
                             <td class="px-6 py-4">
                                 {{item.semester}}
                             </td>
                             <td class="px-6 py-4">
-                                {{item.year}}
+                                {{item.yearStart}}
+                                -
+                                {{item.yearEnd}}
                             </td>
                             <td class="px-6 py-4">
-                                {{item.request}}
+                                {{item.totalRequest}}
                             </td>
                             <!-- <td class="px-6 py-4">
                                 <div class="p-1 w-[70px] text-center rounded-md text-white"
@@ -59,9 +61,9 @@
                             </td> -->
                             <td class="px-6 py-4 flex items-center">
                                 <!-- detail -->
-                                <a routerLink="/app/admin/approval-view/121" class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                                <button [routerLink]="[url, item.scheduleID]" class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full hover:bg-gray-100 flex items-center justify-center">
                                     <i class="fa fa-eye text-lg"></i>
-                                </a>
+                                </button>
                                 <!-- accept -->
                                 <!-- <button class="h-[35px] w-[35px] flex items-center justify-center font-medium text-green-600 rounded-full hover:bg-gray-100">
                                     <i class="fa fa-check-circle text-lg"></i>

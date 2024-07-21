@@ -1,10 +1,12 @@
 import dotenv from 'dotenv';
 import express from 'express';
+
 import cors from 'cors'
 import initApiRoutes from './routes/apiRoutes.js';
 import morgan from 'morgan';
 import httpStatusCode from './helpers/httpStatusCode.js';
 import { errorResponse } from './helpers/httpResponse.js';
+import realtimeNotification from './middleware/realtimeNotification.js';
 
 dotenv.config();
 
@@ -22,6 +24,9 @@ app.use(
         origin: '*',
     })
 );
+
+// config notification realtime
+realtimeNotification(app)
 
 // logger middleware
 app.use(morgan('combined'))

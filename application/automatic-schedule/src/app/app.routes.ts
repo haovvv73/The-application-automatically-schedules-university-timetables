@@ -17,6 +17,8 @@ import { NotificationComponent } from './pages/notification/notification.compone
 import { ScheduleGenerateComponent } from './pages/schedule-generate/schedule-generate.component';
 import { HomeUserComponent } from './pages/home-user/home-user.component';
 import { ApprovalViewComponent } from './pages/approval-view/approval-view.component';
+import { authGuardGuard } from './guard/auth-guard/auth-guard.guard';
+import { adminGuardGuard } from './guard/admin-guard/admin-guard.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'app/auth/login', pathMatch: 'full' },
@@ -43,6 +45,7 @@ export const routes: Routes = [
             redirectTo: 'notfound'
           },
         ],
+        canActivate:[adminGuardGuard],
         component: DashboardTemplateComponent,
       },
       // USER route
@@ -60,6 +63,7 @@ export const routes: Routes = [
             redirectTo: 'notfound'
           },
         ],
+        canActivate:[authGuardGuard],
         component: UserTemplateComponent
       },
       // AUTH route

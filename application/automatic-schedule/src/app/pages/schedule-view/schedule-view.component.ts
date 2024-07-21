@@ -20,6 +20,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 })
 export class ScheduleViewComponent implements OnInit {
   envUrl = EnvUrl
+  currentScheduleID : string | null = null
   requestForm!: FormGroup
   title = ''
   data: any[] = []
@@ -195,6 +196,7 @@ export class ScheduleViewComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           this.title = result.data[0].title
+          this.currentScheduleID = result.data[0].scheduleID
         } else {
           alert("Something wrong")
         }
@@ -316,7 +318,12 @@ export class ScheduleViewComponent implements OnInit {
     alert('run')
     this.onClickValidate()
     if (!this.requestForm.invalid) {
- 
+      console.log(this.getForm())
+
+      const send = {
+        scheduleID: this.currentScheduleID,
+        
+      }
     }
   }
 }

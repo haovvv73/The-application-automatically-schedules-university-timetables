@@ -18,7 +18,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "mysql2": "^3.9.9"
+    "mysql2": "^3.9.9",
+    "socket.io": "^4.7.5"
   },
   "devDependencies": {
     "express-generator": "^4.16.1",
