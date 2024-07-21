@@ -10,13 +10,17 @@ function getUserSocketId(userId) {
 const realtimeNotification = (app) => {
     console.log('realtime notification work !!')
     const server = http.createServer(app);
-    const io = new Server(server);
+    const io = new Server(server, {
+        cors: {
+          origin: '*',
+        }
+      });
 
     // listen client 
     io.on('connection', (socket) => {
         console.log('A user connected:', socket.id);
 
-       // register 
+        // register noti
         socket.on('register', (userId) => {
             // register client socket ID
             users[userId] = socket.id;
@@ -34,6 +38,8 @@ const realtimeNotification = (app) => {
                     break;
                 }
             }
+
+            console.log(users);
         });
     });
 
@@ -42,6 +48,10 @@ const realtimeNotification = (app) => {
         req.io = io;
         req.getUserSocketId = getUserSocketId;
         next();
+    });
+
+    server.listen(4133, () => {
+        console.log('server socket running at http://localhost:4133');
     });
 }
 

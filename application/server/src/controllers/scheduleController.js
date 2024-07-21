@@ -188,6 +188,7 @@ const continueSchedule = async (req, res) => {
         // save schedule
         const result = await scheduleService.saveSchedule(schedule)
 
+        // save course
         const modelCourses = []
         const listLecturerID = []
         for (let cou of course) {
@@ -212,9 +213,9 @@ const continueSchedule = async (req, res) => {
                 )
             )
         }
-
-        // save course
         let check = await courseService.saveCourses(modelCourses)
+
+        
         if (check) {
             const message = 'New schedule time-table'
             const description = 'New Schedule For' + schedule.Title + ' in Semester ' + schedule.semester + ' ' + schedule.timeStart + schedule.timeEnd
@@ -223,10 +224,11 @@ const continueSchedule = async (req, res) => {
             for (let lecID of listLecturerID) {
                 const event = new Date();
                 const dateTime = event.toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }).split(', ');
-                // save DB
-                const noti = new Noti('', '', message, 'message', description, 'HCMUS ADMIN', dateTime[1], dateTime[0])
+                // save DB 
+                const noti = new Noti('', lecID, message, 'message', description, 'HCMUS ADMIN', dateTime[1], dateTime[0])
                 await notification.saveNotification(noti)
 
+                // send noti user online
                 const userSocketId = req.getUserSocketId(lecID);
                 if (userSocketId) {
                     req.io.to(userSocketId).emit(

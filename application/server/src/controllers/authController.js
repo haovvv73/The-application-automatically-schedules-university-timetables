@@ -20,6 +20,7 @@ const login = async (req, res, next) => {
 
         // check password
         const user = result[0]
+        
         const isMatch = await comparePassword(password, user.password)
         if (!isMatch) return errorResponse(res, 'Wrong Password', httpStatusCode.Unauthorized.code)
 
@@ -70,17 +71,19 @@ const register = async (req, res, next) => {
 }
 
 const checkIsAdmin = async (req, res, next) => {
+    
     const { token } = req.body;
     const userToken = decodeToken(token)
+    
     // validate
     if (!userToken) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
         const {accountID} = userToken
+        
         const result = await accountService.getAccountByID(accountID)
         if (result.length < 1) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
         const user = result[0]
-        console.log(user);
         if (user.permissionRead == 0 || user.permissionCreate == 0 || user.permissionUpdate == 0 || user.permissionDelete == 0) {
             return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
         }

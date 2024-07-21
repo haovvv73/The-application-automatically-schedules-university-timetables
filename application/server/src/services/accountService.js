@@ -27,6 +27,7 @@ class AccountService {
                     account.permissionCreate,
                     account.permissionUpdate,
                     account.permissionDelete,
+                    account.lecturerID,
                 ))
             }
         }
@@ -36,7 +37,7 @@ class AccountService {
 
     async getAccounts() {
         const query = `SELECT * FROM ${this.table} 
-        LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID `
+        LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID`
         const [row] = await this.connection.execute(query)
         const result = []
 
@@ -50,6 +51,7 @@ class AccountService {
                     account.permissionCreate,
                     account.permissionUpdate,
                     account.permissionDelete,
+                    account.lecturerID,
                 ))
             }
         }
@@ -75,6 +77,7 @@ class AccountService {
                     account.permissionCreate,
                     account.permissionUpdate,
                     account.permissionDelete,
+                    account.lecturerID,
                 ))
             }
         }

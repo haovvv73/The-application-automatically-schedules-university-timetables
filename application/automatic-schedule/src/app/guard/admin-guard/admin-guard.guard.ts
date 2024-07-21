@@ -18,13 +18,13 @@ export const adminGuardGuard: CanActivateFn = async (route, state) => {
 
   // check token is expired
   const token = tokenService.getToken()
+  console.log(token);
   
   await authService.checkAdmin({token}).subscribe({
     next: (result : any) =>{
       if(result.data){
         // valid token
-        console.log('admin success')
-        tokenService.setUser(result.data)
+        console.log('admin success',result.data)
         router.navigate(['app/admin']);
       }else{
         // expired token
