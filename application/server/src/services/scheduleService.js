@@ -11,17 +11,14 @@ class ScheduleService {
     // READ
     async getSchedule() {
         const query = `SELECT ${this.table}.*, COUNT(r.requestID) as totalRequest FROM ${this.table} 
-        LEFT JOIN course as c
-        ON ${this.table}.scheduleID = c.scheduleID
-        LEFT JOIN lecturer as l
-        ON c.lecturerID = l.lecturerID
         LEFT JOIN request as r
-        ON r.lecturerID = l.lecturerID
+        ON r.scheduleID = ${this.table}.scheduleID
         WHERE  ${this.table}.deleted = ?
         GROUP BY ${this.table}.scheduleID;`
         const [row] = await this.connection.execute(query,[0])
         const result = []
-        
+        // console.log(row);
+        // console.log(query);
         if (row.length > 0) {
             for (let schedule of row) {
                 result.push(

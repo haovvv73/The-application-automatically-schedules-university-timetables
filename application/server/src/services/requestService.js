@@ -11,13 +11,14 @@ class RequestService {
     // READ
     // get by lecturer
     async getRequest(id) {
+        console.log(id);
         const query = `SELECT * FROM ${this.table} 
-        WHERE lectureID = ? AND ${this.table}.deleted = ?`
+        WHERE ${this.table}.lecturerID = ? AND ${this.table}.deleted = ?`
         const [row] = await this.connection.execute(query, [id,0])
         const result = []
 
         if (row.length > 0) {
-            for(let request of row[0]){
+            for(let request of row){
                 result.unshift(
                     request
                 )
@@ -105,7 +106,7 @@ class RequestService {
             const {lecturerID,scheduleID,courseID, title, content, status, time, time2, reason, date} = request
 
             const query = `INSERT INTO ${this.table}(lecturerID,scheduleID,courseID, title, content, status, time, time2, reason, date) 
-            VALUES(?,?,?,?,?,?,?,?,?,?)`
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             const result = await this.connection.execute(query, [lecturerID,scheduleID,courseID, title, content, status, time, time2, reason, date])
 
             await this.connection.query('COMMIT');

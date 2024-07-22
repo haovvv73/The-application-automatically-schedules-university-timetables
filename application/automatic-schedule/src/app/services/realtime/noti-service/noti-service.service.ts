@@ -7,6 +7,8 @@ import { io } from 'socket.io-client';
 })
 export class NotiServiceService {
   private socket: any;
+  isUserConnect = false
+  isAdminConnect = false
   private url = 'http://localhost:4133'; // Your server URL
   public message: Subject<any> = new Subject<any>();
   public messageAdmin: Subject<any> = new Subject<any>();
@@ -24,10 +26,20 @@ export class NotiServiceService {
   }
 
   register(lecID: string) {
-    this.socket.emit('register', lecID);
+    if( !this.isUserConnect ){
+      this.socket.emit('register', lecID);
+      this.isUserConnect = true
+    }else{
+      console.log('user connected');
+    }
   }
 
   registerAdmin(accID: string) {
-    this.socket.emit('register-admin', accID);
+    if( !this.isAdminConnect ){
+      this.socket.emit('register-admin', accID);
+      this.isAdminConnect = true
+    }else{
+      console.log('admin connected');
+    }
   }
 }

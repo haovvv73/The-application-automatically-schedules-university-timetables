@@ -409,7 +409,7 @@ export class ScheduleViewComponent implements OnInit {
 
     return false
   }
-  const isOverlap = (cou1 : any, cou2 : any) => {
+  isOverlap = (cou1 : any, cou2 : any) => {
     const interval1 = {
       start: set(new Date(), {
         hours: cou1.timeStart.getHours(),

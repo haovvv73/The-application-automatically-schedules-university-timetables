@@ -10,13 +10,13 @@ class Notification {
 
     // READ
     async getNotification(id) {
-        const query = `SELECT * FROM ${this.table} WHERE lectureID = ? AND deleted = ?`
+        const query = `SELECT * FROM ${this.table} WHERE lecturerID = ? AND deleted = ?`
         const [row] = await this.connection.execute(query, [id, 0])
         const result = []
         
         if (row.length > 0) {
             for (let noti of row) {
-                result.push(
+                result.unshift(
                     new Noti(
                         noti.notiID,
                         noti.lecturerID,

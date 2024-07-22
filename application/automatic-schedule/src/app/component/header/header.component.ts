@@ -1,22 +1,23 @@
 import { NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { EnvUrl } from '../../env-url';
 import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
 import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgIf,RouterLink],
+  imports: [NgIf, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
-  host: {ngSkipHydration: 'true'},
+  host: { ngSkipHydration: 'true' },
 })
-export class HeaderComponent {
-  currentUser : any = {}
+export class HeaderComponent implements OnInit {
+  currentUser: any = {}
   showSubmenu = false
   envUrl = EnvUrl
   goToNotification = this.envUrl.notification_user
@@ -26,11 +27,13 @@ export class HeaderComponent {
 
   constructor(
     private router: Router,
-    private tokenServiceService : TokenServiceService,
-    private authServiceService : AuthServiceService,
-    private notiServiceService : NotiServiceService,
+    private tokenServiceService: TokenServiceService,
+    private authServiceService: AuthServiceService,
+    private notiServiceService: NotiServiceService,
     private toastr: ToastrService,
   ) { }
+
+
 
   ngOnInit(): void {
     let href = this.router.url.split('/');
@@ -39,11 +42,11 @@ export class HeaderComponent {
     this.isAdmin = userPathSegment == 'user' ? false : true
 
     const token = this.tokenServiceService.getToken()
-    this.authServiceService.checkAuth({token}).subscribe({
-      next: (result : any) =>{
-        if(result.data){
+    this.authServiceService.checkAuth({ token }).subscribe({
+      next: (result: any) => {
+        if (result.data) {
           // binding
-          console.log('success',result.data)
+          console.log('success', result.data)
           this.userName = result.data.email.split('@')[0]
 
           // save local
@@ -51,50 +54,63 @@ export class HeaderComponent {
           this.tokenServiceService.setUser(result.data)
 
           // register noti real time
-          if(this.isAdmin){
-            this.registerNotiAdmin(this.currentUser.accountID)
-            this.onNotiAdmin()
-          }else{
+          if (
+            this.currentUser.permissionRead == 0 || 
+            this.currentUser.permissionCreate == 0 || 
+            this.currentUser.permissionUpdate == 0 ||
+            this.currentUser.permissionDelete == 0 ) 
+          {
+            
+            if(this.notiServiceService.isUserConnect){
+              this.onNoti()
+              console.log('haooasodasdo');
+            }
             this.registerNoti(this.currentUser.lecturerID)
-            this.onNoti()
+            
+          }else{
+
+            console.log(22);
+            
+            // this.registerNotiAdmin(this.currentUser.accountID)
+            // this.onNotiAdmin()
           }
         }
       },
-      error :(error : any)=>{
+      error: (error: any) => {
         console.error('Error validating token:', error);
       }
     })
   }
 
-  registerNoti(lecID : string){
+  registerNoti(lecID: string) {
     this.notiServiceService.register(lecID);
   }
 
-  onNoti(){
-    this.notiServiceService.message.subscribe((msg: any) => {
-      console.log("user >>",msg);
+  onNoti() {
+     this.notiServiceService.message.subscribe((msg: any) => {
+      console.log("user >>", msg);
       this.toastr.info('New Message !!')
       this.newMessage = true
     });
   }
 
-  registerNotiAdmin(lecID : string){
+  registerNotiAdmin(lecID: string) {
     this.notiServiceService.registerAdmin(lecID);
   }
 
-  onNotiAdmin(){
-    this.notiServiceService.messageAdmin.subscribe((msg: any) => {
-      console.log("admin >>",msg);
+  onNotiAdmin() {
+     this.notiServiceService.messageAdmin.subscribe((msg: any) => {
+      console.log("admin >>", msg);
       this.toastr.info('New Message !!')
       this.newMessage = true
     });
   }
 
-  onShowSubmenu(){
+  onShowSubmenu() {
     this.showSubmenu = true
   }
 
-  onHideSubmenu(){
+  onHideSubmenu() {
     this.showSubmenu = false
   }
 }

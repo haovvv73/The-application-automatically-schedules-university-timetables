@@ -82,8 +82,9 @@ const checkIsAdmin = async (req, res, next) => {
         const {accountID} = userToken
         
         const result = await accountService.getAccountByID(accountID)
-        if (result.length < 1) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+        if (result.length <= 0) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
         const user = result[0]
+
         if (user.permissionRead == 0 || user.permissionCreate == 0 || user.permissionUpdate == 0 || user.permissionDelete == 0) {
             return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
         }

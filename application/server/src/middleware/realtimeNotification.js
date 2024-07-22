@@ -30,12 +30,14 @@ const realtimeNotification = (app) => {
         socket.on('register', (userId) => {
             // register client socket ID
             users[userId] = socket.id;
+            console.log(users);
             console.log(`User ${userId} registered with socket ID ${socket.id}`);
         });
 
         //  admin
         socket.on('register-admin', (adminId) => {
             // register client socket ID
+            console.log(admins);
             admins[adminId] = socket.id;
             console.log(`admin ${adminId} registered with socket ID ${socket.id}`);
         });
@@ -60,8 +62,8 @@ const realtimeNotification = (app) => {
                 }
             }
 
-            console.log(users);
-            console.log(admins);
+            // console.log(users);
+            // console.log(admins);
         });
     });
 

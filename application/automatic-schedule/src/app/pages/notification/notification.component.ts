@@ -53,11 +53,11 @@ export class NotificationComponent implements OnInit {
 
           // register noti real time
           if (this.isAdmin) {
-            this.registerNotiAdmin(this.currentUser.accountID)
-            this.onNotiAdmin()
+            // this.registerNotiAdmin(this.currentUser.accountID)
+            // this.onNotiAdmin()
           } else {
-            this.registerNoti(this.currentUser.lecturerID)
-            this.onNoti()
+            // this.registerNoti(this.currentUser.lecturerID)
+            // this.onNoti()
           }
         }
       },
@@ -129,7 +129,7 @@ export class NotificationComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           console.log(result);
-          this.getAll('1')
+          this.getAll(this.currentUser.lecturerID)
         } else {
           alert("Something wrong")
         }
@@ -147,8 +147,8 @@ export class NotificationComponent implements OnInit {
 
   onNoti(){
     this.notiServiceService.message.subscribe((msg: any) => {
-      console.log("user >>",msg);
-      this.toastr.info('New Message !!')
+      console.log("user2 >>",msg);
+      // this.toastr.info('New Message !!')
       if(this.currentUser.lecturerID){
         this.getAll(this.currentUser.lecturerID)
       }
@@ -161,8 +161,8 @@ export class NotificationComponent implements OnInit {
 
   onNotiAdmin(){
     this.notiServiceService.messageAdmin.subscribe((msg: any) => {
-      console.log("admin >>",msg);
-      this.toastr.info('New Message !!')
+      console.log("admin2 >>",msg);
+      // this.toastr.info('New Message !!')
       if(this.currentUser.lecturerID){
         this.getAll(this.currentUser.lecturerID)
       }

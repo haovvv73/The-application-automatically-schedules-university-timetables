@@ -219,7 +219,8 @@ const continueSchedule = async (req, res) => {
         
         if (check) {
             const message = 'New schedule time-table'
-            const description = 'New Schedule For' + schedule.Title + ' in Semester ' + schedule.semester + ' ' + schedule.timeStart + schedule.timeEnd
+
+            const description = 'New Schedule For ' + schedule.title + ' in Semester ' + schedule.semester + ' ' + schedule.yearStart + ' ' + schedule.yearEnd
 
             // Format the date and time
             for (let lecID of listLecturerID) {
@@ -233,8 +234,11 @@ const continueSchedule = async (req, res) => {
                 const userDB = await lecturerService.getUserById(lecID)
 
                 // send noti user online
-                const userSocketId = req.getUserSocketId(userDB[0].accountID);
+                const userSocketId = req.getUserSocketId(userDB[0].lecturerID);
+                // console.log('omg >', userDB);
+                // console.log('omg >>', userSocketId);
                 if (userSocketId) {
+                    console.log('send to user >>>>>>');
                     req.io.to(userSocketId).emit(
                         'notification', noti
                     );

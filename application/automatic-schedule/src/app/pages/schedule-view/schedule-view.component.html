@@ -130,7 +130,7 @@
                                         {{item.duration}}
                                     </td>
                                     <td class="px-4 py-4">
-                                        <a [routerLink]="[envUrl.courseView_admin,item.courseID]" class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full 
+                                        <a [routerLink]="[isAdmin ? envUrl.courseView_admin : envUrl.courseView_user,item.courseID]" class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full 
                                         hover:bg-gray-100 flex items-center justify-center">
                                             <i class="fa fa-eye text-lg"></i>
                                         </a>
@@ -343,9 +343,9 @@
     <!-- schedule -->
     <div class="mt-6 space-x-2">
         <div class="px-6 py-4 flex items-center gap-5" >
-            <span class="px-2" >Select course:</span>
+            <span class="px-2 py-1 border border-dashed border-sky-500 rounded-md" >Select course:</span>
             <button 
-            class="px-2 py-1 bg-sky-400 rounded-md" 
+            class="px-2 py-1 bg-sky-400 rounded-md text-[10px] text-white" 
             *ngFor="let item of dataTeacherCanSelect" 
             (click)="onSelectCourse(item)">
                 {{ item.className }}

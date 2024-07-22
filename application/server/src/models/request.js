@@ -12,7 +12,7 @@ export class Request {
         timeSelect = 0
     ){
         this.requestID  = requestID
-        this.lectureID  = lecturerID
+        this.lecturerID  = lecturerID
         this.title  = title
         this.content  = content
         this.status  = status

@@ -11,7 +11,7 @@ class AccountService {
     // READ
     async getAccountByID(accountID) {
         const query = `
-        SELECT ${this.table}.*, l.lecturerID as lecturerID FROM ${this.table}
+        SELECT ${this.table}.*, ${this.subTable}.* ,l.lecturerID as lecturerID FROM ${this.table}
         LEFT JOIN lecturer as l ON l.accountID = ${this.table}.accountID
         LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID 
         WHERE ${this.table}.accountID = ?`
@@ -62,7 +62,7 @@ class AccountService {
 
     async getAccountByEmail(email) {
         const query = `
-        SELECT ${this.table}.*, l.lecturerID as lecturerID FROM ${this.table} 
+        SELECT ${this.table}.*, ${this.subTable}.*,l.lecturerID as lecturerID FROM ${this.table} 
         LEFT JOIN lecturer as l ON l.accountID = ${this.table}.accountID
         LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID 
         WHERE ${this.table}.email = ?`

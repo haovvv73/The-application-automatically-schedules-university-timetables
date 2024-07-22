@@ -16,7 +16,7 @@ const getRequest = async (req, res, next) => {
         // get by ID
         if (lecturerID) {
             data = await requestService.getRequest(lecturerID)
-            if (data.length < 1) return errorResponse(res, httpStatusCode.NotFound.message, httpStatusCode.NotFound.code)
+            // if (data.length < 1) return errorResponse(res, httpStatusCode.NotFound.message, httpStatusCode.NotFound.code)
         } 
 
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, data)
@@ -67,11 +67,12 @@ const getRequestedSchedule = async (req, res, next) => {
 
 // POST
 const saveRequest = async (req, res, next) => {
-    const {lectureID,scheduleID,courseID, title, content, status, time, time2, reason, date, sender} = req.body
-    if (!scheduleID || !courseID || !lectureID || !title || !content || !status || !time || !time2 || !reason || !date) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    const {lecturerID,scheduleID,courseID, title, content, status, time, time2, reason, date, sender} = req.body
+
+    if (!scheduleID || !courseID || !lecturerID || !title || !content || !status || !time || !time2 || !reason || !date) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
-        const newRequest = new Request('', lectureID, title, content, status, time, time2, reason, date)
+        const newRequest = new Request('', lecturerID, title, content, status, time, time2, reason, date)
         const new2Request = {
             scheduleID,
             courseID,
@@ -85,11 +86,12 @@ const saveRequest = async (req, res, next) => {
             const dateTime = event.toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }).split(', ');
 
             // save DB 
-            const noti = new Noti('', lectureID, title, 'message', content, sender, dateTime[1], dateTime[0])
+            const noti = new Noti('', 1, title, 'message', content, sender, dateTime[1], dateTime[0])
             await notification.saveNotification(noti)
 
             //  send noti
-            const userSocketId = req.getAdminSocketId('6');
+            const userSocketId = req.getAdminSocketId(6);
+            console.log(userSocketId);
             if (userSocketId) {
                 req.io.to(userSocketId).emit(
                     'notification-admin', noti
