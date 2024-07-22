@@ -22,6 +22,7 @@ export class HeaderComponent {
   goToNotification = this.envUrl.notification_user
   userName = ''
   newMessage = false
+  isAdmin = false
 
   constructor(
     private router: Router,
@@ -35,6 +36,7 @@ export class HeaderComponent {
     let href = this.router.url.split('/');
     let userPathSegment = href[2]
     this.goToNotification = userPathSegment == 'user' ? this.envUrl.notification_user : this.envUrl.notification_admin
+    this.isAdmin = userPathSegment == 'user' ? false : true
 
     const token = this.tokenServiceService.getToken()
     this.authServiceService.checkAuth({token}).subscribe({
@@ -49,8 +51,13 @@ export class HeaderComponent {
           this.tokenServiceService.setUser(result.data)
 
           // register noti real time
-          this.registerNoti(this.currentUser.lecturerID)
-          this.onNoti()
+          if(this.isAdmin){
+            this.registerNotiAdmin(this.currentUser.accountID)
+            this.onNotiAdmin()
+          }else{
+            this.registerNoti(this.currentUser.lecturerID)
+            this.onNoti()
+          }
         }
       },
       error :(error : any)=>{
@@ -65,7 +72,19 @@ export class HeaderComponent {
 
   onNoti(){
     this.notiServiceService.message.subscribe((msg: any) => {
-      console.log(msg);
+      console.log("user >>",msg);
+      this.toastr.info('New Message !!')
+      this.newMessage = true
+    });
+  }
+
+  registerNotiAdmin(lecID : string){
+    this.notiServiceService.registerAdmin(lecID);
+  }
+
+  onNotiAdmin(){
+    this.notiServiceService.messageAdmin.subscribe((msg: any) => {
+      console.log("admin >>",msg);
       this.toastr.info('New Message !!')
       this.newMessage = true
     });

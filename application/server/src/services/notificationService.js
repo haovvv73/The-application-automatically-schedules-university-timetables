@@ -19,7 +19,7 @@ class Notification {
                 result.push(
                     new Noti(
                         noti.notiID,
-                        noti.lectureID,
+                        noti.lecturerID,
                         noti.title,
                         noti.notiType,
                         noti.description,
@@ -55,11 +55,11 @@ class Notification {
         try {
             await this.connection.query('START TRANSACTION');
 
-            const {lectureID, title, notiType, description, sender, time, date} = noti
+            const {lecturerID, title, notiType, description, sender, time, date} = noti
 
-            const query = `INSERT INTO ${this.table}(lectureID, title, notiType, description, sender, time, date) 
+            const query = `INSERT INTO ${this.table}(lecturerID, title, notiType, description, sender, time, date) 
             VALUES(?,?,?,?,?,?,?)`
-            const result = await this.connection.execute(query, [lectureID, title, notiType, description, sender, time, date])
+            const result = await this.connection.execute(query, [lecturerID, title, notiType, description, sender, time, date])
 
             await this.connection.query('COMMIT');
             return result[0].affectedRows

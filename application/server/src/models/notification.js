@@ -1,7 +1,7 @@
 export class Noti {
     constructor(
         notiID = '',
-        lectureID = '',
+        lecturerID = '',
         title = '',
         notiType = '',
         description = '',
@@ -10,7 +10,7 @@ export class Noti {
         date = '',
     ){
         this.notiID = notiID 
-        this.lectureID = lectureID 
+        this.lecturerID = lecturerID 
         this.title = title 
         this.notiType = notiType 
         this.description = description 

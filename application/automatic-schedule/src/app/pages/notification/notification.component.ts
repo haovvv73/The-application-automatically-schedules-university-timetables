@@ -1,21 +1,71 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NotificationServiceService } from '../../services/http/notification-service/notification-service.service';
+import { Router, RouterLink } from '@angular/router';
+import { EnvUrl } from '../../env-url';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
+import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
+import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [NgFor, NgIf, NgClass, RouterLink],
   templateUrl: './notification.component.html',
   styleUrl: './notification.component.css'
 })
 export class NotificationComponent implements OnInit {
   title = "Notification"
-  constructor(private notificationServiceService: NotificationServiceService) { }
+  envUrl = EnvUrl
+  currentUser: any | null = null
+  goToSchedule = ''
+  isAdmin = false
+  constructor(
+    private router: Router,
+    private notificationServiceService: NotificationServiceService,
+    private tokenServiceService : TokenServiceService,
+    private authServiceService : AuthServiceService,
+    private notiServiceService : NotiServiceService,
+    private toastr: ToastrService,
+  ) { }
 
 
   ngOnInit(): void {
-    this.getAll('1')
+    let href = this.router.url.split('/');
+    let userPathSegment = href[2]
+    // this.goToSchedule = userPathSegment == 'user' ? this.envUrl.scheduleView_user : this.envUrl.approvalView_admin
+    this.isAdmin = userPathSegment == 'user' ? false : true
+
+    const token = this.tokenServiceService.getToken()
+    this.authServiceService.checkAuth({ token }).subscribe({
+      next: (result: any) => {
+        if (result.data) {
+          // binding
+          console.log('noti success', result.data)
+
+          // save local
+          this.currentUser = result.data
+          this.tokenServiceService.setUser(result.data)
+
+          // get view list
+          this.getAll(this.currentUser.lecturerID)
+
+          // register noti real time
+          if (this.isAdmin) {
+            this.registerNotiAdmin(this.currentUser.accountID)
+            this.onNotiAdmin()
+          } else {
+            this.registerNoti(this.currentUser.lecturerID)
+            this.onNoti()
+          }
+        }
+      },
+      error: (error: any) => {
+        console.error('Error validating token:', error);
+      }
+    })
+
   }
 
 
@@ -56,7 +106,7 @@ export class NotificationComponent implements OnInit {
   }
 
   // api
-  getAll(lecturerID:string) {
+  getAll(lecturerID: string) {
     this.notificationServiceService.getNotification(lecturerID).subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -74,7 +124,7 @@ export class NotificationComponent implements OnInit {
     })
   }
 
-  delete(id : string) {
+  delete(id: string) {
     this.notificationServiceService.deleteNotification(id).subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -89,5 +139,33 @@ export class NotificationComponent implements OnInit {
         alert("Something wrong")
       }
     })
+  }
+
+  registerNoti(lecID : string){
+    this.notiServiceService.register(lecID);
+  }
+
+  onNoti(){
+    this.notiServiceService.message.subscribe((msg: any) => {
+      console.log("user >>",msg);
+      this.toastr.info('New Message !!')
+      if(this.currentUser.lecturerID){
+        this.getAll(this.currentUser.lecturerID)
+      }
+    });
+  }
+
+  registerNotiAdmin(lecID : string){
+    this.notiServiceService.registerAdmin(lecID);
+  }
+
+  onNotiAdmin(){
+    this.notiServiceService.messageAdmin.subscribe((msg: any) => {
+      console.log("admin >>",msg);
+      this.toastr.info('New Message !!')
+      if(this.currentUser.lecturerID){
+        this.getAll(this.currentUser.lecturerID)
+      }
+    });
   }
 }

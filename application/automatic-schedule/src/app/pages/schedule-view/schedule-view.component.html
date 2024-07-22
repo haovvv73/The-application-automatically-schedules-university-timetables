@@ -166,7 +166,23 @@
         <div class="w-[30%]">
             <form [formGroup]="requestForm" (ngSubmit)="onSubmit()"
                 class="flex-1 border py-2 px-3 rounded-lg shadow-sm border-sky-400">
-                <span class="font-semibold text-gray-500">Course Name:</span>
+
+                <div class="flex-1 items-center">
+                    <span class="font-semibold text-gray-500">Course Name: </span>
+                    <input type="text" id="couID1" formControlName="courseName" readonly
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                    placeholder="----" />
+                    <input type="text" id="couID2" formControlName="courseID"
+                    class="hidden bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                    placeholder="----" />
+                </div>
+                <div class="h-6 text-[13px] font-semibold">
+                    <div *ngIf="courseID && courseID.invalid && (courseID.touched || courseID.dirty)"
+                        class="flex-1">
+                        <span *ngIf="courseID.errors?.['required']" class="text-rose-500"> *Select Course </span>
+                    </div>
+                </div>
+
                 <!-- 1st change time -->
                 <div>
                     <p class="mb-2"> <strong>1ST</strong> change course time:</p>
@@ -306,7 +322,7 @@
                                 </td> -->
                             <td *ngFor="let dt of [data2,data3,data4,data5,data6,data7]"
                                 class="border border-black/20 text-white bg-[#C7C8CC]">
-                                <div *ngIf="dt[ind]" >
+                                <div *ngIf="dt[ind]">
                                     <p>{{dt[ind].className}}</p>
                                     <span>{{dt[ind].roomName}} </span>
                                     <span>
@@ -323,9 +339,18 @@
             </div>
         </div>
     </div>
-    
+
     <!-- schedule -->
     <div class="mt-6 space-x-2">
+        <div class="px-6 py-4 flex items-center gap-5" >
+            <span class="px-2" >Select course:</span>
+            <button 
+            class="px-2 py-1 bg-sky-400 rounded-md" 
+            *ngFor="let item of dataTeacherCanSelect" 
+            (click)="onSelectCourse(item)">
+                {{ item.className }}
+            </button>
+        </div>
         <h1 class="text-2xl font-semibold bg-pink-600 rounded-md w-fit text-white py-1 px-3 mr-2">
             Schedule Before Release
         </h1>

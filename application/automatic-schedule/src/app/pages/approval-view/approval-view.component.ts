@@ -7,6 +7,7 @@ import { RoomServiceService } from '../../services/http/room-service/room-servic
 import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
 import { ScheduleTableComponent } from '../../component/schedule-table/schedule-table.component';
 import { RequestServiceService } from '../../services/http/request-service/request-service.service';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 
 @Component({
   selector: 'app-approval-view',
@@ -33,6 +34,7 @@ export class ApprovalViewComponent implements OnInit {
     private roomServiceService: RoomServiceService,
     private scheduleServiceService: ScheduleServiceService,
     private requestServiceService: RequestServiceService,
+    private tokenServiceService : TokenServiceService,
     private router: Router
   ) { }
 
@@ -155,10 +157,11 @@ export class ApprovalViewComponent implements OnInit {
   }
 
   rejectRequest(requestID : string){
+    let us = this.tokenServiceService.getUser()
     const send = {
       requestID,
       status : 'reject',
-      timeSelect : '0'
+      timeSelect : '0',
     }
 
     this.requestServiceService.updateRequest(send).subscribe({
@@ -179,10 +182,11 @@ export class ApprovalViewComponent implements OnInit {
   }
 
   acceptRequest(requestID : string, timeSelect : string){
+    let us = this.tokenServiceService.getUser()
     const send = {
       requestID,
       status : 'success',
-      timeSelect
+      timeSelect,
     }
 
     this.requestServiceService.updateRequest(send).subscribe({

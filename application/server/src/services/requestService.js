@@ -11,25 +11,33 @@ class RequestService {
     // READ
     // get by lecturer
     async getRequest(id) {
-        const query = `SELECT * FROM ${this.table} WHERE lectureID = ? AND deleted = ?`
+        const query = `SELECT * FROM ${this.table} 
+        WHERE lectureID = ? AND ${this.table}.deleted = ?`
         const [row] = await this.connection.execute(query, [id,0])
         const result = []
 
         if (row.length > 0) {
             for(let request of row[0]){
                 result.unshift(
-                    new Request(
-                        request.requestID,
-                        request.lecturerID,
-                        request.title,
-                        request.content,
-                        request.status,
-                        request.time,
-                        request.time2,
-                        request.reason,
-                        request.date,
-                        request.timeSelect,
-                    )
+                    request
+                )
+            }
+        }
+
+        return result
+    }
+
+    // get detail request
+    async getRequestDetailById(id) {
+        const query = `SELECT * FROM ${this.table} 
+        WHERE requestID = ?`
+        const [row] = await this.connection.execute(query, [id])
+        const result = []
+
+        if (row.length > 0) {
+            for(let request of row[0]){
+                result.unshift(
+                    request
                 )
             }
         }

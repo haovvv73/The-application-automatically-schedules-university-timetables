@@ -10,6 +10,7 @@ import subjectService from "../services/subjectService.js";
 import roomService from "../services/roomService.js";
 import { Noti } from "../models/notification.js";
 import notification from "../services/notificationService.js";
+import lecturerService from "../services/lecturerService.js";
 
 const getSchedules = async (req, res) => {
     const scheduleID = req.params.id
@@ -228,8 +229,11 @@ const continueSchedule = async (req, res) => {
                 const noti = new Noti('', lecID, message, 'message', description, 'HCMUS ADMIN', dateTime[1], dateTime[0])
                 await notification.saveNotification(noti)
 
+                // get list accountID user
+                const userDB = await lecturerService.getUserById(lecID)
+
                 // send noti user online
-                const userSocketId = req.getUserSocketId(lecID);
+                const userSocketId = req.getUserSocketId(userDB[0].accountID);
                 if (userSocketId) {
                     req.io.to(userSocketId).emit(
                         'notification', noti
