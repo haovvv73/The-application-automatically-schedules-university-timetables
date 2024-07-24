@@ -27,6 +27,8 @@ export const adminGuardGuard: CanActivateFn = async (route, state) => {
         console.log('admin success',result.data)
         router.navigate(['app/admin']);
       }else{
+        console.log('miss 1');
+        
         // expired token
         // tokenService.removeToken()
         // tokenService.removeUser()
@@ -34,6 +36,8 @@ export const adminGuardGuard: CanActivateFn = async (route, state) => {
       }
     },
     error :(error : any)=>{
+      console.log('miss 2');
+
       // console.error('Error validating token:', error);
       // tokenService.removeToken()
       // tokenService.removeUser()

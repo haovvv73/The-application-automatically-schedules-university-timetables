@@ -1007,4 +1007,4 @@ const roomGenerate = (room, roomUsed, scheduleClone)=>{
     // console.log(courseMissingRoom);
     return [scheduleClone,courseMissingRoom,message]
 }
-export { scheduleGenerate, roomGenerate }
+export { scheduleGenerate, roomGenerate, isOverlap }

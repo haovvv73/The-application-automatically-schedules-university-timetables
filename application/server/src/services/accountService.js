@@ -17,7 +17,8 @@ class AccountService {
         WHERE ${this.table}.accountID = ?`
         const [row] = await this.connection.execute(query, [accountID])
         const result = []
-
+        // console.log(query);
+        // console.log(accountID);
         if (row.length > 0) {
             for (let account of row) {
                 result.push(new Account(
@@ -62,17 +63,20 @@ class AccountService {
 
     async getAccountByEmail(email) {
         const query = `
-        SELECT ${this.table}.*, ${this.subTable}.*,l.lecturerID as lecturerID FROM ${this.table} 
+        SELECT account.accountID as accID, ${this.table}.*, ${this.subTable}.*,l.lecturerID as lecturerID FROM ${this.table} 
         LEFT JOIN lecturer as l ON l.accountID = ${this.table}.accountID
         LEFT JOIN ${this.subTable} ON ${this.table}.accountID = ${this.subTable}.accountID 
         WHERE ${this.table}.email = ?`
         const [row] = await this.connection.execute(query, [email])
         const result = []
+            // console.log(query);
+            // console.log(email);
+            // console.log(row);
 
         if (row.length > 0) {
             for (let account of row) {
                 result.push(new Account(
-                    account.accountID,
+                    account.accID,
                     account.email,
                     account.password,
                     account.permissionRead,

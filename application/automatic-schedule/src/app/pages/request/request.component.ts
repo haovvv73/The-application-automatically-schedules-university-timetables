@@ -1,9 +1,11 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PopupComponent } from '../../component/popup/popup.component';
 import { RequestServiceService } from '../../services/http/request-service/request-service.service';
 import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
+import { Subscription } from 'rxjs';
+import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
 
 @Component({
   selector: 'app-request',
@@ -12,18 +14,22 @@ import { AuthServiceService } from '../../services/http/auth-service/auth-servic
   templateUrl: './request.component.html',
   styleUrl: './request.component.css',
 })
-export class RequestComponent implements OnInit {
+export class RequestComponent implements OnInit, OnDestroy {
   title = "Request History"
   borderColor = 'border-sky-400'
   statusSelect = 0
   currentLecturerID : string | null = null
-  statusList = ['all', 'wait', 'accept', 'cancel', 'reject']
+  statusList = ['all', 'wait', 'success', 'cancel', 'reject']
+
+  userWatcher !: Subscription
 
   constructor(
     private requestServiceService: RequestServiceService,
     private tokenServiceService : TokenServiceService,
     private authServiceService : AuthServiceService,
+    private notiServiceService: NotiServiceService,
   ) { }
+
 
   ngOnInit(): void {
     const token = this.tokenServiceService.getToken()
@@ -40,6 +46,24 @@ export class RequestComponent implements OnInit {
         console.error('Error validating token:', error);
       }
     })
+
+    // listener
+    this.onNoti()
+
+  }
+
+  ngOnDestroy(): void {
+    console.log('request destroy');
+    if(this.userWatcher) this.userWatcher.unsubscribe()
+  }
+
+  onNoti() {
+    this.userWatcher = this.notiServiceService.message.subscribe((msg: any) => {
+      console.log("request noti >>", msg);
+      if (this.currentLecturerID) {
+        this.getRequestByUser(this.currentLecturerID)
+      }
+    });
   }
 
   columnsKey: any[] = [
@@ -54,7 +78,7 @@ export class RequestComponent implements OnInit {
 
   statusColor = {
     wait: 'bg-gray-400',
-    accept: 'bg-green-400',
+    success: 'bg-green-400',
     reject: 'bg-red-400',
     cancel: 'bg-orange-400',
     all: 'bg-sky-400'
@@ -63,7 +87,7 @@ export class RequestComponent implements OnInit {
   borderColorMap = {
     all: 'border-sky-400',
     wait: 'border-gray-400',
-    accept: 'border-green-400',
+    success: 'border-green-400',
     reject: 'border-red-400',
     cancel: 'border-orange-400'
   }
@@ -79,12 +103,15 @@ export class RequestComponent implements OnInit {
     },
   ]
 
+  dataBackup : any[] =[]
+
   // call api
   getRequestByUser(lecturerID: string) {
     this.requestServiceService.getRequest(lecturerID).subscribe({
       next: (result: any) => {
         if (result.status) {
           this.data = result.data
+          this.dataBackup = result.data
           console.log(">>request history<<", result.data)
         } else {
           alert("Something wrong")
@@ -150,8 +177,8 @@ export class RequestComponent implements OnInit {
     switch (status) {
       case 'wait':
         return this.statusColor.wait
-      case 'accept':
-        return this.statusColor.accept
+      case 'success':
+        return this.statusColor.success
       case 'reject':
         return this.statusColor.reject
       case 'cancel':
@@ -168,8 +195,8 @@ export class RequestComponent implements OnInit {
       case 'wait':
         this.borderColor = this.borderColorMap.wait
         break
-      case 'accept':
-        this.borderColor = this.borderColorMap.accept
+      case 'success':
+        this.borderColor = this.borderColorMap.success
         break
       case 'reject':
         this.borderColor = this.borderColorMap.reject
@@ -187,6 +214,18 @@ export class RequestComponent implements OnInit {
     this.getBorderColor(this.statusList[index])
     // set statusColor
     this.statusSelect = index
+    //
+    this.data = this.dataBackup.filter(re => {
+      // status : all - wait - reject - success - [cancel]
+      if(re.status == this.statusList[index]){
+        return re
+      }
+
+      if(this.statusList[index] == 'all'){
+        return re
+      }
+    })
+
   }
 
   formatDateTime(dateTimeStr: string) {

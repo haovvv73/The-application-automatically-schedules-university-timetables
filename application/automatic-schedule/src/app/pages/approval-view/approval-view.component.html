@@ -25,11 +25,13 @@
 
         <!-- list request -->
         <div class="items-center flex gap-5">
+            <!-- view request -->
             <button class="py-5 text-lg font-semibold 0"  (click)="onUnChangeViewRequested()">
                 <span [ngClass]="{'bg-sky-500':!test, 'bg-gray-500':test}" class="border p-1 px-2 rounded-md text-white">
                     Schedule's Request
                 </span>
             </button>
+            <!-- view history quest -->
             <button class="py-5 text-lg font-semibold"  (click)="onChangeViewRequested()">
                 <span [ngClass]="{'bg-sky-500':test, 'bg-gray-500':!test}" 
                 class="border p-1 px-2 rounded-md text-white">

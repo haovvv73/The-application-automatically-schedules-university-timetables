@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationServiceService } from '../../services/http/notification-service/notification-service.service';
 import { Router, RouterLink } from '@angular/router';
 import { EnvUrl } from '../../env-url';
@@ -7,6 +7,7 @@ import { TokenServiceService } from '../../services/session/token-service/token-
 import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
 import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-notification',
@@ -15,20 +16,31 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './notification.component.html',
   styleUrl: './notification.component.css'
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent implements OnInit, OnDestroy {
   title = "Notification"
   envUrl = EnvUrl
   currentUser: any | null = null
   goToSchedule = ''
   isAdmin = false
+
+  adminWatcher !: Subscription 
+  userWatcher !: Subscription 
+
   constructor(
     private router: Router,
     private notificationServiceService: NotificationServiceService,
-    private tokenServiceService : TokenServiceService,
-    private authServiceService : AuthServiceService,
-    private notiServiceService : NotiServiceService,
+    private tokenServiceService: TokenServiceService,
+    private authServiceService: AuthServiceService,
+    private notiServiceService: NotiServiceService,
     private toastr: ToastrService,
   ) { }
+
+
+  ngOnDestroy(): void {
+    console.log('noti destroy');
+    if(this.userWatcher) this.userWatcher.unsubscribe()
+    if(this.adminWatcher) this.adminWatcher.unsubscribe()
+  }
 
 
   ngOnInit(): void {
@@ -37,37 +49,26 @@ export class NotificationComponent implements OnInit {
     // this.goToSchedule = userPathSegment == 'user' ? this.envUrl.scheduleView_user : this.envUrl.approvalView_admin
     this.isAdmin = userPathSegment == 'user' ? false : true
 
-    const token = this.tokenServiceService.getToken()
-    this.authServiceService.checkAuth({ token }).subscribe({
-      next: (result: any) => {
-        if (result.data) {
-          // binding
-          console.log('noti success', result.data)
+    const user = this.tokenServiceService.getUser()
 
-          // save local
-          this.currentUser = result.data
-          this.tokenServiceService.setUser(result.data)
+    // binding
+    console.log('noti success', user)
 
-          // get view list
-          this.getAll(this.currentUser.lecturerID)
+    // save local
+    this.currentUser = user
+    // get view list
+    this.getAll(this.currentUser.lecturerID)
 
-          // register noti real time
-          if (this.isAdmin) {
-            // this.registerNotiAdmin(this.currentUser.accountID)
-            // this.onNotiAdmin()
-          } else {
-            // this.registerNoti(this.currentUser.lecturerID)
-            // this.onNoti()
-          }
-        }
-      },
-      error: (error: any) => {
-        console.error('Error validating token:', error);
-      }
-    })
+    // register noti real time
+    if (this.isAdmin) {
+      console.log('noti admin');
+      this.onNotiAdmin()
+    } else {
+      console.log('noti user');
+      this.onNoti()
+    }
 
   }
-
 
   data: any[] = [
     {
@@ -99,11 +100,11 @@ export class NotificationComponent implements OnInit {
     },
   ]
 
-  classTest = false
-  test() {
-    console.log('run');
-    this.classTest = !this.classTest
-  }
+  // classTest = false
+  // test() {
+  //   console.log('run');
+  //   this.classTest = !this.classTest
+  // }
 
   // api
   getAll(lecturerID: string) {
@@ -141,29 +142,21 @@ export class NotificationComponent implements OnInit {
     })
   }
 
-  registerNoti(lecID : string){
-    this.notiServiceService.register(lecID);
-  }
-
-  onNoti(){
-    this.notiServiceService.message.subscribe((msg: any) => {
-      console.log("user2 >>",msg);
+  onNoti() {
+    this.userWatcher = this.notiServiceService.message.subscribe((msg: any) => {
+      console.log("user2 >>", msg);
       // this.toastr.info('New Message !!')
-      if(this.currentUser.lecturerID){
+      if (this.currentUser.lecturerID) {
         this.getAll(this.currentUser.lecturerID)
       }
     });
   }
 
-  registerNotiAdmin(lecID : string){
-    this.notiServiceService.registerAdmin(lecID);
-  }
-
-  onNotiAdmin(){
-    this.notiServiceService.messageAdmin.subscribe((msg: any) => {
-      console.log("admin2 >>",msg);
+  onNotiAdmin() {
+    this.adminWatcher = this.notiServiceService.messageAdmin.subscribe((msg: any) => {
+      console.log("admin2 >>", msg);
       // this.toastr.info('New Message !!')
-      if(this.currentUser.lecturerID){
+      if (this.currentUser.lecturerID) {
         this.getAll(this.currentUser.lecturerID)
       }
     });

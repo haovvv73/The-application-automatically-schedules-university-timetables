@@ -17,7 +17,7 @@ const login = async (req, res, next) => {
         // check user
         const result = await accountService.getAccountByEmail(email)
         if (result.length < 1) return errorResponse(res, 'User Does Not Exist', httpStatusCode.Unauthorized.code)
-
+            // console.log(result);
         // check password
         const user = result[0]
         
@@ -31,7 +31,7 @@ const login = async (req, res, next) => {
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code, token)
 
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return errorResponse(res, httpStatusCode.InternalServerError.message, httpStatusCode.InternalServerError.code)
     }
 }
@@ -85,7 +85,10 @@ const checkIsAdmin = async (req, res, next) => {
         if (result.length <= 0) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
         const user = result[0]
 
-        if (user.permissionRead == 0 || user.permissionCreate == 0 || user.permissionUpdate == 0 || user.permissionDelete == 0) {
+        if (user.permissionRead == 0|| user.permissionCreate == 0 || user.permissionUpdate == 0 || user.permissionDelete == 0
+            || !user.permissionRead|| !user.permissionCreate|| !user.permissionUpdate|| !user.permissionDelete
+        ) {
+            console.log('????');
             return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
         }
 

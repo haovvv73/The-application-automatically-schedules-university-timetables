@@ -33,8 +33,6 @@ export class HeaderComponent implements OnInit {
     private toastr: ToastrService,
   ) { }
 
-
-
   ngOnInit(): void {
     let href = this.router.url.split('/');
     let userPathSegment = href[2]
@@ -63,16 +61,16 @@ export class HeaderComponent implements OnInit {
             
             if(this.notiServiceService.isUserConnect){
               this.onNoti()
-              console.log('haooasodasdo');
+              console.log('heder user');
             }
             this.registerNoti(this.currentUser.lecturerID)
             
           }else{
 
-            console.log(22);
-            
-            // this.registerNotiAdmin(this.currentUser.accountID)
-            // this.onNotiAdmin()
+            this.registerNotiAdmin(this.currentUser.accountID)
+            this.onNotiAdmin()
+            console.log('header admin');
+          
           }
         }
       },

@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ViewtableComponent } from '../../component/viewtable/viewtable.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { format, parseISO, set, areIntervalsOverlapping } from 'date-fns';
@@ -13,6 +13,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 import { RequestServiceService } from '../../services/http/request-service/request-service.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
 
 @Component({
   selector: 'app-schedule-view',
@@ -21,7 +23,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './schedule-view.component.html',
   styleUrl: './schedule-view.component.css',
 })
-export class ScheduleViewComponent implements OnInit {
+export class ScheduleViewComponent implements OnInit, OnDestroy {
   envUrl = EnvUrl
   currentScheduleID: string | null = null
   requestForm!: FormGroup
@@ -40,6 +42,8 @@ export class ScheduleViewComponent implements OnInit {
   data6: any[] = []
   data7: any[] = []
 
+  userWatcher !: Subscription 
+
   constructor(
     private courseServiceService: CourseServiceService,
     private route: ActivatedRoute,
@@ -49,7 +53,8 @@ export class ScheduleViewComponent implements OnInit {
     private tokenServiceService: TokenServiceService,
     private requestServiceService: RequestServiceService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private notiServiceService: NotiServiceService
   ) { }
 
   ngOnInit(): void {
@@ -59,11 +64,11 @@ export class ScheduleViewComponent implements OnInit {
     this.isAdmin = userPathSegment == 'user' ? false : true
     // console.log(id);
     if (id) {
-      this.getLecturer()
-      this.getRoom()
+      // this.getLecturer()
+      // this.getRoom()
       this.getSchedule(id)
-      this.getTeacherCourse()
-      this.getAll(id)
+      // this.getTeacherCourse() // re-render
+      // this.getAll(id) // re-render
     }
 
     this.requestForm = new FormGroup({
@@ -77,6 +82,26 @@ export class ScheduleViewComponent implements OnInit {
       timeEnd2: new FormControl('', [Validators.required]),
       reason: new FormControl('', [Validators.required])
     })
+
+    // listener
+    this.onNoti()
+
+  }
+
+  ngOnDestroy(): void {
+    console.log('user schedule-view >> destroy');
+    if(this.userWatcher) this.userWatcher.unsubscribe()
+  }
+
+  onNoti() {
+    this.userWatcher = this.notiServiceService.message.subscribe((msg: any) => {
+      console.log("user schedule-view >>", msg);
+      if (this.currentScheduleID) {
+        this.getTeacherCourse() // re-render
+        this.getAll(this.currentScheduleID) // re-render
+        // this.bindingScheduleTable(this.data)
+      }
+    });
   }
 
   get courseID() {
@@ -170,7 +195,8 @@ export class ScheduleViewComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           this.data = result.data
-          // console.log(this.data);
+          this.bindingScheduleTable(this.data)
+          console.log("getALL",this.data);
         } else {
           alert("Something wrong")
         }
@@ -187,6 +213,10 @@ export class ScheduleViewComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           this.dataTeacher = result.data
+          if (this.currentScheduleID) {
+            this.getTeacherCourse() // re-render
+            this.getAll(this.currentScheduleID) // re-render
+          }
         } else {
           alert("Something wrong")
         }
@@ -203,6 +233,7 @@ export class ScheduleViewComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           this.dataRoom = result.data
+          this.getLecturer()
         } else {
           alert("Something wrong")
         }
@@ -220,6 +251,7 @@ export class ScheduleViewComponent implements OnInit {
         if (result.status) {
           this.title = result.data[0].title
           this.currentScheduleID = result.data[0].scheduleID
+          this.getRoom()
         } else {
           alert("Something wrong")
         }
@@ -239,7 +271,12 @@ export class ScheduleViewComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           // this.data = result.data
-
+          this.data2 = []
+          this.data3 = []
+          this.data4 = []
+          this.data5 = []
+          this.data6 = []
+          this.data7 = []
           for (let cou of result.data) {
             switch (cou.day) {
               case 'mon':
@@ -262,7 +299,7 @@ export class ScheduleViewComponent implements OnInit {
                 break;
             }
           }
-          console.log(this.data5);
+          console.log('teacher course',result.data);
 
         } else {
           alert("Something wrong")
@@ -359,6 +396,9 @@ export class ScheduleViewComponent implements OnInit {
   overlapTeacherCourseValidate(day: string, timeStart: string, timeEnd: string) {
     const arrTimeStart = timeStart.split(':')
     const arrTimeEnd = timeStart.split(':')
+    console.log(arrTimeStart);
+    console.log(arrTimeEnd);
+
     const cou1 = {
       timeStart: set(new Date(), {
         hours: parseInt(arrTimeStart[0]),
@@ -409,7 +449,7 @@ export class ScheduleViewComponent implements OnInit {
 
     return false
   }
-  isOverlap = (cou1 : any, cou2 : any) => {
+  isOverlap = (cou1: any, cou2: any) => {
     const interval1 = {
       start: set(new Date(), {
         hours: cou1.timeStart.getHours(),
@@ -478,18 +518,34 @@ export class ScheduleViewComponent implements OnInit {
             if (result.status) {
               if (this.currentScheduleID) {
                 this.toastr.success('Request Success')
+                this.clearForm(true)
               }
             } else {
-              alert("Something wrong")
+              this.toastr.success('Cant Send Request at the moment')
             }
           },
           error: (error: any) => {
             console.log(">> error >>", error)
-            alert("Something wrong")
+            this.toastr.success('Cant Send Request at the moment')
           }
         })
-      }else{
-        this.toastr.error(`Conflict with your course ${semiData.courseName}`)
+      } else {
+        let dayToast = check1 ? semiData.day1 : semiData.day2
+        switch (dayToast) {
+          case 'mon':
+            dayToast = 'Monday'; break;
+          case 'tue':
+            dayToast = 'Tuesday'; break;
+          case 'wed':
+            dayToast = 'Wednesday'; break;
+          case 'thu':
+            dayToast = 'Thursday'; break;
+          case 'fri':
+            dayToast = 'Friday'; break;
+          case 'sat':
+            dayToast = 'Saturday'; break;
+        }
+        this.toastr.error(`Conflict with your course ${semiData.courseName} on ${dayToast}`)
       }
 
     }

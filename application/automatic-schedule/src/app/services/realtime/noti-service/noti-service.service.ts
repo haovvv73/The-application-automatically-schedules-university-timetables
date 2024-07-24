@@ -20,8 +20,10 @@ export class NotiServiceService {
       this.message.next(data);
     });
 
-    this.socket.on('notification-admin', (data: any) => {
-      this.message.next(data);
+    this.socket.on('notificationAdmin', (data: any) => {
+      console.log('>>admin notiiiiii<<');
+      
+      this.messageAdmin.next(data);
     });
   }
 

@@ -36,7 +36,7 @@ class RequestService {
         const result = []
 
         if (row.length > 0) {
-            for(let request of row[0]){
+            for(let request of row){
                 result.unshift(
                     request
                 )
