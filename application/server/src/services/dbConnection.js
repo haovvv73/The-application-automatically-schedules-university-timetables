@@ -7,7 +7,7 @@ class Dbconnection{
         this.connection = mysql.createPool({
             host: 'localhost',
             user: 'root',
-            password: '',
+            password: '12345',
             database: 'hcmus_automatic_schedule'
         });
 
