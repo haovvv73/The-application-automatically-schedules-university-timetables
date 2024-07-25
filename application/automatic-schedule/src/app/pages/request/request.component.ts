@@ -235,6 +235,8 @@ export class RequestComponent implements OnInit, OnDestroy {
   }
 
   formatDateTime(dateTimeStr: string) {
+    if(!dateTimeStr) return '-'
+    
     const dayMap: any = {
       mon: 'Monday',
       tue: 'Tuesday',
@@ -243,6 +245,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       fri: 'Friday',
       sat: 'Saturday',
     }
+    
     const dateSplit = dateTimeStr.split('_')
     const day = dateSplit[0]
     const time = dateSplit[1]
