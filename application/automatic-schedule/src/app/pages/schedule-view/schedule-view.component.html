@@ -27,7 +27,7 @@
         <div class="flex items-center space-x-3">
             <!-- search -->
             <div class="border w-1/3 flex items-center p-1 rounded-md bg-gray-50 flex-1">
-                <input type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
+                <input #myTitle (keyup)="onSearch(myTitle.value)" type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
                 <span class="px-2"><i class="fa fa-search"></i></span>
             </div>
 
@@ -130,7 +130,8 @@
                                         {{item.duration}}
                                     </td>
                                     <td class="px-4 py-4">
-                                        <a [routerLink]="[envUrl.courseView_admin,item.courseID]" class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full 
+                                        <a [routerLink]="[isAdmin ? envUrl.courseView_admin : envUrl.courseView_user,item.courseID]"
+                                            class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full 
                                         hover:bg-gray-100 flex items-center justify-center">
                                             <i class="fa fa-eye text-lg"></i>
                                         </a>
@@ -166,7 +167,22 @@
         <div class="w-[30%]">
             <form [formGroup]="requestForm" (ngSubmit)="onSubmit()"
                 class="flex-1 border py-2 px-3 rounded-lg shadow-sm border-sky-400">
-                <span class="font-semibold text-gray-500">Course Name:</span>
+
+                <div class="flex-1 items-center">
+                    <span class="font-semibold text-gray-500">Course Name: </span>
+                    <input type="text" id="couID1" formControlName="courseName" readonly
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                        placeholder="----" />
+                    <input type="text" id="couID2" formControlName="courseID"
+                        class="hidden bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                        placeholder="----" />
+                </div>
+                <div class="h-6 text-[13px] font-semibold">
+                    <div *ngIf="courseID && courseID.invalid && (courseID.touched || courseID.dirty)" class="flex-1">
+                        <span *ngIf="courseID.errors?.['required']" class="text-rose-500"> *Select Course </span>
+                    </div>
+                </div>
+
                 <!-- 1st change time -->
                 <div>
                     <p class="mb-2"> <strong>1ST</strong> change course time:</p>
@@ -175,11 +191,12 @@
                         <select id="location" formControlName="day1"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ">
                             <option selected>--Select--</option>
-                            <option value="mon">Mon</option>
-                            <option value="tue">Tue</option>
-                            <option value="wed">Wed</option>
-                            <option value="thu">Thu</option>
-                            <option value="fri">Fri</option>
+                            <option value="mon">Monday</option>
+                            <option value="tue">Tuesday</option>
+                            <option value="wed">Wednesday</option>
+                            <option value="thu">Thursday</option>
+                            <option value="fri">Friday</option>
+                            <option value="sat">Saturday</option>
                         </select>
                         <!-- time start -->
                         <input type="time" id="small-input" formControlName="timeStart1"
@@ -219,11 +236,12 @@
                         <select id="location" formControlName="day2"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ">
                             <option selected>--Select--</option>
-                            <option value="mon">Mon</option>
-                            <option value="tue">Tue</option>
-                            <option value="wed">Wed</option>
-                            <option value="thu">Thu</option>
-                            <option value="fri">Fri</option>
+                            <option value="mon">Monday</option>
+                            <option value="tue">Tuesday</option>
+                            <option value="wed">Wednesday</option>
+                            <option value="thu">Thursday</option>
+                            <option value="fri">Friday</option>
+                            <option value="sat">Saturday</option>
                         </select>
                         <!-- time start -->
                         <input type="time" id="small-input" formControlName="timeStart2"
@@ -306,7 +324,7 @@
                                 </td> -->
                             <td *ngFor="let dt of [data2,data3,data4,data5,data6,data7]"
                                 class="border border-black/20 text-white bg-[#C7C8CC]">
-                                <div *ngIf="dt[ind]" >
+                                <div *ngIf="dt[ind]">
                                     <p>{{dt[ind].className}}</p>
                                     <span>{{dt[ind].roomName}} </span>
                                     <span>
@@ -323,9 +341,21 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- course can select -->
+    <div class="mt-6 space-y-2" >
+        <div class="w-1/5 bg-sky-500 rounded-full text-white text-center">Select course</div>
+        <div class="flex flex-wrap gap-2">
+            <button class="px-2 py-1 bg-gray-400 hover:bg-sky-400 rounded-sm text-[14px] text-white"
+                *ngFor="let item of dataTeacherCanSelect" (click)="onSelectCourse(item)">
+                <i class="fa fa-mouse-pointer"></i> {{ item.className }} 
+            </button>
+        </div>
+    </div>
+
     <!-- schedule -->
     <div class="mt-6 space-x-2">
+
         <h1 class="text-2xl font-semibold bg-pink-600 rounded-md w-fit text-white py-1 px-3 mr-2">
             Schedule Before Release
         </h1>

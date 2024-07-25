@@ -4,32 +4,33 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class TokenServiceService {
+  user2 : any = {}
+  token : any = ''
+  constructor() {
 
-  constructor() { }
+  }
 
   getToken(): string | null {
-    return localStorage.getItem('MWuEaV33X9');
+    return this.token
   }
 
   setToken(token: string): void {
-    localStorage.setItem('MWuEaV33X9', token);
+    this.token = token;
   }
 
   removeToken(): void {
-    localStorage.removeItem('MWuEaV33X9');
+    this.token = ''
   }
 
-  setUser(user : any): void{
-    localStorage.setItem('hF9ExNMjn7', JSON.stringify(user));
+  setUser(user: any): void {
+    this.user2 = user
   }
 
-  getUser(): any | null{
-    const result = localStorage.getItem('hF9ExNMjn7');
-    if(!result) return null
-    return JSON.parse(result)
+  getUser(): any | null {
+    return this.user2
   }
 
   removeUser(): void {
-    localStorage.removeItem('hF9ExNMjn7');
+    this.user2 = {}
   }
 }

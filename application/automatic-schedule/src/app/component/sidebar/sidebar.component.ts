@@ -2,6 +2,7 @@ import { NgFor } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { EnvUrl } from '../../env-url';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
 
 interface LinkItem{
   title : string,
@@ -19,6 +20,9 @@ interface LinkItem{
 })
 export class SidebarComponent {
   envUrl = EnvUrl
+
+  constructor(private tokenServiceService : TokenServiceService){}
+
   linkItems : LinkItem[] = [
     {
       title : 'Dashboard',
@@ -51,4 +55,9 @@ export class SidebarComponent {
       icon : 'fa fa-store-alt'
     }
   ]
+
+  logout(){
+    this.tokenServiceService.removeToken()
+    this.tokenServiceService.removeUser()
+  }
 }

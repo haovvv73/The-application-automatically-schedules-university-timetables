@@ -5,6 +5,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { NgIf } from '@angular/common';
 import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
 import { TokenServiceService } from '../../services/session/token-service/token-service.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthServiceService,
      private router: Router,
-     private tokenServiceService : TokenServiceService
+     private tokenServiceService : TokenServiceService,
+     private toastr: ToastrService,
     ) { }
 
   ngOnInit(): void {
@@ -66,14 +68,15 @@ export class LoginComponent implements OnInit {
           if(result.status){
               // console.log(result.data);
               this.tokenServiceService.setToken(result.data)
+              this.toastr.success("login success")
               this.router.navigate([this.envUrl.schedule_admin])
           }else{
-            alert("Wrong email or password")
+            this.toastr.error("login failed")
           }
         },
         error: (error: any) => {
           console.log(">> error >>", error)
-          alert("Something wrong")
+          this.toastr.error("login failed")
         }
       })
     }

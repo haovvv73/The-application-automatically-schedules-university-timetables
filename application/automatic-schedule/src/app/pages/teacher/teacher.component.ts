@@ -118,6 +118,7 @@ export class TeacherComponent {
   ]
 
   data: any[] = []
+  dataBackup: any[] = []
 
   // save
   saveLecturer(data: any) {
@@ -163,6 +164,7 @@ export class TeacherComponent {
       next: (result: any) => {
         if (result.status) {
           this.data = result.data
+          this.dataBackup = result.data
         } else {
           alert("Something wrong")
         }
@@ -232,4 +234,11 @@ export class TeacherComponent {
       }
     }
   }
+
+  // search
+  onSearch(text : string){
+    console.log("text",text);
+    this.data = this.dataBackup.filter(item => item.lecturerName.toLowerCase().includes(text.toLowerCase().trim()) )
+  }
+
 }

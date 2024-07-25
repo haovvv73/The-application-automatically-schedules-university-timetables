@@ -1,23 +1,74 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationServiceService } from '../../services/http/notification-service/notification-service.service';
+import { Router, RouterLink } from '@angular/router';
+import { EnvUrl } from '../../env-url';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
+import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
+import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
+import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [NgFor, NgIf, NgClass, RouterLink],
   templateUrl: './notification.component.html',
   styleUrl: './notification.component.css'
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent implements OnInit, OnDestroy {
   title = "Notification"
-  constructor(private notificationServiceService: NotificationServiceService) { }
+  envUrl = EnvUrl
+  currentUser: any | null = null
+  goToSchedule = ''
+  isAdmin = false
+
+  adminWatcher !: Subscription 
+  userWatcher !: Subscription 
+
+  constructor(
+    private router: Router,
+    private notificationServiceService: NotificationServiceService,
+    private tokenServiceService: TokenServiceService,
+    private authServiceService: AuthServiceService,
+    private notiServiceService: NotiServiceService,
+    private toastr: ToastrService,
+  ) { }
+
+
+  ngOnDestroy(): void {
+    console.log('noti destroy');
+    if(this.userWatcher) this.userWatcher.unsubscribe()
+    if(this.adminWatcher) this.adminWatcher.unsubscribe()
+  }
 
 
   ngOnInit(): void {
-    this.getAll('1')
-  }
+    let href = this.router.url.split('/');
+    let userPathSegment = href[2]
+    // this.goToSchedule = userPathSegment == 'user' ? this.envUrl.scheduleView_user : this.envUrl.approvalView_admin
+    this.isAdmin = userPathSegment == 'user' ? false : true
 
+    const user = this.tokenServiceService.getUser()
+
+    // binding
+    console.log('noti success', user)
+
+    // save local
+    this.currentUser = user
+    // get view list
+    this.getAll(this.currentUser.lecturerID)
+
+    // register noti real time
+    if (this.isAdmin) {
+      console.log('noti admin');
+      this.onNotiAdmin()
+    } else {
+      console.log('noti user');
+      this.onNoti()
+    }
+
+  }
 
   data: any[] = [
     {
@@ -49,14 +100,14 @@ export class NotificationComponent implements OnInit {
     },
   ]
 
-  classTest = false
-  test() {
-    console.log('run');
-    this.classTest = !this.classTest
-  }
+  // classTest = false
+  // test() {
+  //   console.log('run');
+  //   this.classTest = !this.classTest
+  // }
 
   // api
-  getAll(lecturerID:string) {
+  getAll(lecturerID: string) {
     this.notificationServiceService.getNotification(lecturerID).subscribe({
       next: (result: any) => {
         if (result.status) {
@@ -74,12 +125,12 @@ export class NotificationComponent implements OnInit {
     })
   }
 
-  delete(id : string) {
+  delete(id: string) {
     this.notificationServiceService.deleteNotification(id).subscribe({
       next: (result: any) => {
         if (result.status) {
           console.log(result);
-          this.getAll('1')
+          this.getAll(this.currentUser.lecturerID)
         } else {
           alert("Something wrong")
         }
@@ -89,5 +140,25 @@ export class NotificationComponent implements OnInit {
         alert("Something wrong")
       }
     })
+  }
+
+  onNoti() {
+    this.userWatcher = this.notiServiceService.message.subscribe((msg: any) => {
+      console.log("user2 >>", msg);
+      // this.toastr.info('New Message !!')
+      if (this.currentUser.lecturerID) {
+        this.getAll(this.currentUser.lecturerID)
+      }
+    });
+  }
+
+  onNotiAdmin() {
+    this.adminWatcher = this.notiServiceService.messageAdmin.subscribe((msg: any) => {
+      console.log("admin2 >>", msg);
+      // this.toastr.info('New Message !!')
+      if (this.currentUser.lecturerID) {
+        this.getAll(this.currentUser.lecturerID)
+      }
+    });
   }
 }

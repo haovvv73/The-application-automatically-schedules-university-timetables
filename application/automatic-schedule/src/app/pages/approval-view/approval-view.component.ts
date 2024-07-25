@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseServiceService } from '../../services/http/course-service/course-service.service';
 import { LecturerServiceService } from '../../services/http/lecturer-service/lecturer-service.service';
@@ -7,24 +7,30 @@ import { RoomServiceService } from '../../services/http/room-service/room-servic
 import { ScheduleServiceService } from '../../services/http/schedule-service/schedule-service.service';
 import { ScheduleTableComponent } from '../../component/schedule-table/schedule-table.component';
 import { RequestServiceService } from '../../services/http/request-service/request-service.service';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
+import { Subscription } from 'rxjs';
+import { NotiServiceService } from '../../services/realtime/noti-service/noti-service.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-approval-view',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass,ScheduleTableComponent],
+  imports: [NgFor, NgIf, NgClass, ScheduleTableComponent],
   templateUrl: './approval-view.component.html',
   styleUrl: './approval-view.component.css'
 })
-export class ApprovalViewComponent implements OnInit {
+export class ApprovalViewComponent implements OnInit, OnDestroy {
   title = ''
-  currentScheduleID : string | null = null
+  currentScheduleID: string | null = null
   test = false
 
   data: any[] = []
-  dataRequest : any[] = []
+  dataRequest: any[] = []
   dataCourseBeforeSaveTable: any[] = []
   dataRoom: any[] = []
   dataTeacher: any[] = []
+
+  adminWatcher !: Subscription
 
   constructor(
     private courseServiceService: CourseServiceService,
@@ -33,7 +39,10 @@ export class ApprovalViewComponent implements OnInit {
     private roomServiceService: RoomServiceService,
     private scheduleServiceService: ScheduleServiceService,
     private requestServiceService: RequestServiceService,
-    private router: Router
+    private tokenServiceService: TokenServiceService,
+    private router: Router,
+    private notiServiceService: NotiServiceService,
+    private toastr: ToastrService,
   ) { }
 
   async ngOnInit() {
@@ -46,8 +55,26 @@ export class ApprovalViewComponent implements OnInit {
       this.getRequestByAdmin(this.currentScheduleID)
       // this.getAll(this.currentScheduleID)
       // this.getLecturer()
-      
+
+
+      // listener
+      this.onNotiAdmin()
+
     }
+  }
+
+  ngOnDestroy(): void {
+    console.log('admin approval-view >> destroy');
+    if(this.adminWatcher) this.adminWatcher.unsubscribe()
+  }
+
+  onNotiAdmin() {
+    this.adminWatcher = this.notiServiceService.messageAdmin.subscribe((msg: any) => {
+      console.log("admin approval-view >>", msg);
+      if (this.currentScheduleID) {
+        this.getRequestByAdmin(this.currentScheduleID)
+      }
+    });
   }
 
   // api call
@@ -73,7 +100,7 @@ export class ApprovalViewComponent implements OnInit {
       next: (result: any) => {
         if (result.status) {
           this.dataTeacher = result.data
-          if(this.currentScheduleID){
+          if (this.currentScheduleID) {
             this.getAll(this.currentScheduleID)
           }
         } else {
@@ -120,12 +147,12 @@ export class ApprovalViewComponent implements OnInit {
     })
   }
 
-  getRequestByAdmin(scheduleID : string){
+  getRequestByAdmin(scheduleID: string) {
     this.requestServiceService.getRequestByAdmin(scheduleID).subscribe({
       next: (result: any) => {
         if (result.status) {
           this.dataRequest = result.data
-          console.log(">><<",result.data)
+          console.log(">><<", result.data)
         } else {
           alert("Something wrong")
         }
@@ -137,12 +164,12 @@ export class ApprovalViewComponent implements OnInit {
     })
   }
 
-  getRequestedByAdmin(scheduleID : string){
+  getRequestedByAdmin(scheduleID: string) {
     this.requestServiceService.getRequestedByAdmin(scheduleID).subscribe({
       next: (result: any) => {
         if (result.status) {
           this.dataRequest = result.data
-          console.log(">>history<<",result.data)
+          console.log(">>history<<", result.data)
         } else {
           alert("Something wrong")
         }
@@ -154,17 +181,22 @@ export class ApprovalViewComponent implements OnInit {
     })
   }
 
-  rejectRequest(requestID : string){
+  rejectRequest(requestID: string) {
+    let us = this.tokenServiceService.getUser()
     const send = {
       requestID,
-      status : 'reject',
-      timeSelect : '0'
+      status: 'reject',
+      timeSelect: '0',
+      scheduleID: this.currentScheduleID,
+      lecturerID :us.lecturerID
     }
 
     this.requestServiceService.updateRequest(send).subscribe({
       next: (result: any) => {
         if (result.status) {
           if (this.currentScheduleID) {
+            console.log('rejectRequest >>>');
+            this.getAll(this.currentScheduleID)
             this.getRequestByAdmin(this.currentScheduleID)
           }
         } else {
@@ -178,26 +210,33 @@ export class ApprovalViewComponent implements OnInit {
     })
   }
 
-  acceptRequest(requestID : string, timeSelect : string){
+  acceptRequest(requestID: string, timeSelect: string) {
+    let us = this.tokenServiceService.getUser()
     const send = {
       requestID,
-      status : 'success',
-      timeSelect
+      status: 'success',
+      timeSelect,
+      scheduleID: this.currentScheduleID,
+      lecturerID :us.lecturerID
     }
 
     this.requestServiceService.updateRequest(send).subscribe({
       next: (result: any) => {
         if (result.status) {
           if (this.currentScheduleID) {
+            console.log('acceptRequest >>>');
+            this.getAll(this.currentScheduleID)
             this.getRequestByAdmin(this.currentScheduleID)
           }
         } else {
-          alert("Something wrong")
+          console.log(result);
+          this.toastr.warning(result.error)
+          // alert("Something wrong1")
         }
       },
       error: (error: any) => {
         console.log(">> error >>", error)
-        alert("Something wrong")
+        alert("Something wrong2")
       }
     })
   }
@@ -245,14 +284,14 @@ export class ApprovalViewComponent implements OnInit {
     this.dataCourseBeforeSaveTable = mockData
   }
 
-  formatDateTime(dateTimeStr : string){
-    const dayMap : any = {
-      mon:'Monday',
-      tue:'Tuesday',
-      wed:'Wednesday',
-      thu:'Thursday',
-      fri:'Friday',
-      sat:'Saturday',
+  formatDateTime(dateTimeStr: string) {
+    const dayMap: any = {
+      mon: 'Monday',
+      tue: 'Tuesday',
+      wed: 'Wednesday',
+      thu: 'Thursday',
+      fri: 'Friday',
+      sat: 'Saturday',
     }
     const dateSplit = dateTimeStr.split('_')
     const day = dateSplit[0]
@@ -263,15 +302,15 @@ export class ApprovalViewComponent implements OnInit {
 
 
   // change view
-  onChangeViewRequested = ()=>{
-    if(this.currentScheduleID){
+  onChangeViewRequested = () => {
+    if (this.currentScheduleID) {
       this.getRequestedByAdmin(this.currentScheduleID)
       this.test = true
     }
   }
 
-  onUnChangeViewRequested = ()=>{
-    if(this.currentScheduleID){
+  onUnChangeViewRequested = () => {
+    if (this.currentScheduleID) {
       this.getRequestByAdmin(this.currentScheduleID)
       this.test = false
     }

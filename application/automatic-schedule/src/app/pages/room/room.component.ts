@@ -7,14 +7,14 @@ import { RoomServiceService } from '../../services/http/room-service/room-servic
 @Component({
   selector: 'app-room',
   standalone: true,
-  imports: [NgFor,PopupComponent,NgIf, FormsModule, ReactiveFormsModule,],
+  imports: [NgFor, PopupComponent, NgIf, FormsModule, ReactiveFormsModule,],
   templateUrl: './room.component.html',
   styleUrl: './room.component.css',
 })
 export class RoomComponent {
   title = 'Room Resource'
   roomForm!: FormGroup
-  currentID : string = ''
+  currentID: string = ''
   @ViewChild(PopupComponent)
   private popupComponent!: PopupComponent;
 
@@ -39,7 +39,7 @@ export class RoomComponent {
   get capacity() {
     return this.roomForm.get('capacity')
   }
-  
+
   get location() {
     return this.roomForm.get('location')
   }
@@ -62,8 +62,8 @@ export class RoomComponent {
     }
   }
 
-  clearForm(success : boolean) {
-    if(success){
+  clearForm(success: boolean) {
+    if (success) {
       this.roomForm.get('roomName')?.setValue('')
       this.roomForm.get('capacity')?.setValue('')
       this.roomForm.get('location')?.setValue('')
@@ -81,7 +81,7 @@ export class RoomComponent {
     this.roomForm.get('description')?.markAsTouched()
   }
 
-  columnsKey : any[] = [
+  columnsKey: any[] = [
     'STT',
     'room ID',
     'room Name',
@@ -92,17 +92,18 @@ export class RoomComponent {
     'Action'
   ]
 
-  data : any[] = []
+  data: any[] = []
+  dataBackup: any[] = []
 
   // save
-  saveRoom(data:any){
+  saveRoom(data: any) {
     this.roomServiceService.saveRoom(data).subscribe({
       next: (result: any) => {
-        if(result.status){
+        if (result.status) {
           this.getAll()
           this.clearForm(true)
           this.popupComponent.onClosePopup()
-        }else{
+        } else {
           alert("Something wrong")
         }
       },
@@ -114,14 +115,14 @@ export class RoomComponent {
   }
 
   // update
-  updateRoom(data:any){
+  updateRoom(data: any) {
     this.roomServiceService.updateRoom(data).subscribe({
       next: (result: any) => {
-        if(result.status){
+        if (result.status) {
           this.getAll()
           this.clearForm(true)
           this.popupComponent.onClosePopup()
-        }else{
+        } else {
           alert("Something wrong")
         }
       },
@@ -133,12 +134,13 @@ export class RoomComponent {
   }
 
   // get
-  getAll(){
+  getAll() {
     this.roomServiceService.getRoom().subscribe({
       next: (result: any) => {
-        if(result.status){
+        if (result.status) {
           this.data = result.data
-        }else{
+          this.dataBackup = result.data
+        } else {
           alert("Something wrong")
         }
       },
@@ -149,10 +151,10 @@ export class RoomComponent {
     })
   }
 
-  getDetail(id:string){
+  getDetail(id: string) {
     this.roomServiceService.getRoomDetail(id).subscribe({
       next: (result: any) => {
-        if(result.status){
+        if (result.status) {
           this.currentID = result.data[0].roomID
           this.roomForm.get('roomName')?.setValue(result.data[0].roomName)
           this.roomForm.get('capacity')?.setValue(result.data[0].capacity)
@@ -160,7 +162,7 @@ export class RoomComponent {
           this.roomForm.get('roomType')?.setValue(result.data[0].roomType)
           this.roomForm.get('description')?.setValue(result.data[0].description)
           this.popupComponent.onOpenPopup()
-        }else{
+        } else {
           alert("Something wrong")
         }
       },
@@ -172,12 +174,12 @@ export class RoomComponent {
   }
 
   // delete
-  deleteRoom(id:string){
+  deleteRoom(id: string) {
     this.roomServiceService.deleteRoom(id).subscribe({
       next: (result: any) => {
-        if(result.status){
+        if (result.status) {
           this.getAll()
-        }else{
+        } else {
           alert("Something wrong")
         }
       },
@@ -191,17 +193,23 @@ export class RoomComponent {
   onSubmit() {
     this.onClickValidate()
     if (!this.roomForm.invalid) {
-      if(!this.currentID){
+      if (!this.currentID) {
         this.saveRoom(this.getForm())
-      }else if(this.currentID){
+      } else if (this.currentID) {
         let formData = this.getForm()
         const roomUpdate = {
-          roomID : this.currentID,
+          roomID: this.currentID,
           ...formData
         }
-        
+
         this.updateRoom(roomUpdate)
       }
     }
+  }
+
+  // search
+  onSearch(text: string) {
+    console.log("text", text);
+    this.data = this.dataBackup.filter(item => item.roomName.toLowerCase().includes(text.toLowerCase().trim()))
   }
 }

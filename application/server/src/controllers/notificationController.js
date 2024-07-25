@@ -26,11 +26,11 @@ const getNotification = async (req, res, next) => {
 
 // POST
 const saveNotification = async (req, res, next) => {
-    const {lectureID, title, notiType, description, sender, time, date} = req.body
-    if (!lectureID || !title || !notiType || !description || !sender || !date) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
+    const {lecturerID, title, notiType, description, sender, time, date} = req.body
+    if (!lecturerID || !title || !notiType || !description || !sender || !date) return errorResponse(res, httpStatusCode.BadRequest.message, httpStatusCode.BadRequest.code)
 
     try {
-        const newNoti = new Noti('', lectureID, title, notiType, description, sender, time, date)
+        const newNoti = new Noti('', lecturerID, title, notiType, description, sender, time, date)
         const result = await notification.saveNotification(newNoti)
 
         if (result) return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)

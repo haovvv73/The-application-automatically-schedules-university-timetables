@@ -84,7 +84,7 @@
             </div>
 
             <!-- export -->
-            <div class="space-x-3 flex items-center hidden">
+            <div class="space-x-3 items-center hidden">
                 <button class="rounded-full px-2 hover:bg-white/10">
                     <i class="fa fa-pen"></i>
                 </button>
@@ -134,7 +134,7 @@
                                     </div>
                                     <div class="flex items-center flex-wrap justify-start gap-1">
                                         <i class="fa fa-map-marker-alt text-red-500 w-5"></i>
-                                        <span>{{course.room}}_{{course.location}}</span>
+                                        <span>{{course.room}}_{{course.location == 1 ? 'LT' : 'NVC' }}</span>
                                     </div>
                                     <div class="flex items-center flex-wrap justify-start gap-1">
                                         <i class="fa fa-chalkboard-teacher text-[#74a0bf] w-5"></i>

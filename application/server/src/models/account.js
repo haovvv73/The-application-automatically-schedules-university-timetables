@@ -6,7 +6,8 @@ export class Account {
         permissionRead = 0,
         permissionCreate = 0,
         permissionUpdate = 0,
-        permissionDelete = 0
+        permissionDelete = 0,
+        lecturerID = ''
     ){
         this.accountID = accountID
         this.email = email
@@ -15,5 +16,6 @@ export class Account {
         this.permissionCreate = permissionCreate
         this.permissionUpdate = permissionUpdate
         this.permissionDelete = permissionDelete
+        this.lecturerID = lecturerID
     }
 }

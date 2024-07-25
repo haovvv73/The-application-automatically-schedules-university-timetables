@@ -10,6 +10,7 @@ import subjectService from "../services/subjectService.js";
 import roomService from "../services/roomService.js";
 import { Noti } from "../models/notification.js";
 import notification from "../services/notificationService.js";
+import lecturerService from "../services/lecturerService.js";
 
 const getSchedules = async (req, res) => {
     const scheduleID = req.params.id
@@ -188,6 +189,7 @@ const continueSchedule = async (req, res) => {
         // save schedule
         const result = await scheduleService.saveSchedule(schedule)
 
+        // save course
         const modelCourses = []
         const listLecturerID = []
         for (let cou of course) {
@@ -212,14 +214,16 @@ const continueSchedule = async (req, res) => {
                 )
             )
         }
-
-        // save course
         let check = await courseService.saveCourses(modelCourses)
+
+        
         if (check) {
             const message = 'New schedule time-table'
-            const description = 'New Schedule For' + schedule.Title + ' in Semester ' + schedule.semester + ' ' + schedule.timeStart + schedule.timeEnd
+
+            const description = 'New Schedule For ' + schedule.title + ' in Semester ' + schedule.semester + ' ' + schedule.yearStart + ' ' + schedule.yearEnd
 
             // Format the date and time
+<<<<<<< HEAD
             // for (let lecID of listLecturerID) {
             //     const event = new Date();
             //     const dateTime = event.toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }).split(', ');
@@ -234,6 +238,29 @@ const continueSchedule = async (req, res) => {
             //         );
             //     }
             // }
+=======
+            for (let lecID of listLecturerID) {
+                const event = new Date();
+                const dateTime = event.toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }).split(', ');
+                // save DB 
+                const noti = new Noti('', lecID, message, 'message', description, 'HCMUS ADMIN', dateTime[1], dateTime[0])
+                await notification.saveNotification(noti)
+
+                // get list accountID user
+                const userDB = await lecturerService.getUserById(lecID)
+
+                // send noti user online
+                const userSocketId = req.getUserSocketId(userDB[0].lecturerID);
+                // console.log('omg >', userDB);
+                // console.log('omg >>', userSocketId);
+                if (userSocketId) {
+                    console.log('send to user >>>>>>');
+                    req.io.to(userSocketId).emit(
+                        'notification', noti
+                    );
+                }
+            }
+>>>>>>> ee09ca2d62af015e04cd46c92889bd224634105f
         }
 
         return successResponse(res, httpStatusCode.OK.message, httpStatusCode.OK.code)
