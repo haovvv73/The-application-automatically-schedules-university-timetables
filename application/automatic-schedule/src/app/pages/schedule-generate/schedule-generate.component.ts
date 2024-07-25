@@ -532,6 +532,8 @@ export class ScheduleGenerateComponent implements OnInit {
       schedule: this.getScheduleForm(),
       course
     }
+    console.log("asdadasdsad >>>><<<",data);
+    
     this.scheduleServiceService.continueSchedule(data).subscribe({
       next: (result: any) => {
         if (result.status) {

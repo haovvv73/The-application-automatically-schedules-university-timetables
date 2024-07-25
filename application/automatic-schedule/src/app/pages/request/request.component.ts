@@ -18,31 +18,32 @@ export class RequestComponent implements OnInit, OnDestroy {
   title = "Request History"
   borderColor = 'border-sky-400'
   statusSelect = 0
-  currentLecturerID : string | null = null
-  statusList = ['all', 'wait', 'success', 'cancel', 'reject']
+  currentLecturerID: string | null = null
+  statusList = ['all', 'wait', 'success', 'reject']
+  // statusList = ['all', 'wait', 'success', 'cancel', 'reject']
 
   userWatcher !: Subscription
 
   constructor(
     private requestServiceService: RequestServiceService,
-    private tokenServiceService : TokenServiceService,
-    private authServiceService : AuthServiceService,
+    private tokenServiceService: TokenServiceService,
+    private authServiceService: AuthServiceService,
     private notiServiceService: NotiServiceService,
   ) { }
 
 
   ngOnInit(): void {
     const token = this.tokenServiceService.getToken()
-    this.authServiceService.checkAuth({token}).subscribe({
-      next: (result : any) =>{
-        if(result.data){
+    this.authServiceService.checkAuth({ token }).subscribe({
+      next: (result: any) => {
+        if (result.data) {
           // binding
-          console.log('request success',result.data)
+          console.log('request success', result.data)
           this.currentLecturerID = result.data.lecturerID
           this.getRequestByUser(result.data.lecturerID)
         }
       },
-      error :(error : any)=>{
+      error: (error: any) => {
         console.error('Error validating token:', error);
       }
     })
@@ -54,7 +55,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('request destroy');
-    if(this.userWatcher) this.userWatcher.unsubscribe()
+    if (this.userWatcher) this.userWatcher.unsubscribe()
   }
 
   onNoti() {
@@ -69,7 +70,7 @@ export class RequestComponent implements OnInit, OnDestroy {
   columnsKey: any[] = [
     'STT',
     'request',
-    'schedule',
+    'reason',
     'time change',
     'date',
     'status',
@@ -103,7 +104,8 @@ export class RequestComponent implements OnInit, OnDestroy {
     },
   ]
 
-  dataBackup : any[] =[]
+  dataBackup: any[] = []
+  dataBackup2: any[] = []
 
   // call api
   getRequestByUser(lecturerID: string) {
@@ -112,6 +114,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         if (result.status) {
           this.data = result.data
           this.dataBackup = result.data
+          this.dataBackup2 = result.data
           console.log(">>request history<<", result.data)
         } else {
           alert("Something wrong")
@@ -128,7 +131,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     const send = {
       requestID,
       status: 'cancel',
-      timeSelect : 0
+      timeSelect: 0
     }
 
     this.requestServiceService.updateRequest(send).subscribe({
@@ -151,11 +154,11 @@ export class RequestComponent implements OnInit, OnDestroy {
   deleteRequest(requestID: string,) {
     const send = {
       requestID,
-      status: 'success',
+      status: 'delete',
       timeSelect: 0
     }
 
-    this.requestServiceService.updateRequest(send).subscribe({
+    this.requestServiceService.deleteRequest(requestID).subscribe({
       next: (result: any) => {
         if (result.status) {
           if (this.currentLecturerID) {
@@ -215,17 +218,20 @@ export class RequestComponent implements OnInit, OnDestroy {
     // set statusColor
     this.statusSelect = index
     //
-    this.data = this.dataBackup.filter(re => {
+    let resultArr = this.dataBackup.filter(re => {
       // status : all - wait - reject - success - [cancel]
-      if(re.status == this.statusList[index]){
+      if (re.status == this.statusList[index]) {
         return re
       }
 
-      if(this.statusList[index] == 'all'){
+      if (this.statusList[index] == 'all') {
         return re
       }
     })
 
+    // 
+    this.data = resultArr
+    this.dataBackup2 = resultArr
   }
 
   formatDateTime(dateTimeStr: string) {
@@ -242,5 +248,11 @@ export class RequestComponent implements OnInit, OnDestroy {
     const time = dateSplit[1]
 
     return dayMap[day] + ' ' + time
+  }
+
+  // search
+  onSearch(text: string) {
+    console.log("text", text);
+    this.data = this.dataBackup2.filter(item => item.content.toLowerCase().includes(text.toLowerCase().trim()))
   }
 }

@@ -11,7 +11,7 @@
         <div class="flex items-center space-x-3">
             <!-- search -->
             <div class="border w-1/3 flex items-center p-1 rounded-md bg-gray-50 flex-1">
-                <input type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
+                <input  #myTitle (keyup)="onSearch(myTitle.value)" type="text" class="bg-gray-50 w-full outline-none px-2" placeholder="Search">
                 <span class="px-2"><i class="fa fa-search"></i></span>
             </div>
             <!-- request button -->
@@ -63,7 +63,7 @@
                                 {{item.content}}
                             </td>
                             <td class="px-4 py-2">
-                                {{item.title}} HK {{item.semester}} {{item.yearStart}}-{{item.yearEnd}}
+                                {{item.reason}}
                             </td>
                             <td class="px-4 py-2">
                                 <span > <i [ngClass]="{'text-green-500':item.timeSelect == 1,'text-red-500':item.status == 'reject'}" class="fa fa-circle"></i>  {{formatDateTime(item.time)}} </span>
@@ -79,7 +79,7 @@
                                     {{item.status}}
                                 </div>
                             </td>
-                            <td class="px-4 py-2 flex items-center">
+                            <td class="px-4 py-2 ">
                                 <!-- detail -->
                                 <!-- <button
                                     class="h-[35px] w-[35px] font-medium text-sky-600 rounded-full hover:bg-gray-100">
@@ -88,7 +88,7 @@
                                 <!-- cancel -->
                                 <button
                                     (click)="cancelRequest(item.requestID)"
-                                    class="h-[35px] w-[35px] font-medium rounded-full hover:bg-gray-100 text-orange-600">
+                                    class="h-[35px] w-[35px] font-medium rounded-full hover:bg-gray-100 text-orange-600 hidden">
                                     <i class="fa fa-minus-circle text-lg"></i>
                                 </button>
                                 <!-- remove -->

@@ -228,6 +228,8 @@ class CourseService {
     async saveCourses(courses) {
         try {
             await this.connection.query('START TRANSACTION');
+
+            console.log(">>>>>",courses);
             let allResult = 0
             for (let course of courses) {
                 const { className, cohort, classSize, timeStart, timeEnd, day, location, lecturerID, subjectID, type, roomID, scheduleID } = course

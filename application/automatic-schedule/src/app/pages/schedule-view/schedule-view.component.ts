@@ -29,6 +29,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   requestForm!: FormGroup
   title = ''
   data: any[] = []
+  dataBackup : any[] = []
   dataRoom: any[] = []
   dataTeacher: any[] = []
   dataTeacherCanSelect: any[] = []
@@ -42,7 +43,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
   data6: any[] = []
   data7: any[] = []
 
-  userWatcher !: Subscription 
+  userWatcher !: Subscription
 
   constructor(
     private courseServiceService: CourseServiceService,
@@ -90,7 +91,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('user schedule-view >> destroy');
-    if(this.userWatcher) this.userWatcher.unsubscribe()
+    if (this.userWatcher) this.userWatcher.unsubscribe()
   }
 
   onNoti() {
@@ -195,8 +196,9 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       next: (result: any) => {
         if (result.status) {
           this.data = result.data
+          this.dataBackup = result.data
           this.bindingScheduleTable(this.data)
-          console.log("getALL",this.data);
+          console.log("getALL", this.data);
         } else {
           alert("Something wrong")
         }
@@ -299,7 +301,7 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
                 break;
             }
           }
-          console.log('teacher course',result.data);
+          console.log('teacher course', result.data);
 
         } else {
           alert("Something wrong")
@@ -549,5 +551,11 @@ export class ScheduleViewComponent implements OnInit, OnDestroy {
       }
 
     }
+  }
+
+  // search
+  onSearch(text: string) {
+    console.log("text", text);
+    this.data = this.dataBackup.filter(item => item.className.toLowerCase().includes(text.toLowerCase().trim()))
   }
 }

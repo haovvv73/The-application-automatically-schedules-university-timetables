@@ -4,14 +4,14 @@
         <!-- number card -->
         <div class="flex gap-3">
             <div class="bg-green-200 rounded-xl overflow-hidden flex-1 shadow-md text-white relative">
-                <div class="text-6xl text-center p-3 text-black">4</div>
+                <div class="text-6xl text-center p-3 text-black">{{getCountRequest('success')}}</div>
                 <span class="h-6 w-6 text-center rounded-lg bg-green-400 absolute top-2 left-2"><i
                         class="fa fa-check"></i></span>
                 <div class="p-2 bg-green-400">Total Accept</div>
             </div>
 
             <div class="bg-slate-200 rounded-xl overflow-hidden flex-1 shadow-md text-white relative">
-                <div class="text-6xl text-center p-3 text-black">4</div>
+                <div class="text-6xl text-center p-3 text-black">{{getCountRequest('wait')}}</div>
                 <span class="h-6 w-6 text-center rounded-lg bg-slate-400 absolute top-2 left-2">
                     <i class="fa fa-stopwatch"></i>
                 </span>
@@ -19,7 +19,7 @@
             </div>
 
             <div class="bg-orange-200 rounded-xl overflow-hidden flex-1 shadow-md text-white relative">
-                <div class="text-6xl text-center p-3 text-black">4</div>
+                <div class="text-6xl text-center p-3 text-black">{{getCountRequest('cancel')}}</div>
                 <span class="h-6 w-6 text-center rounded-lg bg-orange-400 absolute top-2 left-2">
                     <i class="fa fa-exclamation"></i>
                 </span>
@@ -27,7 +27,7 @@
             </div>
 
             <div class="bg-red-200 rounded-xl overflow-hidden flex-1 shadow-md text-white relative">
-                <div class="text-6xl text-center p-3 text-black">4</div>
+                <div class="text-6xl text-center p-3 text-black">{{getCountRequest('reject')}}</div>
                 <span class="h-6 w-6 text-center rounded-lg bg-red-400 absolute top-2 left-2">
                     <i class="fa fa-times"></i>
                 </span>
@@ -58,17 +58,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of [1,2,3,4,1,1,1]"
+                        <tr *ngFor="let item of dataRequest"
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 ">
-                            <th scope="row" class="px-6 py-4 font-medium text-sky-500 whitespace-nowrap ">
-                                Wait
+                            <th *ngIf="item.status == 'wait' " scope="row" class="px-6 py-4 font-medium text-sky-500 whitespace-nowrap ">
+                                {{item.status}}
+                            </th>
+                            <th *ngIf="item.status == 'reject' " scope="row" class="px-6 py-4 font-medium text-red-500 whitespace-nowrap ">
+                                {{item.status}}
+                            </th>
+                            <th *ngIf="item.status == 'success' " scope="row" class="px-6 py-4 font-medium text-green-500 whitespace-nowrap ">
+                                {{item.status}}
+                            </th>
+                            <th *ngIf="item.status == 'cancel' " scope="row" class="px-6 py-4 font-medium text-orange-500 whitespace-nowrap ">
+                                {{item.status}}
                             </th>
                             <td class="px-6 py-4">
-                                Giảng viên A: đổi giờ dạy ngày thứ ba môn PHP cơ sở NVC
+                                {{item.content}}
                             </td>
                             <td class="px-6 py-4">
-                                <span>09:56</span> <br>
-                                <span>18-04-2024</span>
+                                {{item.date}}
                             </td>
                         </tr>
                     </tbody>

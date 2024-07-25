@@ -49,12 +49,14 @@ export class ApprovalComponent implements OnInit {
     //   request: '5 request',
     // },
   ]
+  dataBackup: any[] = []
 
   getAll() {
     this.scheduleServiceService.getSchedule().subscribe({
       next: (result: any) => {
         if (result.status) {
           this.data = result.data
+          this.dataBackup = result.data
           console.log(this.data);
           
         } else {
@@ -68,5 +70,9 @@ export class ApprovalComponent implements OnInit {
     })
   }
 
-
+  // search
+  onSearch(text : string){
+    console.log("text",text);
+    this.data = this.dataBackup.filter(item => item.title.toLowerCase().includes(text.toLowerCase().trim()) )
+  }
 }
