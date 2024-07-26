@@ -1,68 +1,58 @@
-import { NgClass, NgFor } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { RequestServiceService } from '../../services/http/request-service/request-service.service';
+import { TokenServiceService } from '../../services/session/token-service/token-service.service';
+import { AuthServiceService } from '../../services/http/auth-service/auth-service.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgFor,NgClass,NgxChartsModule],
+  imports: [NgFor,NgClass,NgxChartsModule,NgIf],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
   host: { ngSkipHydration: 'true' },
 })
 export class HomeComponent {
-  dataPC = [
-    {
-      "name": "Germany",
-      "value": 40632,
-      "extra": {
-        "code": "de"
-      }
-    },
-    {
-      "name": "United States",
-      "value": 50000,
-      "extra": {
-        "code": "us"
-      }
-    },
-    {
-      "name": "France",
-      "value": 36745,
-      "extra": {
-        "code": "fr"
-      }
-    },
-    {
-      "name": "United Kingdom",
-      "value": 36240,
-      "extra": {
-        "code": "uk"
-      }
-    },
-    {
-      "name": "Spain",
-      "value": 33000,
-      "extra": {
-        "code": "es"
-      }
-    },
-    {
-      "name": "Italy",
-      "value": 35800,
-      "extra": {
-        "code": "it"
-      }
-    }
-  ]
-  viewPC: [number, number] = [800, 300];
-  animationPC = true;
-  colorSchemePC = "vivid";
-  legendVBC = true;
-  labelsPC = true;
-  doughnut = true;
+  dataRequest: any[] = []
 
-  percentageFormatterPC(data: any): string {
-    return data.value + "%";
+  constructor(
+    // private courseServiceService: CourseServiceService,
+    private requestServiceService: RequestServiceService,
+    private tokenServiceService: TokenServiceService,
+    private authServiceService: AuthServiceService,
+  ) { }
+
+  ngOnInit(): void {
+    // const token = this.tokenServiceService.getToken()
+    // this.authServiceService.checkAdmin({ token }).subscribe({
+    //   next: (result: any) => {
+    //     if (result.data) {
+    //       console.log('success admin-user', result.data)
+    //       let id = result.data.lecturerID
+    //       this.getRequestByUser(id)
+    //     }
+    //   },
+    //   error: (error: any) => {
+    //     console.error('Error validating token:', error);
+    //   }
+    // })
   }
+
+  // getRequestByUser(lecturerID: string) {
+  //   this.requestServiceService.getRequest(lecturerID).subscribe({
+  //     next: (result: any) => {
+  //       if (result.status) {
+  //         this.dataRequest = result.data
+  //         console.log(">> request history dashboard <<", result.data)
+  //       } else {
+  //         alert("Something wrong")
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //       console.log(">> error >>", error)
+  //       alert("Something wrong")
+  //     }
+  //   })
+  // }
 }
