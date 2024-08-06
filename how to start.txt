@@ -1,0 +1,17 @@
+source code => application folder
+ - FE = >  npm i =>  ng serve -o
+ - server => npm start
+
+data use for this thesis => data folder
+
+describe data => document folder
+
+daily report => report folder
+
+schema database => schema folder
+
+setup DB => install mysql and run that file => setup folder
+
+final report and slide report => thesis folder
+
+video demo application => video folder
